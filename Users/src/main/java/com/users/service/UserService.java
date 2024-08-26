@@ -9,6 +9,8 @@ import com.users.indto.LoginRequest;
 import com.users.indto.UserRequest;
 import com.users.outdto.UserResponse;
 import com.users.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.users.passwordencryption.PasswordEncodingAndDecoding;
@@ -22,6 +24,8 @@ import java.util.Optional;
 @Service
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -33,8 +37,13 @@ public class UserService {
      * @return a list of {@link User} entities.
      */
     public List<User> getAllUserList(){
-        List<User> list = new ArrayList<>();
-        list = userRepository.findAll();
+        logger.info("Retrieving all users");
+        List<User> list = userRepository.findAll();
+        if (list.isEmpty()) {
+            logger.warn("No users found");
+        } else {
+            logger.info("Found {} users", list.size());
+        }
         return list;
     }
 
@@ -47,14 +56,18 @@ public class UserService {
      */
     public UserResponse addUser(UserRequest userRequest) {
 
+        logger.info("Adding a new user with email: {}", userRequest.getUserEmail());
+
         User user = DtoConversion.convertUserRequestToUser(userRequest);
         Optional<User> optionalUser = userRepository.findByUserEmail(userRequest.getUserEmail());
-        if (optionalUser.isPresent()) {
+        if (optionalUser.isPresent()){
+            logger.error("User with email {} already exists", userRequest.getUserEmail());
             throw new AlreadyExists(ConstantMessage.ALREADY_EXISTS);
         }
         passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
         user.setUserPassword(passwordEncodingAndDecoding.encodePassword(user.getUserPassword()));
         User savedUser = userRepository.save(user);
+        logger.info("Successfully added user with id: {}", savedUser.getUserId());
         UserResponse userResponse = DtoConversion.userToUserResponse(savedUser);
         return userResponse;
     }
@@ -67,6 +80,7 @@ public class UserService {
      * @throws NotFoundException if no user with the given ID is found.
      */
     public boolean deleteUser(Long userId){
+        logger.info("Deleting user with id: {}", userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(ConstantMessage.NOT_FOUND));
         userRepository.deleteById(userId);
         return true;
@@ -80,11 +94,13 @@ public class UserService {
      * @throws NotFoundException if no user with the given email is found.
      */
     public UserResponse authenticateUser(LoginRequest loginRequest) {
+        logger.info("Authenticating user with email: {}", loginRequest.getUserEmail());
 
         User user = userRepository.findByUserEmail(loginRequest.getUserEmail())
                 .orElseThrow(() -> new NotFoundException(ConstantMessage.NOT_FOUND));
         passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
         UserResponse userResponse = DtoConversion.userToUserResponse(user);
+        logger.info("User with email {} authenticated successfully", loginRequest.getUserEmail());
         return userResponse;
     }
 }

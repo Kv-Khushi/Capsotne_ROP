@@ -46,12 +46,12 @@ public class UserControllerTest {
         UserRequest userRequest = new UserRequest();
         userRequest.setPhoneNumber(1234567890L);
         userRequest.setUserName("Khushi");
-        userRequest.setUserEmail("khushi@gmail.com");
-        userRequest.setUserPassword("khushi123");
+        userRequest.setUserEmail("khushi@nucleusteq.com");
+        userRequest.setUserPassword("Khushi@123");
         userRequest.setUserRole(UserRole.CUSTOMER);
 
         UserResponse userResponse = new UserResponse();
-        userResponse.setUserEmail("khushi@gmail.com");
+        userResponse.setUserEmail("khushi@nucleusteq.com");
 
         when(userService.addUser(any(UserRequest.class))).thenReturn(userResponse);
 
@@ -59,14 +59,14 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userEmail").value("khushi@gmail.com"));
+                .andExpect(jsonPath("$.userEmail").value("khushi@nucleusteq.com"));
     }
 
     @Test
     public void testAddUser_ValidationError() throws Exception {
         UserRequest userRequest = new UserRequest();
         userRequest.setUserEmail("khushi@gmail.com");
-        userRequest.setUserPassword("khushi123");
+        userRequest.setUserPassword("Khushi@123");
 
         mockMvc.perform(post("/users/addUser")
                         .contentType(MediaType.APPLICATION_JSON)

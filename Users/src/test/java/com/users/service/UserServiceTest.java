@@ -76,13 +76,17 @@ public class UserServiceTest {
     @Test
     public void testDeleteUser_Success() {
         Long userId = 1L;
-        doNothing().when(userRepository).deleteById(userId);
+        User mockUser = new User(); // Create a mock user instance
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser)); // Mock findById to return a user
+
+        doNothing().when(userRepository).deleteById(userId); // Mock deleteById to do nothing
 
         boolean result = userService.deleteUser(userId);
 
         assertTrue(result);
         verify(userRepository, times(1)).deleteById(userId);
     }
+
 
     @Test
     public void testAuthenticateUser_Success() {
