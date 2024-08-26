@@ -13,4 +13,7 @@ public class UserResponse {
 
     private String userEmail;
 
+    private String userPassword;
+
+    private Long wallet;
 }

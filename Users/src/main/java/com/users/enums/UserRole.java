@@ -1,6 +1,7 @@
-package com.users.entities;
+package com.users.enums;
 
 public enum UserRole {
     CUSTOMER,
     RESTAURANT_OWNER
 }
+

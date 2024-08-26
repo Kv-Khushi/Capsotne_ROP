@@ -10,9 +10,16 @@ public class LoginRequest {
 
     @Override
     public String toString() {
-        return "LoginRequest{" +
-                "userEmail='" + userEmail + '\'' +
-                ", userPassword='" + userPassword + '\'' +
+        return "LoginRequest{"
+                +
+                "userEmail='"
+                + userEmail
+                + '\''
+                +
+                ", userPassword='"
+                + userPassword
+                + '\''
+                +
                 '}';
     }
 }

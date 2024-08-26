@@ -1,7 +1,14 @@
 package com.users.entities;
 
-import javax.persistence.*;
+import lombok.Data;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+
+@Data
 @Entity
 public class Address {
 
@@ -12,8 +19,10 @@ public class Address {
         private String street;
         private String city;
         private String state;
-        private String zipCode;
+        private Integer zipCode;
         private String country;
-        private String user_Id;
-    }
+        private Long userId;
+
+
+}
 
