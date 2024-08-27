@@ -125,5 +125,4 @@ public class GlobalExceptionHandler {
         String errorMessage = "Validation failed: " + ex.getFieldError().getDefaultMessage();
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
     }
-
 }

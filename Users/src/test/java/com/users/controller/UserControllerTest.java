@@ -63,48 +63,5 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.userEmail").value("khushi@nucleusteq.com"));
     }
 
-//    @Test
-//    public void testAddUser_ValidationError() throws Exception {
-//        UserRequest userRequest = new UserRequest();
-//        userRequest.setUserEmail("khushi@nucleusteq.com");
-//        userRequest.setUserPassword("Khushi@123");
-//        userRequest.setUserId(1L);
-//        userRequest.setUserRole(UserRole.CUSTOMER);
-//        userRequest.setPhoneNumber(9587419793L);
-//        userRequest.setUserName("Khushi Vyas");
-//
-//        mockMvc.perform(post("/users/addUser")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(userRequest)))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.status").value(400))
-//                .andExpect(jsonPath("$.message").value("Validation failed: phone number can not be null")); // Update this to match the actual message
-//    }
-
-//    @Test
-//    public void testLoginUser_Success() throws Exception {
-//        UserRequest userRequest = new UserRequest();
-//        userRequest.setUserEmail("khushi@gmail.com");
-//        userRequest.setUserPassword("khushi123");
-//
-//        UserResponse userResponse = new UserResponse();
-//        userResponse.setUserEmail("khushi@gmail.com");
-//
-//        when(userService.authenticateUser(any(com.users.indto.LoginRequest.class))).thenReturn(userResponse);
-//
-//        mockMvc.perform(post("/users/loginUser")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(userRequest)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.userEmail").value("khushi@gmail.com"));
-//    }
-
-
-//    @Test
-//    public void testDeleteUser_Success() throws Exception {
-//        mockMvc.perform(delete("/users/deleteUser/1")
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNoContent());
-//    }
 
 }
