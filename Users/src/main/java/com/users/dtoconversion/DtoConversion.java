@@ -18,7 +18,7 @@ public class DtoConversion {
      * @param userRequest the {@link UserRequest} DTO containing user details
      * @return a {@link User} entity populated with data from the provided DTO
      */
-    public static User convertUserRequestToUser(UserRequest userRequest) {
+    public static User convertUserRequestToUser(final UserRequest userRequest) {
         User user = new User();
         user.setUserName(userRequest.getUserName());
         user.setUserPassword(userRequest.getUserPassword());
@@ -34,7 +34,7 @@ public class DtoConversion {
      * @param user the {@link User} entity to be converted
      * @return a {@link UserResponse} DTO populated with data from the provided entity
      */
-    public static UserResponse userToUserResponse(User user) {
+    public static UserResponse userToUserResponse(final User user) {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserId(user.getUserId());
         userResponse.setUserEmail(user.getUserEmail());
@@ -51,7 +51,7 @@ public class DtoConversion {
      * @param addressRequest the {@link AddressRequest} DTO containing address details
      * @return an {@link Address} entity populated with data from the provided DTO
      */
-    public static Address convertAddressRequestToAddress(AddressRequest addressRequest) {
+    public static Address convertAddressRequestToAddress(final AddressRequest addressRequest) {
         Address address = new Address();
         address.setStreet(addressRequest.getStreet());
         address.setCity(addressRequest.getCity());
@@ -68,7 +68,7 @@ public class DtoConversion {
      * @param address the {@link Address} entity to be converted
      * @return an {@link AddressResponse} DTO populated with data from the provided entity
      */
-    public static AddressResponse addressToAddressResponse(Address address) {
+    public static AddressResponse addressToAddressResponse(final Address address) {
         AddressResponse addressResponse = new AddressResponse();
         addressResponse.setStreet(address.getStreet());
         addressResponse.setCity(address.getCity());
