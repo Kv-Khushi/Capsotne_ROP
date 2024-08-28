@@ -103,4 +103,9 @@ public class UserService {
         logger.info("User with email {} authenticated successfully", loginRequest.getUserEmail());
         return userResponse;
     }
+
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
 }

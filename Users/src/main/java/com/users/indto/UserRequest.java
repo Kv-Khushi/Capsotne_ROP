@@ -40,7 +40,7 @@ public class UserRequest {
      * This field cannot be null or empty and must have at least 2 characters.
      * </p>
      */
-    @NotNull(message = "Username cannot be null")
+    @NotBlank(message = "Username cannot be null")
     @Size(min = 2, message = "Username should have at least 2 characters")
     private String userName;
 

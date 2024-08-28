@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for handling user-related operations.
@@ -104,5 +105,21 @@ public class UserController {
             logger.warn("User not found with ID: {}", userId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
+
     }
+
+    @GetMapping("/getUser/{userId}")
+    public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
+        logger.info("Received request to get user with ID: {}", userId);
+        Optional<User> user = userService.getUserById(userId);
+
+        if (user.isPresent()) {
+            logger.info("Successfully retrieved user with ID: {}", userId);
+            return ResponseEntity.status(HttpStatus.OK).body(user.get());
+        } else {
+            logger.warn("User not found with ID: {}", userId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
 }
