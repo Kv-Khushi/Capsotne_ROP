@@ -3,9 +3,7 @@ package com.restaurants.outdto;
 import lombok.Data;
 
 @Data
-public class RestaurantResponse {
-
-    private Long restaurantId;
+public class RestaurantResponse{
 
     private Long userId;
 
@@ -20,4 +18,6 @@ public class RestaurantResponse {
     private Long openingHour;
 
     private String restaurantImages;
+
 }
+
