@@ -15,7 +15,7 @@ public class NotFoundException extends RuntimeException {
      *
      * @param message the detail message, which provides more information about the cause of the exception
      */
-    public NotFoundException(String message) {
+    public NotFoundException(final String message) {
         super(message);
     }
 }

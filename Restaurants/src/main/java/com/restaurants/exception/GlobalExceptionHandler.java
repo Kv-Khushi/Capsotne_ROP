@@ -6,42 +6,77 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * Global exception handler for the application to handle various exceptions.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Represents an error response containing status and message.
+     */
     public static class ErrorResponse {
         private int status;
         private String message;
 
-
-        public ErrorResponse(int status, String message) {
+        /**
+         * Constructs an ErrorResponse with the given status and message.
+         *
+         * @param status  the HTTP status code
+         * @param message the error message
+         */
+        public ErrorResponse(final int status, final String message) {
             this.status = status;
             this.message = message;
         }
 
+        /**
+         * Gets the HTTP status code of the error response.
+         *
+         * @return the HTTP status code
+         */
         public int getStatus() {
             return status;
         }
 
-
-        public void setStatus(int status) {
+        /**
+         * Sets the HTTP status code of the error response.
+         *
+         * @param status the HTTP status code
+         */
+        public void setStatus(final int status) {
             this.status = status;
         }
 
-
+        /**
+         * Gets the error message of the error response.
+         *
+         * @return the error message
+         */
         public String getMessage() {
             return message;
         }
 
-
-        public void setMessage(String message) {
+        /**
+         * Sets the error message of the error response.
+         *
+         * @param message the error message
+         */
+        public void setMessage(final String message) {
             this.message = message;
         }
     }
-        @ExceptionHandler(NotFoundException.class)
-        @ResponseStatus(HttpStatus.NOT_FOUND)
-        @ResponseBody
-        public ErrorResponse handleNotFoundException(NotFoundException ex) {
-            return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-        }
+
+    /**
+     * Handles NotFoundException and returns an error response with status 404.
+     *
+     * @param ex the NotFoundException to handle
+     * @return an ErrorResponse with status 404 and exception message
+     */
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorResponse handleNotFoundException(final NotFoundException ex) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
+}

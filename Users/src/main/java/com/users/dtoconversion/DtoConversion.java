@@ -42,6 +42,7 @@ public class DtoConversion {
         userResponse.setPhoneNumber(user.getPhoneNumber());
         userResponse.setUserPassword(user.getUserPassword());
         userResponse.setWallet(user.getWallet());
+        userResponse.setUserRole(user.getUserRole());
         return userResponse;
     }
 

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.DeleteMapping;
+
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,8 +30,14 @@ import java.util.Optional;
 @RestController
 public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    /**
+     * Logger for logging UserController events.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    /**
+     * Service for handling user-related business logic.
+     */
     @Autowired
     private UserService userService;
 
@@ -42,17 +48,13 @@ public class UserController {
      * @return a {@link ResponseEntity} containing the user response with {@link HttpStatus#CREATED} status
      */
     @PostMapping("/addUser")
-    public ResponseEntity<UserResponse> addUser(@Valid @RequestBody UserRequest userRequest){
+    public ResponseEntity<UserResponse> addUser(final @Valid @RequestBody UserRequest userRequest) {
 
-        logger.info("Received request to add a new user with username: {}", userRequest.getUserName());
+        LOGGER.info("Received request to add a new user with username: {}", userRequest.getUserName());
 
         UserResponse newUser = userService.addUser(userRequest);
-        if (newUser != null){
-            logger.info("Successfully added user with username: {}", newUser.getUserName());
-            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
-        }
-        logger.error("Failed to add user with username: {}", userRequest.getUserName());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        LOGGER.info("Successfully added user with username: {}", newUser.getUserName());
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     /**
@@ -62,7 +64,7 @@ public class UserController {
      * @return a {@link ResponseEntity} containing the user response with {@link HttpStatus#OK} status
      */
     @PostMapping("/loginUser")
-    public ResponseEntity<UserResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest){
+    public ResponseEntity<UserResponse> loginUser(final @Valid @RequestBody LoginRequest loginRequest) {
 
         UserResponse userResponse = userService.authenticateUser(loginRequest);
         return ResponseEntity.ok(userResponse);
@@ -75,51 +77,35 @@ public class UserController {
      *         or {@link HttpStatus#NOT_FOUND} if no users are found
      */
     @GetMapping("/getAllUser")
-    public ResponseEntity<List<User>> getAllUser(){
-        logger.info("Received request to retrieve all users");
+    public ResponseEntity<List<User>> getAllUser() {
+        LOGGER.info("Received request to retrieve all users");
         List<User> list = userService.getAllUserList();
         if (!list.isEmpty()) {
-            logger.info("Successfully retrieved {} users", list.size());
+            LOGGER.info("Successfully retrieved {} users", list.size());
             return ResponseEntity.ok(list);
         }
-        logger.warn("No users found");
+        LOGGER.warn("No users found");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     /**
-     * Deletes a user by user ID.
+     * Retrieves a user by user ID.
      *
-     * @param userId the ID of the user to be deleted
-     * @return a {@link ResponseEntity} with {@link HttpStatus#NO_CONTENT} status if deletion is successful,
-     *         or {@link HttpStatus#NOT_FOUND} if the user to be deleted is not found
+     * @param userId the ID of the user to be retrieved
+     * @return a {@link ResponseEntity} containing the user details with {@link HttpStatus#OK} status,
+     *         or {@link HttpStatus#NOT_FOUND} if the user is not found
      */
-    @DeleteMapping("/deleteUser/{userId}")
-    public ResponseEntity<String> deleteUser(final @PathVariable("userId") Long userId) {
-        logger.info("Received request to delete user with ID: {}", userId);
-        boolean isDeleted = userService.deleteUser(userId);
-        if (isDeleted) {
-            logger.info("Successfully deleted user with ID : {}", userId);
-            return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
-        }
-        else {
-            logger.warn("User not found with ID: {}", userId);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-
-    }
-
     @GetMapping("/getUser/{userId}")
-    public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
-        logger.info("Received request to get user with ID: {}", userId);
+    public ResponseEntity<?> getUser(final @PathVariable("userId") Long userId) {
+        LOGGER.info("Received request to get user with ID: {}", userId);
         Optional<User> user = userService.getUserById(userId);
 
         if (user.isPresent()) {
-            logger.info("Successfully retrieved user with ID: {}", userId);
+            LOGGER.info("Successfully retrieved user with ID: {}", userId);
             return ResponseEntity.status(HttpStatus.OK).body(user.get());
         } else {
-            logger.warn("User not found with ID: {}", userId);
+            LOGGER.warn("User not found with ID: {}", userId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
-
 }

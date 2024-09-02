@@ -1,5 +1,6 @@
 package com.users.outdto;
 
+import com.users.enums.UserRole;
 import lombok.Data;
 
 /**
@@ -44,4 +45,10 @@ public class UserResponse {
      * The wallet balance of the user.
      */
     private Long wallet;
+
+    /**
+     * The role of the user.
+     */
+
+    private UserRole userRole;
 }

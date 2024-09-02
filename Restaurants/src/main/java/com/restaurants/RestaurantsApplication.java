@@ -3,11 +3,18 @@ package com.restaurants;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * The entry point for the Restaurants application.
+ */
 @SpringBootApplication
 public class RestaurantsApplication {
 
-	public static void main(String[] args) {
+	/**
+	 * The main method to run the Restaurants application.
+	 *
+	 * @param args the command-line arguments
+	 */
+	public static void main(final String[] args) {
 		SpringApplication.run(RestaurantsApplication.class, args);
 	}
-
 }

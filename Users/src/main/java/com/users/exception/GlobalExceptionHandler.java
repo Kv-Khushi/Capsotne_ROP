@@ -1,6 +1,7 @@
 package com.users.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,8 +22,15 @@ public class GlobalExceptionHandler {
      * Represents an error response containing the HTTP status and error message.
      */
     public static class ErrorResponse {
-        private int status;
-        private String message;
+        /**
+         * The HTTP status code.
+         */
+        private final int status;
+
+        /**
+         * The error message.
+         */
+        private final String message;
 
         /**
          * Constructs a new {@code ErrorResponse} with the specified status and message.
@@ -30,12 +38,10 @@ public class GlobalExceptionHandler {
          * @param status  the HTTP status code
          * @param message the error message
          */
-        public ErrorResponse(int status, String message) {
+        public ErrorResponse(final int status, final String message) {
             this.status = status;
             this.message = message;
         }
-
-        // Getters and setters
 
         /**
          * Returns the HTTP status code.
@@ -47,30 +53,12 @@ public class GlobalExceptionHandler {
         }
 
         /**
-         * Sets the HTTP status code.
-         *
-         * @param status the HTTP status code
-         */
-        public void setStatus(int status) {
-            this.status = status;
-        }
-
-        /**
          * Returns the error message.
          *
          * @return the error message
          */
         public String getMessage() {
             return message;
-        }
-
-        /**
-         * Sets the error message.
-         *
-         * @param message the error message
-         */
-        public void setMessage(String message) {
-            this.message = message;
         }
     }
 
@@ -87,7 +75,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AlreadyExists.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ErrorResponse handleAlreadyExists(AlreadyExists ex) {
+    public ErrorResponse handleAlreadyExists(final AlreadyExists ex) {
         return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
@@ -104,7 +92,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorResponse handleNotFoundException(NotFoundException ex) {
+    public ErrorResponse handleNotFoundException(final NotFoundException ex) {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
@@ -121,8 +109,25 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMessage = "Validation failed: " + ex.getFieldError().getDefaultMessage();
+    public ErrorResponse handleValidationExceptions(final MethodArgumentNotValidException ex) {
+        String errorMessage = "Validation failed";
+
+        // Safely retrieve the FieldError
+        FieldError fieldError = ex.getFieldError();
+        if (fieldError != null) {
+            // Safely retrieve the default message
+            String defaultMessage = fieldError.getDefaultMessage();
+            if (defaultMessage != null) {
+                errorMessage += ": " + defaultMessage;
+            } else {
+                errorMessage += ": Unknown error";
+            }
+        } else {
+            errorMessage += ": Unknown error";
+        }
+
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
     }
+
+
 }

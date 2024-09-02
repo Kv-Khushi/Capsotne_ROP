@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.users.enums.UserRole;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -62,6 +64,46 @@ public class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.userEmail").value("khushi@nucleusteq.com"));
     }
+
+    @Test
+    public void testLoginUser_Success() throws Exception {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setUserEmail("khushi@nucleusteq.com");
+        userRequest.setUserPassword("Khushi@123");
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUserEmail("khushi@nucleusteq.com");
+
+        when(userService.authenticateUser(any(com.users.indto.LoginRequest.class))).thenReturn(userResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/loginUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userEmail").value("khushi@nucleusteq.com"));
+    }
+
+
+    @Test
+    public void testAddUser_PhoneNumberNullValidationError() throws Exception {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setUserEmail("khushi@nucleusteq.com");
+        userRequest.setUserPassword("Khushi@123");
+        userRequest.setUserId(1L);
+        userRequest.setUserRole(UserRole.CUSTOMER);
+        userRequest.setPhoneNumber(null);  // Set to null to trigger @NotNull validation
+        userRequest.setUserName("Khushi Vyas");
+
+        mockMvc.perform(post("/users/addUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Validation failed: Phone number cannot be null"));
+    }
+
+
+
 
 
 }

@@ -28,9 +28,14 @@ import java.util.List;
 @RestController
 public class AddressController {
 
-
+    /**
+     * Logger instance for logging address-related actions.
+     */
     private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
 
+    /**
+     * Service layer dependency for address-related operations.
+     */
     @Autowired
     private AddressService addressService;
 
@@ -47,14 +52,8 @@ public class AddressController {
         logger.info("Received request to add address for userId: {}", addressRequest.getUserId());
 
         AddressResponse newAddress = addressService.addAddress(addressRequest);
-        if (newAddress != null) {
-
-            logger.info("Successfully added address for userId: {}", addressRequest.getUserId());
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
-        }
-        logger.error("Failed to add address for userId: {}", addressRequest.getUserId());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        logger.info("Successfully added address for userId: {}", addressRequest.getUserId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
     }
 
     /**
