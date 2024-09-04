@@ -1,8 +1,10 @@
 package com.users.controller;
 
+import com.users.constant.ConstantMessage;
 import com.users.entities.User;
 import com.users.indto.LoginRequest;
 import com.users.indto.UserRequest;
+import com.users.outdto.UserAddResponse;
 import com.users.outdto.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,21 +43,31 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    /**
-     * Adds a new user.
-     *
-     * @param userRequest the details of the user to be added
-     * @return a {@link ResponseEntity} containing the user response with {@link HttpStatus#CREATED} status
-     */
-    @PostMapping("/addUser")
-    public ResponseEntity<UserResponse> addUser(final @Valid @RequestBody UserRequest userRequest) {
+//    @PostMapping("/addUser")
+//    public ResponseEntity<UserResponse> addUser(final @Valid @RequestBody UserRequest userRequest) {
+//        LOGGER.info("Received request to add a new user with username: {}", userRequest.getUserName());
+//
+//        UserResponse newUser = userService.addUser(userRequest);
+//        LOGGER.info("Successfully added user with username: {}", newUser.getUserName());
+//        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+//    }
 
+    @PostMapping("/addUser")
+    public ResponseEntity<UserAddResponse> addUser(@Valid @RequestBody UserRequest userRequest) {
         LOGGER.info("Received request to add a new user with username: {}", userRequest.getUserName());
 
-        UserResponse newUser = userService.addUser(userRequest);
-        LOGGER.info("Successfully added user with username: {}", newUser.getUserName());
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        userService.addUser(userRequest); // Perform the operation
+
+        // Log success message
+        LOGGER.info("Successfully added user with username: {}", userRequest.getUserName());
+
+        // Create a response with the success message from ConstantMessage
+        UserAddResponse response = new UserAddResponse(ConstantMessage.USER_ADD_SUCCESS);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
+
 
     /**
      * Authenticates a user and logs them in.
