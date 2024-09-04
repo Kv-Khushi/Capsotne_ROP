@@ -30,4 +30,10 @@ public final class ConstantMessage {
      * Message indicating that a user was not found.
      */
     public static final String USER_NOT_FOUND = "User not found";
+
+    public static final String RESTAURANT_ADD_SUCCESS = " Restaurant added successfully";
+    public static final String FOOD_ITEM_ADD_SUCCESS = " Food item added successfully";
+    public static final String CATEGORY_ADD_SUCCESS = " Category added successfully";
+
+
 }

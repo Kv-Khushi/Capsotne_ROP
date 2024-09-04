@@ -2,6 +2,7 @@ package com.restaurants.controller;
 
 import com.restaurants.dto.indto.FoodCategoryRequest;
 import com.restaurants.dto.outdto.FoodCategoryResponse;
+import com.restaurants.dto.outdto.SuccessResponse;
 import com.restaurants.service.FoodCategoryService;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;
@@ -35,14 +36,14 @@ public final class FoodCategoryController {
      * @return a response entity with the created food category
      */
     @PostMapping("/add")
-    public ResponseEntity<FoodCategoryResponse> addRestaurant(
-            @Valid @RequestBody final FoodCategoryRequest foodCategoryRequest) {
+    public ResponseEntity<SuccessResponse> addFoodCategory(@Valid @RequestBody FoodCategoryRequest foodCategoryRequest) {
         logger.info("Request to add new food category with details: {}", foodCategoryRequest);
 
-        FoodCategoryResponse foodCategoryResponse = foodCategoryService.addFoodCategory(foodCategoryRequest);
-        logger.info("Food category added successfully with ID: {}", foodCategoryResponse.getCategoryId());
+        foodCategoryService.addFoodCategory(foodCategoryRequest);
 
-        return ResponseEntity.ok(foodCategoryResponse);
+        logger.info("Food category added successfully");
+
+        return ResponseEntity.ok(new SuccessResponse(ConstantMessage.CATEGORY_ADD_SUCCESS));
     }
 
     /**

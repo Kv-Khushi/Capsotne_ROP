@@ -1,5 +1,7 @@
 package com.restaurants.controller;
 
+import com.restaurants.constant.ConstantMessage;
+import com.restaurants.dto.outdto.SuccessResponse;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.dto.indto.RestaurantRequest;
 import com.restaurants.dto.outdto.RestaurantResponse;
@@ -36,15 +38,27 @@ public final class RestaurantController {
 
   * @return a response entity with the created restaurant
   */
+// @PostMapping("/addRestaurant")
+// public ResponseEntity<RestaurantResponse> addRestaurant(
+//        @ModelAttribute @Valid final RestaurantRequest restaurantRequest,
+//         @RequestParam ("image") final MultipartFile image) {
+//  logger.info("Request to add new restaurant with details: {}", restaurantRequest);
+//
+//  RestaurantResponse restaurantResponse = restaurantService.addRestaurant(restaurantRequest,image);
+//
+//  return ResponseEntity.ok(restaurantResponse);
+// }
+
  @PostMapping("/addRestaurant")
- public ResponseEntity<RestaurantResponse> addRestaurant(
-        @ModelAttribute @Valid final RestaurantRequest restaurantRequest,
-         @RequestParam ("image") final MultipartFile image) {
+ public ResponseEntity<SuccessResponse> addRestaurant(@ModelAttribute @Valid RestaurantRequest restaurantRequest,
+                                                      @RequestParam("image") MultipartFile image) {
   logger.info("Request to add new restaurant with details: {}", restaurantRequest);
 
-  RestaurantResponse restaurantResponse = restaurantService.addRestaurant(restaurantRequest,image);
+  restaurantService.addRestaurant(restaurantRequest, image);
 
-  return ResponseEntity.ok(restaurantResponse);
+  logger.info("Restaurant added successfully");
+
+  return ResponseEntity.ok(new SuccessResponse(ConstantMessage.RESTAURANT_ADD_SUCCESS));
  }
 
  /**

@@ -1,5 +1,7 @@
 package com.restaurants.controller;
 
+import com.restaurants.constant.ConstantMessage;
+import com.restaurants.dto.outdto.SuccessResponse;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.dto.indto.RestaurantMenuRequest;
 import com.restaurants.dto.outdto.RestaurantMenuResponse;
@@ -36,15 +38,15 @@ public final class RestaurantMenuController {
      * @return a response entity with the created food item
      */
     @PostMapping("/add")
-    public ResponseEntity<RestaurantMenuResponse> addFoodItem( @Valid  final
-            @ModelAttribute RestaurantMenuRequest restaurantMenuRequest,
-            @RequestParam("image") final MultipartFile image) {
+    public ResponseEntity<SuccessResponse> addFoodItem(@Valid @ModelAttribute RestaurantMenuRequest restaurantMenuRequest,
+                                                       @RequestParam("image") MultipartFile image) {
         logger.info("Request to add a new food item: {}", restaurantMenuRequest);
 
-        RestaurantMenuResponse restaurantMenuResponse = restaurantMenuService.addFoodItem(restaurantMenuRequest, image);
-        logger.info("Food item added successfully with ID: {}", restaurantMenuResponse.getItemId());
+        restaurantMenuService.addFoodItem(restaurantMenuRequest, image);
 
-        return ResponseEntity.ok(restaurantMenuResponse);
+        logger.info("Food item added successfully");
+
+        return ResponseEntity.ok(new SuccessResponse(ConstantMessage.FOOD_ITEM_ADD_SUCCESS));
     }
 
     /**

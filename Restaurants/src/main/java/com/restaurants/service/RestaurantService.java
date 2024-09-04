@@ -43,19 +43,7 @@ public class RestaurantService {
      */
     public RestaurantResponse addRestaurant(final RestaurantRequest restaurantRequest,
                                             final MultipartFile image) {
-//        Optional<Restaurant> optionalRestaurant =restaurantRepository.findById(restaurantRequest.getUserId());
-//        if(!optionalRestaurant.isPresent()){
-//            throw new NotFoundException(ConstantMessage.USER_NOT_FOUND);
-//        }
         logger.info("Adding a new restaurant with details: {}", restaurantRequest);
-
-//        // Fetch user details to get the user role
-//        UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
-//        String userRole = userResponse.getUserRole();
-//        if(userRole.equals("CUSTOMER")){
-//            throw new RuntimeException("Customer can not register a restaurant ");
-//        }
-        // Optionally, you can perform some logic based on the user role
 
         logger.info("Adding a new restaurant with details: {}", restaurantRequest);
         Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
