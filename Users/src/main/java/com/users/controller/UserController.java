@@ -57,13 +57,11 @@ public class UserController {
         LOGGER.info("Received request to add a new user with username: {}", userRequest.getUserName());
 
         userService.addUser(userRequest); // Perform the operation
-
         // Log success message
         LOGGER.info("Successfully added user with username: {}", userRequest.getUserName());
 
         // Create a response with the success message from ConstantMessage
         UserAddResponse response = new UserAddResponse(ConstantMessage.USER_ADD_SUCCESS);
-
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
