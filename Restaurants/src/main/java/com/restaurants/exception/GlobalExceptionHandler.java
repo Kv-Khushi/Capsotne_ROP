@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -91,18 +92,29 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
+    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        List<String> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.toList());
+    @ResponseBody
+    public ErrorResponse handleValidationExceptions(Exception ex) {
+        List<String> errorMessages = null;
 
-        String errorMessage = String.join(",", errors);
+        if (ex instanceof MethodArgumentNotValidException) {
+            errorMessages = ((MethodArgumentNotValidException) ex)
+                    .getBindingResult()
+                    .getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.toList());
+        } else if (ex instanceof BindException) {
+            errorMessages = ((BindException) ex)
+                    .getBindingResult()
+                    .getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.toList());
+        }
+
+        String errorMessage = errorMessages != null ? String.join(", ", errorMessages) : "Validation error";
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
     }
-
 }
