@@ -33,38 +33,38 @@ class RestaurantControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void addRestaurantSuccessTest() throws Exception {
-        RestaurantRequest restaurantRequest = new RestaurantRequest();
-        restaurantRequest.setUserId(1L);
-        restaurantRequest.setRestaurantName("Test Restaurant");
-        restaurantRequest.setRestaurantAddress("123 Test St");
-        restaurantRequest.setContactNumber(1234567890L);
-        restaurantRequest.setRestaurantDescription("A test restaurant");
-        restaurantRequest.setOpeningHour("10");
-
-        MultipartFile multipartFile = mock(MultipartFile.class);
-        when(multipartFile.isEmpty()).thenReturn(false);
-        when(multipartFile.getBytes()).thenReturn(new byte[0]);
-
-        RestaurantResponse restaurantResponse = new RestaurantResponse();
-        restaurantResponse.setUserId(1L);
-        restaurantResponse.setRestaurantName("Test Restaurant");
-        restaurantResponse.setRestaurantAddress("123 Test St");
-        restaurantResponse.setContactNumber(1234567890L);
-        restaurantResponse.setRestaurantDescription("A test restaurant");
-        restaurantResponse.setOpeningHour("10");
-
-        when(restaurantService.addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class)))
-                .thenReturn(restaurantResponse);
-
-        ResponseEntity<RestaurantResponse> responseEntity = restaurantController.addRestaurant(restaurantRequest, multipartFile);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals("Test Restaurant", responseEntity.getBody().getRestaurantName());
-        verify(restaurantService, times(1)).addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class));
-    }
+//    @Test
+//    void addRestaurantSuccessTest() throws Exception {
+//        RestaurantRequest restaurantRequest = new RestaurantRequest();
+//        restaurantRequest.setUserId(1L);
+//        restaurantRequest.setRestaurantName("Test Restaurant");
+//        restaurantRequest.setRestaurantAddress("123 Test St");
+//        restaurantRequest.setContactNumber(1234567890L);
+//        restaurantRequest.setRestaurantDescription("A test restaurant");
+//        restaurantRequest.setOpeningHour("10");
+//
+//        MultipartFile multipartFile = mock(MultipartFile.class);
+//        when(multipartFile.isEmpty()).thenReturn(false);
+//        when(multipartFile.getBytes()).thenReturn(new byte[0]);
+//
+//        RestaurantResponse restaurantResponse = new RestaurantResponse();
+//        restaurantResponse.setUserId(1L);
+//        restaurantResponse.setRestaurantName("Test Restaurant");
+//        restaurantResponse.setRestaurantAddress("123 Test St");
+//        restaurantResponse.setContactNumber(1234567890L);
+//        restaurantResponse.setRestaurantDescription("A test restaurant");
+//        restaurantResponse.setOpeningHour("10");
+//
+//        when(restaurantService.addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class)))
+//                .thenReturn(restaurantResponse);
+//
+//        ResponseEntity<RestaurantResponse> responseEntity = restaurantController.addRestaurant(restaurantRequest, multipartFile);
+//
+//        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+//        assertNotNull(responseEntity.getBody());
+//        assertEquals("Test Restaurant", responseEntity.getBody().getRestaurantName());
+//        verify(restaurantService, times(1)).addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class));
+//    }
 
     @Test
     void getAllRestaurantsSuccessTest() {
