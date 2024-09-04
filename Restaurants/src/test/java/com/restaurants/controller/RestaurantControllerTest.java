@@ -1,8 +1,8 @@
 package com.restaurants.controller;
 
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.indto.RestaurantRequest;
-import com.restaurants.outdto.RestaurantResponse;
+import com.restaurants.dto.indto.RestaurantRequest;
+import com.restaurants.dto.outdto.RestaurantResponse;
 import com.restaurants.service.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

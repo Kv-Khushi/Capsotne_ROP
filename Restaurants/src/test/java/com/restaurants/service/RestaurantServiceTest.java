@@ -4,22 +4,16 @@ import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.indto.RestaurantRequest;
-import com.restaurants.outdto.RestaurantResponse;
 import com.restaurants.repository.RestaurantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -39,28 +33,6 @@ class RestaurantServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-
-//    @Test
-//    void getRestaurantByIdTest() throws NotFoundException {
-//        Long restaurantId = 1L;
-//        Restaurant restaurant = new Restaurant();
-//        restaurant.setRestaurantId(restaurantId);
-//        restaurant.setRestaurantName("Test Restaurant");
-//
-//        RestaurantResponse restaurantResponse = new RestaurantResponse();
-//        restaurantResponse.setRestaurantName("Test Restaurant");
-//
-//        when(restaurantRepository.findById(anyLong())).thenReturn(Optional.of(restaurant));
-//        when(dtoConversion.convertToRestaurantResponse(any(Restaurant.class))).thenReturn(restaurantResponse);
-//
-//        RestaurantResponse response = restaurantService.getRestaurantById(restaurantId);
-//
-//        assertNotNull(response);
-//        assertEquals("Test Restaurant", response.getRestaurantName());
-//
-//        verify(restaurantRepository, times(1)).findById(restaurantId);
-//        verify(dtoConversion, times(1)).convertToRestaurantResponse(any(Restaurant.class));
-//    }
 
     @Test
     void getRestaurantByIdNotFoundTest() {

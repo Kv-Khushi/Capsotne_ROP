@@ -1,8 +1,8 @@
 package com.restaurants.controller;
 
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.indto.RestaurantMenuRequest;
-import com.restaurants.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.indto.RestaurantMenuRequest;
+import com.restaurants.dto.outdto.RestaurantMenuResponse;
 import com.restaurants.service.RestaurantMenuService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -35,8 +36,8 @@ public final class RestaurantMenuController {
      * @return a response entity with the created food item
      */
     @PostMapping("/add")
-    public ResponseEntity<RestaurantMenuResponse> addFoodItem(
-            @ModelAttribute final RestaurantMenuRequest restaurantMenuRequest,
+    public ResponseEntity<RestaurantMenuResponse> addFoodItem( @Valid  final
+            @ModelAttribute RestaurantMenuRequest restaurantMenuRequest,
             @RequestParam("image") final MultipartFile image) {
         logger.info("Request to add a new food item: {}", restaurantMenuRequest);
 

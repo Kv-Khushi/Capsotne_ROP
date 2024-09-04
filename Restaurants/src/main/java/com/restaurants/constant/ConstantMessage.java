@@ -24,4 +24,10 @@ public final class ConstantMessage {
      * Message indicating that a food item was not found.
      */
     public static final String FOOD_ITEM_NOT_FOUND = "FoodItem not found";
+
+
+    /**
+     * Message indicating that a user was not found.
+     */
+    public static final String USER_NOT_FOUND = "User not found";
 }

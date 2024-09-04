@@ -1,11 +1,11 @@
 package com.restaurants.service;
-
+import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
-import com.restaurants.exception.NotFoundException;
-import com.restaurants.indto.RestaurantRequest;
-import com.restaurants.outdto.RestaurantResponse;
+//import com.restaurants.feignclientconfig.UserServiceClient;
+import com.restaurants.dto.indto.RestaurantRequest;
+import com.restaurants.dto.outdto.RestaurantResponse;
 import com.restaurants.repository.RestaurantRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,6 +32,9 @@ public class RestaurantService {
     @Autowired
     private DtoConversion dtoConversion;
 
+//    @Autowired
+//    private UserServiceClient userServiceClient;
+
     /**
      * Adds a new restaurant with an optional image.
      *
@@ -40,8 +43,21 @@ public class RestaurantService {
      */
     public RestaurantResponse addRestaurant(final RestaurantRequest restaurantRequest,
                                             final MultipartFile image) {
+//        Optional<Restaurant> optionalRestaurant =restaurantRepository.findById(restaurantRequest.getUserId());
+//        if(!optionalRestaurant.isPresent()){
+//            throw new NotFoundException(ConstantMessage.USER_NOT_FOUND);
+//        }
         logger.info("Adding a new restaurant with details: {}", restaurantRequest);
 
+//        // Fetch user details to get the user role
+//        UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
+//        String userRole = userResponse.getUserRole();
+//        if(userRole.equals("CUSTOMER")){
+//            throw new RuntimeException("Customer can not register a restaurant ");
+//        }
+        // Optionally, you can perform some logic based on the user role
+
+        logger.info("Adding a new restaurant with details: {}", restaurantRequest);
         Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
         try {
             if (image!= null && !image.isEmpty()) {
@@ -124,8 +140,9 @@ public class RestaurantService {
        @Transactional
        public List<RestaurantResponse> getALlRestaurantsByUserId(final Long userId) {
         logger.info("Retrieving restaurants for user ID: {}", userId);
-        List<Restaurant> restaurants = restaurantRepository.findByUserId(userId);
+        List<Restaurant> restaurants = restaurantRepository.findAllByUserId(userId);
         List<RestaurantResponse> responseList = new ArrayList<>();
+           logger.info("Restaurants retrieved: {}", restaurants);
         for (Restaurant restaurant : restaurants) {
             responseList.add(DtoConversion.convertToRestaurantResponse(restaurant));
         }

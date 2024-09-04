@@ -1,9 +1,8 @@
 package com.restaurants.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.restaurants.exception.NotFoundException;
-import com.restaurants.indto.RestaurantMenuRequest;
-import com.restaurants.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.indto.RestaurantMenuRequest;
+import com.restaurants.dto.outdto.RestaurantMenuResponse;
 import com.restaurants.service.RestaurantMenuService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,10 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;

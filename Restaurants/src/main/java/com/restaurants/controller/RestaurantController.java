@@ -1,8 +1,8 @@
 package com.restaurants.controller;
 
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.indto.RestaurantRequest;
-import com.restaurants.outdto.RestaurantResponse;
+import com.restaurants.dto.indto.RestaurantRequest;
+import com.restaurants.dto.outdto.RestaurantResponse;
 import com.restaurants.service.RestaurantService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -92,7 +92,6 @@ public final class RestaurantController {
   byte[] imageData = restaurantService.getRestaurantImage(restaurantId);
   return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageData);
  }
-
 
  /**
   * Retrieves all restaurants associated with a specific user ID.

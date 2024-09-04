@@ -3,7 +3,7 @@ package com.restaurants.exception;
 /**
  * Exception thrown when a requested resource is not found.
  */
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException{
 
     /**
      * Constructs a NotFoundException with the specified detail message.

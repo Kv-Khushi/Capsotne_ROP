@@ -3,8 +3,8 @@ package com.restaurants.service;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.RestaurantMenu;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.indto.RestaurantMenuRequest;
-import com.restaurants.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.indto.RestaurantMenuRequest;
+import com.restaurants.dto.outdto.RestaurantMenuResponse;
 import com.restaurants.repository.RestaurantMenuRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,8 @@
-package com.restaurants.indto;
+package com.restaurants.dto.indto;
 
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * Data transfer object for creating or updating a food category.
@@ -16,5 +18,7 @@ public class FoodCategoryRequest {
     /**
      * The name of the food category.
      */
+    @NotBlank(message = "Category name should not be null.")
+
     private String categoryName;
 }

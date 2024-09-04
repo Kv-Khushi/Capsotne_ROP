@@ -2,11 +2,13 @@ package com.restaurants;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+//import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
 /**
  * The entry point for the Restaurants application.
  */
 @SpringBootApplication
+//@EnableFeignClients
 public class RestaurantsApplication {
 
 	/**
@@ -15,6 +17,7 @@ public class RestaurantsApplication {
 	 * @param args the command-line arguments
 	 */
 	public static void main(final String[] args) {
+
 		SpringApplication.run(RestaurantsApplication.class, args);
 	}
 }

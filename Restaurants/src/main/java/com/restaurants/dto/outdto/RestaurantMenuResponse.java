@@ -1,4 +1,4 @@
-package com.restaurants.outdto;
+package com.restaurants.dto.outdto;
 
 import lombok.Data;
 

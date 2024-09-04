@@ -3,12 +3,12 @@ package com.restaurants.dtoconversion;
 import com.restaurants.entities.FoodCategory;
 import com.restaurants.entities.Restaurant;
 import com.restaurants.entities.RestaurantMenu;
-import com.restaurants.indto.FoodCategoryRequest;
-import com.restaurants.indto.RestaurantMenuRequest;
-import com.restaurants.indto.RestaurantRequest;
-import com.restaurants.outdto.FoodCategoryResponse;
-import com.restaurants.outdto.RestaurantMenuResponse;
-import com.restaurants.outdto.RestaurantResponse;
+import com.restaurants.dto.indto.FoodCategoryRequest;
+import com.restaurants.dto.indto.RestaurantMenuRequest;
+import com.restaurants.dto.indto.RestaurantRequest;
+import com.restaurants.dto.outdto.FoodCategoryResponse;
+import com.restaurants.dto.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.outdto.RestaurantResponse;
 import org.springframework.stereotype.Component;
 
 /**

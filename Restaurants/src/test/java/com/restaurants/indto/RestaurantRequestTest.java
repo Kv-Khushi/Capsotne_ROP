@@ -1,6 +1,6 @@
 package com.restaurants.indto;
 
-import com.restaurants.outdto.RestaurantResponse;
+import com.restaurants.dto.outdto.RestaurantResponse;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,5 +1,6 @@
 package com.restaurants.indto;
 
+import com.restaurants.dto.indto.RestaurantMenuRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
