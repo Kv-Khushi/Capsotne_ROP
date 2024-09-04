@@ -3,6 +3,7 @@ package com.restaurants.controller;
 import com.restaurants.dto.indto.FoodCategoryRequest;
 import com.restaurants.dto.outdto.FoodCategoryResponse;
 import com.restaurants.dto.outdto.SuccessResponse;
+import com.restaurants.exception.DuplicateCategoryException;
 import com.restaurants.service.FoodCategoryService;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;
@@ -35,15 +36,27 @@ public final class FoodCategoryController {
      * @param foodCategoryRequest the request object containing the food category details
      * @return a response entity with the created food category
      */
+//    @PostMapping("/add")
+//    public ResponseEntity<SuccessResponse> addFoodCategory(@Valid @RequestBody FoodCategoryRequest foodCategoryRequest) {
+//        logger.info("Request to add new food category with details: {}", foodCategoryRequest);
+//
+//        foodCategoryService.addFoodCategory(foodCategoryRequest);
+//
+//        logger.info("Food category added successfully");
+//
+//        return ResponseEntity.ok(new SuccessResponse(ConstantMessage.CATEGORY_ADD_SUCCESS));
+//    }
+
     @PostMapping("/add")
     public ResponseEntity<SuccessResponse> addFoodCategory(@Valid @RequestBody FoodCategoryRequest foodCategoryRequest) {
-        logger.info("Request to add new food category with details: {}", foodCategoryRequest);
-
-        foodCategoryService.addFoodCategory(foodCategoryRequest);
-
-        logger.info("Food category added successfully");
-
-        return ResponseEntity.ok(new SuccessResponse(ConstantMessage.CATEGORY_ADD_SUCCESS));
+        try {
+            foodCategoryService.addFoodCategory(foodCategoryRequest);
+            logger.info("Food category added successfully");
+            return ResponseEntity.ok(new SuccessResponse(ConstantMessage.CATEGORY_ADD_SUCCESS));
+        } catch (DuplicateCategoryException e) {
+            logger.error("Error adding food category: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new SuccessResponse(e.getMessage()));
+        }
     }
 
     /**

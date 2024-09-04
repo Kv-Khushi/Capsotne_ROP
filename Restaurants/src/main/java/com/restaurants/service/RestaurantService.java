@@ -6,6 +6,7 @@ import com.restaurants.entities.Restaurant;
 //import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.dto.indto.RestaurantRequest;
 import com.restaurants.dto.outdto.RestaurantResponse;
+import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.repository.RestaurantRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,8 +33,8 @@ public class RestaurantService {
     @Autowired
     private DtoConversion dtoConversion;
 
-//    @Autowired
-//    private UserServiceClient userServiceClient;
+    @Autowired
+    private UserServiceClient userServiceClient;
 
     /**
      * Adds a new restaurant with an optional image.
@@ -47,6 +48,12 @@ public class RestaurantService {
 
         logger.info("Adding a new restaurant with details: {}", restaurantRequest);
         Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
+        // Fetch user details to get the user role
+//        UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
+//        String userRole = userResponse.getUserRole();
+//        if(userRole.equals("CUSTOMER")){
+//            throw new RuntimeException("Customer can not register a restaurant ");
+//        }
         try {
             if (image!= null && !image.isEmpty()) {
                 logger.info("Processing image file for restaurant");
