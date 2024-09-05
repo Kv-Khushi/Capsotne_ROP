@@ -35,5 +35,7 @@ public final class ConstantMessage {
     public static final String FOOD_ITEM_ADD_SUCCESS = " Food item added successfully";
     public static final String CATEGORY_ADD_SUCCESS = " Category added successfully";
 
+    public static final String UNAUTHORIZED_USER = " Customers are not allowed to register a restaurant";
+
 
 }

@@ -24,6 +24,7 @@ public interface RestaurantMenuRepository extends JpaRepository<RestaurantMenu, 
      * @param categoryId the ID of the category to find menu items for
      * @return a list of {@link RestaurantMenu} entities associated with the specified category ID
      */
-    List<RestaurantMenu> findByCategoryId(Long categoryId);
 
+
+    boolean existsByRestaurantIdAndItemName(Long restaurantId, String itemName);
 }

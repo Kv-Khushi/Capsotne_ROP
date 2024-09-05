@@ -3,6 +3,7 @@ package com.restaurants.service;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.RestaurantMenu;
+import com.restaurants.exception.DuplicateItemException;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.dto.indto.RestaurantMenuRequest;
 import com.restaurants.dto.outdto.RestaurantMenuResponse;
@@ -38,9 +39,47 @@ public class RestaurantMenuService {
      * @param multipartFile the image file for the food item
      * @return the response object containing details of the added food item
      */
+//    public RestaurantMenuResponse addFoodItem(final RestaurantMenuRequest restaurantMenuRequest,
+//                                              final MultipartFile foodImage) {
+//        logger.info("Adding a new food item with details: {}", restaurantMenuRequest);
+//
+//        RestaurantMenu restaurantMenu = dtoConversion.convertToRestaurantMenuEntity(restaurantMenuRequest);
+//        try {
+//            if (foodImage != null && !foodImage.isEmpty()) {
+//                logger.info("Processing image file for food item");
+//                restaurantMenu.setImageUrl(foodImage.getBytes());
+//            }
+//        } catch (IOException e) {
+//            logger.error("Error occurred while processing image file for food item: {}", e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+//
+//        RestaurantMenu savedRestaurantMenu = restaurantMenuRepository.save(restaurantMenu);
+//        logger.info("Food item added successfully with ID: {}", savedRestaurantMenu.getItemId());
+//
+//        return dtoConversion.convertToRestaurantMenuResponse(savedRestaurantMenu);
+//    }
+
     public RestaurantMenuResponse addFoodItem(final RestaurantMenuRequest restaurantMenuRequest,
                                               final MultipartFile foodImage) {
         logger.info("Adding a new food item with details: {}", restaurantMenuRequest);
+
+        // Check if the item already exists for the restaurant
+        boolean exists = restaurantMenuRepository.existsByRestaurantIdAndItemName(
+                restaurantMenuRequest.getRestaurantId(),
+                restaurantMenuRequest.getItemName()
+        );
+
+        if (exists) {
+            logger.error("Duplicate item: {} already exists for restaurant ID: {}",
+                    restaurantMenuRequest.getItemName(),
+                    restaurantMenuRequest.getRestaurantId());
+            throw new DuplicateItemException(
+                    String.format("Item '%s' already exists for restaurant ID: %d",
+                            restaurantMenuRequest.getItemName(),
+                            restaurantMenuRequest.getRestaurantId())
+            );
+        }
 
         RestaurantMenu restaurantMenu = dtoConversion.convertToRestaurantMenuEntity(restaurantMenuRequest);
         try {
@@ -58,6 +97,8 @@ public class RestaurantMenuService {
 
         return dtoConversion.convertToRestaurantMenuResponse(savedRestaurantMenu);
     }
+
+
 
     /**
      * Deletes a food item by its ID.

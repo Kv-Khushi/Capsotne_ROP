@@ -1,4 +1,6 @@
 package com.restaurants.service;
+import com.restaurants.dto.outdto.UserResponse;
+import com.restaurants.enums.UserRole;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
@@ -6,6 +8,7 @@ import com.restaurants.entities.Restaurant;
 //import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.dto.indto.RestaurantRequest;
 import com.restaurants.dto.outdto.RestaurantResponse;
+import com.restaurants.exception.UnauthorizedException;
 import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.repository.RestaurantRepository;
 import org.apache.logging.log4j.LogManager;
@@ -42,20 +45,26 @@ public class RestaurantService {
      * @param restaurantRequest the request object containing restaurant details
      * @return the response object containing details of the added restaurant
      */
-    public RestaurantResponse addRestaurant(final RestaurantRequest restaurantRequest,
-                                            final MultipartFile image) {
+
+    public RestaurantResponse addRestaurant(final RestaurantRequest restaurantRequest, final MultipartFile image) {
         logger.info("Adding a new restaurant with details: {}", restaurantRequest);
 
-        logger.info("Adding a new restaurant with details: {}", restaurantRequest);
+        // Fetch the user details
+        UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
+        String userRole = userResponse.getUserRole();
+
+        // Check if the user is a customer
+        if (UserRole.CUSTOMER.name().equals(userRole)) {
+            logger.error("User with ID {} is a CUSTOMER and cannot register a restaurant", restaurantRequest.getUserId());
+            throw new UnauthorizedException(ConstantMessage.UNAUTHORIZED_USER);
+        }
+
+        // Convert the restaurant request to an entity
         Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
-        // Fetch user details to get the user role
-//        UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
-//        String userRole = userResponse.getUserRole();
-//        if(userRole.equals("CUSTOMER")){
-//            throw new RuntimeException("Customer can not register a restaurant ");
-//        }
+
+        // Handle image processing
         try {
-            if (image!= null && !image.isEmpty()) {
+            if (image != null && !image.isEmpty()) {
                 logger.info("Processing image file for restaurant");
                 restaurant.setRestaurantImage(image.getBytes());
             }
@@ -63,8 +72,12 @@ public class RestaurantService {
             logger.error("Error occurred while processing image file for restaurant: {}", e.getMessage());
             e.printStackTrace();
         }
+
+        // Save the restaurant
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
         logger.info("Restaurant added successfully with ID: {}", savedRestaurant.getRestaurantId());
+
+        // Convert the saved entity to a response DTO
         return dtoConversion.convertToRestaurantResponse(savedRestaurant);
     }
 
