@@ -13,8 +13,8 @@ public class OrderResponse {
     private Double totalPrice;
     private OrderStatus orderStatus;
     private LocalDateTime orderTime;
-    private List<CartResponse> items; // List of food items
-    private Long AddressId;
+    private String items; // List of food items
+    private Long addressId;
 
 
 }
