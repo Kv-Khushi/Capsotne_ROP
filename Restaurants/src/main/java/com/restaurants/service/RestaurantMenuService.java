@@ -172,4 +172,23 @@ public class RestaurantMenuService {
 
         return dtoConversion.convertToRestaurantMenuResponse(updatedRestaurantMenu);
     }
+
+
+    public RestaurantMenuResponse getFoodItemById(Long foodItemId) throws NotFoundException {
+        RestaurantMenu menuItem = restaurantMenuRepository.findById(foodItemId)
+                .orElseThrow(() -> new NotFoundException("Food item not found with id: " + foodItemId));
+
+        // Manually map fields
+        RestaurantMenuResponse response = new RestaurantMenuResponse();
+        response.setItemId(menuItem.getItemId());
+        response.setItemName(menuItem.getItemName());
+        response.setPrice(menuItem.getPrice());
+        response.setDescription(menuItem.getDescription());
+        response.setVegNonVeg(menuItem.getVegNonVeg());
+        response.setCategoryId(menuItem.getCategoryId());
+        response.setRestaurantId(menuItem.getRestaurantId());
+        response.setImageUrl(menuItem.getImageUrl());
+
+        return response;
+    }
 }

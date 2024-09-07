@@ -2,6 +2,7 @@ package com.restaurants.controller;
 
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dto.outdto.SuccessResponse;
+import com.restaurants.entities.RestaurantMenu;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.dto.indto.RestaurantMenuRequest;
 import com.restaurants.dto.outdto.RestaurantMenuResponse;
@@ -29,6 +30,8 @@ public final class RestaurantMenuController {
 
     @Autowired
     private RestaurantMenuService restaurantMenuService;
+
+
 
     /**
      * Adds a new food item to the restaurant menu.
@@ -87,6 +90,16 @@ public final class RestaurantMenuController {
             return new ResponseEntity<>(updatedMenu, HttpStatus.OK);
         } catch (NotFoundException e) {
             logger.error("Error updating food item for restaurant ID: {}: {}", restaurantId, e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{foodItemId}")
+    public ResponseEntity<RestaurantMenuResponse> getFoodItemById(@PathVariable("foodItemId") Long foodItemId) {
+        try {
+            RestaurantMenuResponse menuResponse = restaurantMenuService.getFoodItemById(foodItemId);
+            return ResponseEntity.ok(menuResponse);
+        } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }

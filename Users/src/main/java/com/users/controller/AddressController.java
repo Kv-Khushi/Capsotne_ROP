@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RequestMapping("/address")
 @RestController
-public class AddressController {
+public class    AddressController {
 
     /**
      * Logger instance for logging address-related actions.
