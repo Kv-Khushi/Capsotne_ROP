@@ -1,16 +1,19 @@
-package com.orders.service;
 
-import com.orders.entities.Cart;
+package com.orders.service;
+import com.orders.constant.ConstantMessages;
 import com.orders.dtoconversion.DtoConversion;
+import com.orders.entities.Cart;
+import com.orders.exception.InvalidRequestException;
+import com.orders.exception.ResourceNotFoundException;
 import com.orders.feignclientconfig.RestaurantFeignClient;
 import com.orders.feignclientconfig.UserFeignClient;
 import com.orders.indto.CartRequest;
-
 import com.orders.outdto.CartResponse;
 import com.orders.outdto.RestaurantMenuResponse;
 import com.orders.outdto.RestaurantResponse;
 import com.orders.outdto.UserResponse;
 import com.orders.repository.CartRepository;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,79 +27,84 @@ import java.util.stream.Collectors;
 @Service
 public class CartService {
 
-        @Autowired
-        private CartRepository cartRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
-        @Autowired
-        private DtoConversion dtoConversion;
+    @Autowired
+    private DtoConversion dtoConversion;
 
-        @Autowired
-        private RestaurantFeignClient restaurantFeignClient;
+    @Autowired
+    private RestaurantFeignClient restaurantFeignClient;
 
-       @Autowired
-       private UserFeignClient userFeignClient;
+    @Autowired
+    private UserFeignClient userFeignClient;
 
     private static final Logger logger = LoggerFactory.getLogger(CartService.class);
 
     @Transactional
     public Cart addItemToCart(CartRequest cartRequest) {
-        // Validate user existence
-        UserResponse userResponse = userFeignClient.getUserById(cartRequest.getUserId());
-        if (userResponse == null) {
-            throw new IllegalArgumentException("Invalid user ID.");
+        RestaurantMenuResponse menuResponse = null;
+
+        try {
+            // Validate user existence
+            UserResponse userResponse = userFeignClient.getUserById(cartRequest.getUserId());
+            if (userResponse == null) {
+                throw new ResourceNotFoundException(ConstantMessages.INVALID_USER_ID);
+            }
+        } catch (FeignException.NotFound ex) {
+            throw new ResourceNotFoundException(ConstantMessages.INVALID_USER_ID);
         }
 
-        // Validate restaurant existence
-        RestaurantResponse restaurantResponse = restaurantFeignClient.getRestaurantById(cartRequest.getRestaurantId());
-        if (restaurantResponse == null) {
-            throw new IllegalArgumentException("Invalid restaurant ID.");
+        try {
+            // Validate restaurant existence
+            RestaurantResponse restaurantResponse = restaurantFeignClient.getRestaurantById(cartRequest.getRestaurantId());
+            if (restaurantResponse == null) {
+                throw new ResourceNotFoundException(ConstantMessages.INVALID_RESTAURANT_ID);
+            }
+        } catch (FeignException.NotFound ex) {
+            throw new ResourceNotFoundException(ConstantMessages.INVALID_RESTAURANT_ID);
         }
 
-        // Fetch food item details
-        RestaurantMenuResponse menuResponse = restaurantFeignClient.getMenuItemById(cartRequest.getFoodItemId());
-        if (menuResponse == null) {
-            throw new IllegalArgumentException("Invalid food item ID.");
+        try {
+            // Fetch food item details
+            menuResponse = restaurantFeignClient.getMenuItemById(cartRequest.getFoodItemId());
+            if (menuResponse == null) {
+                throw new ResourceNotFoundException(ConstantMessages.INVALID_FOOD_ITEM_ID);
+            }
+        } catch (FeignException.NotFound ex) {
+            throw new ResourceNotFoundException(ConstantMessages.INVALID_FOOD_ITEM_ID);
         }
 
-        // Fetch all cart items for the given user
         List<Cart> existingCartItems = cartRepository.findByUserId(cartRequest.getUserId());
 
-        // Check if the cart already contains items from a different restaurant
         if (!existingCartItems.isEmpty()) {
             Long existingRestaurantId = existingCartItems.get(0).getRestaurantId();
             if (!existingRestaurantId.equals(cartRequest.getRestaurantId())) {
-                throw new IllegalArgumentException("You can only add items from one restaurant at a time.");
+                throw new InvalidRequestException(ConstantMessages.MULTIPLE_RESTAURANT_ERROR);
             }
         }
 
-        // Check if the item is already in the cart
+        RestaurantMenuResponse finalMenuResponse = menuResponse;
+        RestaurantMenuResponse finalMenuResponse1 = menuResponse;
         return cartRepository.findByUserIdAndFoodItemId(cartRequest.getUserId(), cartRequest.getFoodItemId())
                 .map(cart -> {
-                    // Update existing cart item
-                    cart.setQuantity(cart.getQuantity() + cartRequest.getQuantity()); // Update quantity
-                    // Update price based on food item details from restaurant service
-                    cart.setPricePerItem(menuResponse.getPrice());
+                    cart.setQuantity(cart.getQuantity() + cartRequest.getQuantity());
+                    cart.setPricePerItem(finalMenuResponse.getPrice());
                     return cartRepository.save(cart);
                 })
                 .orElseGet(() -> {
-                    // Use DtoConversion to convert CartRequest to Cart for new cart item
                     Cart newCart = dtoConversion.cartRequestToCart(cartRequest);
-                    newCart.setUserId(cartRequest.getUserId());  // Add user ID
-                    newCart.setRestaurantId(cartRequest.getRestaurantId());  // Add restaurant ID
-                    newCart.setPricePerItem(menuResponse.getPrice()); // Set price based on food item details
+                    newCart.setUserId(cartRequest.getUserId());
+                    newCart.setRestaurantId(cartRequest.getRestaurantId());
+                    newCart.setPricePerItem(finalMenuResponse1.getPrice());
                     return cartRepository.save(newCart);
-
                 });
     }
-
-
     @Transactional
     public void removeItemFromCart(Long userId, Long foodItemId) {
-        // Find the cart item by userId and foodItemId
         Cart cart = cartRepository.findByUserIdAndFoodItemId(userId, foodItemId)
-                .orElseThrow(() -> new IllegalArgumentException("Item not found in cart."));
+                .orElseThrow(() -> new ResourceNotFoundException(ConstantMessages.ITEM_NOT_FOUND));
 
-        // Remove the item from the cart
         cartRepository.delete(cart);
     }
 
@@ -106,12 +114,12 @@ public class CartService {
         logger.info("Received cart update request: {}", cartRequest);
         // Find the cart item by userId and foodItemId
         Cart cart = cartRepository.findByUserIdAndFoodItemId(cartRequest.getUserId(), cartRequest.getFoodItemId())
-                .orElseThrow(() -> new IllegalArgumentException("Item not found in cart."));
+                .orElseThrow(() -> new IllegalArgumentException(ConstantMessages.ITEM_NOT_FOUND));
 
         // Validate quantity
         int newQuantity = cartRequest.getQuantity();
         if (newQuantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative.");
+            throw new IllegalArgumentException(ConstantMessages.NEGATIVE_QUANTITY_ERROR);
         }
 
         // Fetch the latest price from the restaurant service
@@ -140,7 +148,4 @@ public class CartService {
                 .collect(Collectors.toList());
     }
     }
-
-
-
 

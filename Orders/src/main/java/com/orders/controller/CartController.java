@@ -1,8 +1,11 @@
+
 package com.orders.controller;
 
+import com.orders.constant.ConstantMessages;
 import com.orders.entities.Cart;
 import com.orders.indto.CartRequest;
 import com.orders.outdto.CartResponse;
+import com.orders.outdto.MessageResponse;
 import com.orders.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +24,22 @@ public class CartController {
     // Add item to the cart
     @PostMapping("/add")
     public ResponseEntity<?> addItemToCart(@RequestBody CartRequest cartRequest) {
-        try {
-            Cart addedCart = cartService.addItemToCart(cartRequest);
-            return ResponseEntity.ok(addedCart);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());  // Return 400 with error message
-        }
+        Cart addedCart = cartService.addItemToCart(cartRequest);
+        return ResponseEntity.ok(addedCart);
     }
 
 
     @DeleteMapping("/remove/{userId}/{foodItemId}")
-    public ResponseEntity<String> removeItemFromCart(@PathVariable("userId") Long userId,
-                                                     @PathVariable("foodItemId") Long foodItemId) {
+    public ResponseEntity<MessageResponse> removeItemFromCart(@PathVariable("userId") Long userId,
+                                                              @PathVariable("foodItemId") Long foodItemId) {
         cartService.removeItemFromCart(userId, foodItemId);
-        return ResponseEntity.ok("Item removed from cart successfully.");
+        return ResponseEntity.ok(new MessageResponse(ConstantMessages.ITEM_REMOVED_SUCCESSFULLY));
     }
 
     @PutMapping("/updateQuantity")
-    public ResponseEntity<String> updateItemQuantity(@RequestBody CartRequest cartRequest) {
+    public ResponseEntity<MessageResponse> updateItemQuantity(@RequestBody CartRequest cartRequest) {
         cartService.updateItemQuantity(cartRequest);
-        return ResponseEntity.ok("Item quantity updated successfully.");
+        return ResponseEntity.ok(new MessageResponse(ConstantMessages.ITEM_QUANTITY_UPDATED_SUCCESSFULLY));
     }
 
     @GetMapping("/user/{userId}")
