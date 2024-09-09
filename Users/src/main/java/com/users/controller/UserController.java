@@ -43,17 +43,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-//    @PostMapping("/addUser")
-//    public ResponseEntity<UserResponse> addUser(final @Valid @RequestBody UserRequest userRequest) {
-//        LOGGER.info("Received request to add a new user with username: {}", userRequest.getUserName());
-//
-//        UserResponse newUser = userService.addUser(userRequest);
-//        LOGGER.info("Successfully added user with username: {}", newUser.getUserName());
-//        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
-//    }
+    /**
+     * Adds a new user.
+     * This method is not designed to be overridden.
+     *
+     * @param userRequest the request object containing user details
+     * @return a {@link ResponseEntity} with a success message
+     */
 
     @PostMapping("/addUser")
-    public ResponseEntity<UserAddResponse> addUser(@Valid @RequestBody UserRequest userRequest) {
+    public final ResponseEntity<UserAddResponse> addUser(final @Valid @RequestBody UserRequest userRequest) {
         LOGGER.info("Received request to add a new user with username: {}", userRequest.getUserName());
 
         userService.addUser(userRequest); // Perform the operation

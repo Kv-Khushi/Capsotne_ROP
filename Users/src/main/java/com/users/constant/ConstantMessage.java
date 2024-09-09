@@ -31,6 +31,9 @@ public final class ConstantMessage {
  public static final Long  WALLET_AMOUNT = 1000L;
 
 
+ /**
+  * The message to be used when the user successfully added.
+  */
  public static final String USER_ADD_SUCCESS = "User added successfully";
 }
 

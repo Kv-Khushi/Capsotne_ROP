@@ -2,7 +2,6 @@ package com.users.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.users.entities.User;
 import com.users.indto.UserRequest;
 import com.users.outdto.UserResponse;
 import com.users.service.UserService;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.users.enums.UserRole;
@@ -103,7 +101,21 @@ public class UserControllerTest {
     }
 
 
+    @Test
+    public void testAddUser_InvalidEmailFormat() throws Exception {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPhoneNumber(1234567890L);
+        userRequest.setUserName("Khushi");
+        userRequest.setUserEmail("invalid-email");
+        userRequest.setUserPassword("Khushi@123");
+        userRequest.setUserRole(UserRole.CUSTOMER);
 
-
+        mockMvc.perform(post("/users/addUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Validation failed: Email must end with nucleusteq.com"));
+    }
 
 }
