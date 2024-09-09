@@ -65,6 +65,7 @@ public class Restaurant {
      * @return a copy of the restaurant image byte array, or null if the array is null.
      */
     public byte[] getRestaurantImage() {
+
         return restaurantImage != null ? restaurantImage.clone() : null;
     }
 

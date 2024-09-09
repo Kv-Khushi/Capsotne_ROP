@@ -77,6 +77,7 @@ public class RestaurantMenu {
      * @param imageUrl a byte array representing the image of the menu item, or null.
      */
     public void setImageUrl(final byte[] imageUrl) {
+
         this.imageUrl = imageUrl != null ? imageUrl.clone() : null;
     }
 }

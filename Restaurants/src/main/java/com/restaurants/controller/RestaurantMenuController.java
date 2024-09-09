@@ -1,6 +1,7 @@
 package com.restaurants.controller;
 
 import com.restaurants.constant.ConstantMessage;
+import com.restaurants.dto.outdto.RestaurantResponse;
 import com.restaurants.dto.outdto.SuccessResponse;
 import com.restaurants.entities.RestaurantMenu;
 import com.restaurants.exception.NotFoundException;
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -102,5 +104,23 @@ public final class RestaurantMenuController {
         } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/{foodItemId}/image")
+    public ResponseEntity<byte[]> getFoodItemImage(@PathVariable final Long foodItemId) throws NotFoundException {
+        logger.info("Retrieving image for food item with ID: {}", foodItemId);
+        byte[] imageData = restaurantMenuService.getFoodItemImage(foodItemId);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageData);
+    }
+
+
+    @GetMapping("/getFoodItemsByCtg/{categoryId}")
+    public ResponseEntity<List<RestaurantMenuResponse>> getFoodItemsByCategoryId(
+            @PathVariable final Long categoryId) throws NotFoundException {
+        logger.info("Request to retrieve food items for restaurant ID: {}", categoryId);
+
+        List<RestaurantMenuResponse> restaurantMenuResponses = restaurantMenuService.findByCategoryId(categoryId);
+        logger.info("Retrieved {} food items for restaurant ID: {}", restaurantMenuResponses.size(), categoryId);
+        return ResponseEntity.ok(restaurantMenuResponses);
     }
 }

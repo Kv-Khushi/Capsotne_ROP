@@ -1,6 +1,7 @@
 package com.restaurants.service;
 
 import com.restaurants.constant.ConstantMessage;
+import com.restaurants.dto.outdto.RestaurantResponse;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
 import com.restaurants.exception.NotFoundException;
@@ -11,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -81,4 +84,19 @@ class RestaurantServiceTest {
         verify(restaurantRepository, times(1)).findById(restaurantId);
     }
 
+    @Test
+    void getAllRestaurants_Success() {
+        List<Restaurant> restaurants = Arrays.asList(new Restaurant(), new Restaurant());
+        List<RestaurantResponse> responses = Arrays.asList(new RestaurantResponse(), new RestaurantResponse());
+
+        when(restaurantRepository.findAll()).thenReturn(restaurants);
+        when(dtoConversion.convertToRestaurantResponse(any(Restaurant.class))).thenReturn(responses.get(0), responses.get(1));
+
+        List<RestaurantResponse> result = restaurantService.getAllRestaurants();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(restaurantRepository, times(1)).findAll();
+        verify(dtoConversion, times(2)).convertToRestaurantResponse(any(Restaurant.class));
+    }
 }

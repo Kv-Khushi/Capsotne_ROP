@@ -27,4 +27,6 @@ public interface RestaurantMenuRepository extends JpaRepository<RestaurantMenu, 
 
 
     boolean existsByRestaurantIdAndItemName(Long restaurantId, String itemName);
+
+    List<RestaurantMenu> findByCategoryId(Long categoryId);
 }

@@ -38,16 +38,6 @@ public final class RestaurantController {
 
   * @return a response entity with the created restaurant
   */
-// @PostMapping("/addRestaurant")
-// public ResponseEntity<RestaurantResponse> addRestaurant(
-//        @ModelAttribute @Valid final RestaurantRequest restaurantRequest,
-//         @RequestParam ("image") final MultipartFile image) {
-//  logger.info("Request to add new restaurant with details: {}", restaurantRequest);
-//
-//  RestaurantResponse restaurantResponse = restaurantService.addRestaurant(restaurantRequest,image);
-//
-//  return ResponseEntity.ok(restaurantResponse);
-// }
 
  @PostMapping("/addRestaurant")
  public ResponseEntity<SuccessResponse> addRestaurant(@ModelAttribute @Valid RestaurantRequest restaurantRequest,

@@ -5,7 +5,6 @@ import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
-//import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.dto.indto.RestaurantRequest;
 import com.restaurants.dto.outdto.RestaurantResponse;
 import com.restaurants.exception.UnauthorizedException;
@@ -131,6 +130,8 @@ public class RestaurantService {
      * @return a byte array containing the image data
      * @throws NotFoundException if the restaurant with the given ID is not found
      */
+
+
         public byte[] getRestaurantImage(final Long restaurantId)throws NotFoundException{
             logger.info("Fetching image for restaurant with ID: {}", restaurantId);
             RestaurantResponse restaurant = getRestaurantById(restaurantId);
