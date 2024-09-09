@@ -13,11 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserServiceTest {
 
@@ -71,20 +74,6 @@ public class UserServiceTest {
         when(userRepository.findByUserEmail(userRequest.getUserEmail())).thenReturn(Optional.of(new User()));
 
         assertThrows(AlreadyExists.class, () -> userService.addUser(userRequest));
-    }
-
-    @Test
-    public void testDeleteUser_Success() {
-        Long userId = 1L;
-        User mockUser = new User(); // Create a mock user instance
-        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser)); // Mock findById to return a user
-
-        doNothing().when(userRepository).deleteById(userId); // Mock deleteById to do nothing
-
-        boolean result = userService.deleteUser(userId);
-
-        assertTrue(result);
-        verify(userRepository, times(1)).deleteById(userId);
     }
 
 

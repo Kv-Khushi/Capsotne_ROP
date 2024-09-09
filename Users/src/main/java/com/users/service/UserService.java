@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.users.passwordencryption.PasswordEncodingAndDecoding;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,11 +24,20 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    /**
+     * Logger instance for logging events.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
+    /**
+     * Repository for accessing user data.
+     */
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Utility for encoding and decoding passwords.
+     */
     private PasswordEncodingAndDecoding passwordEncodingAndDecoding;
 
     /**
@@ -37,12 +46,12 @@ public class UserService {
      * @return a list of {@link User} entities.
      */
     public List<User> getAllUserList(){
-        logger.info("Retrieving all users");
+        LOGGER.info("Retrieving all users");
         List<User> list = userRepository.findAll();
         if (list.isEmpty()) {
-            logger.warn("No users found");
+            LOGGER.warn("No users found");
         } else {
-            logger.info("Found {} users", list.size());
+            LOGGER.info("Found {} users", list.size());
         }
         return list;
     }
@@ -54,37 +63,25 @@ public class UserService {
      * @return a {@link UserResponse} with the details of the added user.
      * @throws AlreadyExists if a user with the same email already exists.
      */
-    public UserResponse addUser(UserRequest userRequest) {
+    public UserResponse addUser(final UserRequest userRequest) {
 
-        logger.info("Adding a new user with email: {}", userRequest.getUserEmail());
+        LOGGER.info("Adding a new user with email: {}", userRequest.getUserEmail());
 
         User user = DtoConversion.convertUserRequestToUser(userRequest);
         Optional<User> optionalUser = userRepository.findByUserEmail(userRequest.getUserEmail());
         if (optionalUser.isPresent()){
-            logger.error("User with email {} already exists", userRequest.getUserEmail());
+            LOGGER.error("User with email {} already exists", userRequest.getUserEmail());
             throw new AlreadyExists(ConstantMessage.ALREADY_EXISTS);
         }
         passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
         user.setUserPassword(passwordEncodingAndDecoding.encodePassword(user.getUserPassword()));
         User savedUser = userRepository.save(user);
-        logger.info("Successfully added user with id: {}", savedUser.getUserId());
+        LOGGER.info("Successfully added user with id: {}", savedUser.getUserId());
         UserResponse userResponse = DtoConversion.userToUserResponse(savedUser);
         return userResponse;
     }
 
-    /**
-     * Deletes a user by their ID.
-     *
-     * @param userId the ID of the user to be deleted.
-     * @return {@code true} if the user was successfully deleted.
-     * @throws NotFoundException if no user with the given ID is found.
-     */
-    public boolean deleteUser(Long userId){
-        logger.info("Deleting user with id: {}", userId);
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(ConstantMessage.NOT_FOUND));
-        userRepository.deleteById(userId);
-        return true;
-    }
+
 
     /**
      * Authenticates a user based on the provided login request.
@@ -93,14 +90,25 @@ public class UserService {
      * @return a {@link UserResponse} with the details of the authenticated user.
      * @throws NotFoundException if no user with the given email is found.
      */
-    public UserResponse authenticateUser(LoginRequest loginRequest) {
-        logger.info("Authenticating user with email: {}", loginRequest.getUserEmail());
+    public UserResponse authenticateUser(final LoginRequest loginRequest) {
+        LOGGER.info("Authenticating user with email: {}", loginRequest.getUserEmail());
 
         User user = userRepository.findByUserEmail(loginRequest.getUserEmail())
                 .orElseThrow(() -> new NotFoundException(ConstantMessage.NOT_FOUND));
         passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
         UserResponse userResponse = DtoConversion.userToUserResponse(user);
-        logger.info("User with email {} authenticated successfully", loginRequest.getUserEmail());
+        LOGGER.info("User with email {} authenticated successfully", loginRequest.getUserEmail());
         return userResponse;
     }
+
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param userId the ID of the user to retrieve.
+     * @return an {@link Optional} containing the {@link User} if found, or empty if not found.
+     */
+    public Optional<User> getUserById(final Long userId) {
+        return userRepository.findById(userId);
+    }
+
 }

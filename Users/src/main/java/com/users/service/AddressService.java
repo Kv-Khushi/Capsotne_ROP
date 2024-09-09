@@ -21,8 +21,15 @@ import java.util.List;
  */
 @Service
 public class AddressService {
-    private static final Logger logger = LoggerFactory.getLogger(AddressService.class);
 
+    /**
+     * Logger for logging AddressService operations.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddressService.class);
+
+    /**
+     * Repository for performing CRUD operations on Address entities.
+     */
     @Autowired
     private AddressRepository addressRepository;
 
@@ -35,13 +42,13 @@ public class AddressService {
      * @param userId the unique identifier of the user whose addresses are to be retrieved
      * @return a list of {@link Address} entities associated with the specified user ID
      */
-    public List<Address> getAllAddressForUser(Long userId){
-        logger.info("Retrieving all addresses for userId: {}", userId);
+    public List<Address> getAllAddressForUser(final Long userId){
+        LOGGER.info("Retrieving all addresses for userId: {}", userId);
         List<Address> addresses = addressRepository.findByUserId(userId);
         if (addresses.isEmpty()) {
-            logger.warn("No addresses found for userId: {}", userId);
+            LOGGER.warn("No addresses found for userId: {}", userId);
         } else {
-            logger.info("Found {} addresses for userId: {}", addresses.size(), userId);
+            LOGGER.info("Found {} addresses for userId: {}", addresses.size(), userId);
         }
         return addresses;
     }
@@ -56,13 +63,13 @@ public class AddressService {
      * @param addressRequest the data transfer object containing address details to be added
      * @return the {@link AddressResponse} containing details of the newly added address
      */
-    public AddressResponse addAddress(AddressRequest addressRequest){
-        logger.info("Adding a new address for userId: {}", addressRequest.getUserId());
+    public AddressResponse addAddress(final AddressRequest addressRequest){
+        LOGGER.info("Adding a new address for userId: {}", addressRequest.getUserId());
 
         Address address = DtoConversion.convertAddressRequestToAddress(addressRequest);
         Address savedAddress = addressRepository.save(address);
         AddressResponse addressResponse = DtoConversion.addressToAddressResponse(savedAddress);
-        logger.info("Successfully added address with id: {}", savedAddress.getAddressId());
+        LOGGER.info("Successfully added address with id: {}", savedAddress.getAddressId());
         return addressResponse;
     }
 
@@ -75,10 +82,10 @@ public class AddressService {
      * @param userId the unique identifier of the user whose address is to be deleted
      * @return {@code true} if the address was successfully deleted, {@code false} otherwise
      */
-    public boolean deleteAddress(Long userId){
-        logger.info("Attempting to delete address for userId: {}", userId);
+    public boolean deleteAddress(final Long userId){
+        LOGGER.info("Attempting to delete address for userId: {}", userId);
         addressRepository.deleteById(userId);
-        logger.info("Successfully deleted address for userId: {}", userId);
+        LOGGER.info("Successfully deleted address for userId: {}", userId);
         return true;
     }
 }

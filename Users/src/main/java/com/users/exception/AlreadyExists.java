@@ -15,7 +15,7 @@ public class AlreadyExists extends RuntimeException {
   *
   * @param message the detail message, which provides more information about the cause of the exception
   */
- public AlreadyExists(String message) {
+ public AlreadyExists(final String message) {
   super(message);
  }
 }

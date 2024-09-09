@@ -1,5 +1,6 @@
 package com.users.passwordencryption;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
@@ -22,8 +23,8 @@ public class PasswordEncodingAndDecoding {
      * @param password the plain text password to be encoded
      * @return the Base64 encoded string of the password
      */
-    public static String encodePassword(String password) {
-        return Base64.getEncoder().encodeToString(password.getBytes());
+    public static String encodePassword(final String password) {
+        return Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -35,9 +36,9 @@ public class PasswordEncodingAndDecoding {
      * @param encodedPassword the Base64 encoded password string to be decoded
      * @return the decoded plain text password
      */
-    public static String decodePassword(String encodedPassword) {
+    public static String decodePassword(final String encodedPassword) {
         byte[] decodedBytes = Base64.getDecoder().decode(encodedPassword);
-        return new String(decodedBytes);
+        return new String(decodedBytes, StandardCharsets.UTF_8);
     }
 }
 
