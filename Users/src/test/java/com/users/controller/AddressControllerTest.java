@@ -1,9 +1,9 @@
 package com.users.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.users.dto.AddressRequest;
+import com.users.dto.AddressResponse;
 import com.users.entities.Address;
-import com.users.indto.AddressRequest;
-import com.users.outdto.AddressResponse;
 import com.users.service.AddressService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

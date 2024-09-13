@@ -1,6 +1,6 @@
 package com.restaurants.controller;
 
-import com.restaurants.dto.outdto.FoodCategoryResponse;
+import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.service.FoodCategoryService;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;

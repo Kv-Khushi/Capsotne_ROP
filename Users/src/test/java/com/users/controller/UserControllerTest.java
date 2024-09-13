@@ -2,9 +2,9 @@ package com.users.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.users.entities.User;
-import com.users.indto.UserRequest;
-import com.users.outdto.UserResponse;
+import com.users.dto.LoginRequest;
+import com.users.dto.UserRequest;
+import com.users.dto.UserResponse;
 import com.users.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.users.enums.UserRole;
@@ -24,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -61,8 +61,9 @@ public class UserControllerTest {
         mockMvc.perform(post("/users/addUser")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest)))
+                .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userEmail").value("khushi@nucleusteq.com"));
+                .andExpect(jsonPath("$.message").value("User added successfully"));
     }
 
     @Test
@@ -74,11 +75,12 @@ public class UserControllerTest {
         UserResponse userResponse = new UserResponse();
         userResponse.setUserEmail("khushi@nucleusteq.com");
 
-        when(userService.authenticateUser(any(com.users.indto.LoginRequest.class))).thenReturn(userResponse);
+        when(userService.authenticateUser(any(LoginRequest.class))).thenReturn(userResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/loginUser")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest)))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userEmail").value("khushi@nucleusteq.com"));
     }
@@ -98,12 +100,26 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.message").value("Validation failed: Phone number cannot be null"));
+                .andExpect(jsonPath("$[0].status").value(400))
+                .andExpect(jsonPath("$[0].message").value("Field 'phoneNumber': Phone number cannot be null"));
     }
 
 
+    @Test
+    public void testAddUser_InvalidEmailFormat() throws Exception {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setPhoneNumber(9587367890L);
+        userRequest.setUserName("Khushi");
+        userRequest.setUserEmail("invalid-email");
+        userRequest.setUserPassword("Khushi@123");
+        userRequest.setUserRole(UserRole.CUSTOMER);
 
-
+        mockMvc.perform(post("/users/addUser")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$[0].status").value(400))
+                .andExpect(jsonPath("$[0].message").value("Field 'userEmail': Email must end with nucleusteq.com"));
+    }
 
 }

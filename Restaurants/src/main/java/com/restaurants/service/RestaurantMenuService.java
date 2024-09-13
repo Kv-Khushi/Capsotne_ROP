@@ -3,14 +3,16 @@ package com.restaurants.service;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.RestaurantMenu;
+import com.restaurants.exception.DuplicateItemException;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.RestaurantMenuRequest;
-import com.restaurants.dto.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.RestaurantMenuRequest;
+import com.restaurants.dto.RestaurantMenuResponse;
 import com.restaurants.repository.RestaurantMenuRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -35,12 +37,31 @@ public class RestaurantMenuService {
      * Adds a new food item to the restaurant menu.
      *
      * @param restaurantMenuRequest the request object containing details of the food item
-     * @param multipartFile the image file for the food item
+
      * @return the response object containing details of the added food item
      */
+
+
     public RestaurantMenuResponse addFoodItem(final RestaurantMenuRequest restaurantMenuRequest,
                                               final MultipartFile foodImage) {
         logger.info("Adding a new food item with details: {}", restaurantMenuRequest);
+
+        // Check if the item already exists for the restaurant
+        boolean exists = restaurantMenuRepository.existsByRestaurantIdAndItemNameIgnoreCase(
+                restaurantMenuRequest.getRestaurantId(),
+                restaurantMenuRequest.getItemName()
+        );
+
+        if (exists) {
+            logger.error("Duplicate item: {} already exists for restaurant ID: {}",
+                    restaurantMenuRequest.getItemName(),
+                    restaurantMenuRequest.getRestaurantId());
+            throw new DuplicateItemException(
+                    String.format("Item '%s' already exists for restaurant ID: %d",
+                            restaurantMenuRequest.getItemName(),
+                            restaurantMenuRequest.getRestaurantId())
+            );
+        }
 
         RestaurantMenu restaurantMenu = dtoConversion.convertToRestaurantMenuEntity(restaurantMenuRequest);
         try {
@@ -58,6 +79,8 @@ public class RestaurantMenuService {
 
         return dtoConversion.convertToRestaurantMenuResponse(savedRestaurantMenu);
     }
+
+
 
     /**
      * Deletes a food item by its ID.
@@ -131,4 +154,51 @@ public class RestaurantMenuService {
 
         return dtoConversion.convertToRestaurantMenuResponse(updatedRestaurantMenu);
     }
+
+
+    public RestaurantMenuResponse getFoodItemById(Long foodItemId) throws NotFoundException {
+        RestaurantMenu menuItem = restaurantMenuRepository.findById(foodItemId)
+                .orElseThrow(() -> new NotFoundException("Food item not found with id: " + foodItemId));
+
+        // Manually map fields
+        RestaurantMenuResponse response = new RestaurantMenuResponse();
+        response.setItemId(menuItem.getItemId());
+        response.setItemName(menuItem.getItemName());
+        response.setPrice(menuItem.getPrice());
+        response.setDescription(menuItem.getDescription());
+        response.setVegNonVeg(menuItem.getVegNonVeg());
+        response.setCategoryId(menuItem.getCategoryId());
+        response.setRestaurantId(menuItem.getRestaurantId());
+        response.setImageUrl(menuItem.getImageUrl());
+
+        return response;
+    }
+
+    public byte[] getFoodItemImage(final Long foodItemId) throws NotFoundException {
+        logger.info("Fetching image for food item with ID: {}", foodItemId);
+        RestaurantMenuResponse foodItem = getFoodItemById(foodItemId);
+        return foodItem.getImageUrl(); // Assuming this returns byte[]
+    }
+
+    @Transactional
+    public List<RestaurantMenuResponse> findByCategoryId(final Long categoryId) throws NotFoundException {
+        logger.info("Retrieving all food items for restaurant ID: {}", categoryId);
+
+        List<RestaurantMenu> menuList = restaurantMenuRepository.findByCategoryId(categoryId);
+
+        if (menuList.isEmpty()) {
+            logger.error("No food items found for restaurant ID: {}",categoryId);
+            throw new NotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
+        }
+
+        List<RestaurantMenuResponse> responseList = new ArrayList<>();
+        for (RestaurantMenu menu : menuList) {
+            RestaurantMenuResponse response = dtoConversion.convertToRestaurantMenuResponse(menu);
+            responseList.add(response);
+        }
+        logger.info("Retrieved {} food items for restaurant ID: {}", responseList.size(), categoryId);
+
+        return responseList;
+    }
+
 }

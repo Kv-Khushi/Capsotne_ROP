@@ -24,4 +24,5 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
    * @return a list of {@link Address} entities associated with the given user ID
    */
   List<Address> findByUserId(Long userId);
+
 }

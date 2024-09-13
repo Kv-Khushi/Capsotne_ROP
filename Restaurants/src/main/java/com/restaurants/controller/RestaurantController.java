@@ -1,10 +1,10 @@
 package com.restaurants.controller;
 
 import com.restaurants.constant.ConstantMessage;
-import com.restaurants.dto.outdto.SuccessResponse;
+import com.restaurants.dto.SuccessResponse;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.RestaurantRequest;
-import com.restaurants.dto.outdto.RestaurantResponse;
+import com.restaurants.dto.RestaurantRequest;
+import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.service.RestaurantService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,16 +38,6 @@ public final class RestaurantController {
 
   * @return a response entity with the created restaurant
   */
-// @PostMapping("/addRestaurant")
-// public ResponseEntity<RestaurantResponse> addRestaurant(
-//        @ModelAttribute @Valid final RestaurantRequest restaurantRequest,
-//         @RequestParam ("image") final MultipartFile image) {
-//  logger.info("Request to add new restaurant with details: {}", restaurantRequest);
-//
-//  RestaurantResponse restaurantResponse = restaurantService.addRestaurant(restaurantRequest,image);
-//
-//  return ResponseEntity.ok(restaurantResponse);
-// }
 
  @PostMapping("/addRestaurant")
  public ResponseEntity<SuccessResponse> addRestaurant(@ModelAttribute @Valid RestaurantRequest restaurantRequest,

@@ -1,15 +1,16 @@
 package com.restaurants.controller;
 
 import com.restaurants.constant.ConstantMessage;
-import com.restaurants.dto.outdto.SuccessResponse;
+import com.restaurants.dto.SuccessResponse;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.RestaurantMenuRequest;
-import com.restaurants.dto.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.RestaurantMenuRequest;
+import com.restaurants.dto.RestaurantMenuResponse;
 import com.restaurants.service.RestaurantMenuService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,8 @@ public final class RestaurantMenuController {
 
     @Autowired
     private RestaurantMenuService restaurantMenuService;
+
+
 
     /**
      * Adds a new food item to the restaurant menu.
@@ -89,5 +92,33 @@ public final class RestaurantMenuController {
             logger.error("Error updating food item for restaurant ID: {}: {}", restaurantId, e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/{foodItemId}")
+    public ResponseEntity<RestaurantMenuResponse> getFoodItemById(@PathVariable("foodItemId") Long foodItemId) {
+        try {
+            RestaurantMenuResponse menuResponse = restaurantMenuService.getFoodItemById(foodItemId);
+            return ResponseEntity.ok(menuResponse);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{foodItemId}/image")
+    public ResponseEntity<byte[]> getFoodItemImage(@PathVariable final Long foodItemId) throws NotFoundException {
+        logger.info("Retrieving image for food item with ID: {}", foodItemId);
+        byte[] imageData = restaurantMenuService.getFoodItemImage(foodItemId);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageData);
+    }
+
+
+    @GetMapping("/getFoodItemsByCtg/{categoryId}")
+    public ResponseEntity<List<RestaurantMenuResponse>> getFoodItemsByCategoryId(
+            @PathVariable final Long categoryId) throws NotFoundException {
+        logger.info("Request to retrieve food items for restaurant ID: {}", categoryId);
+
+        List<RestaurantMenuResponse> restaurantMenuResponses = restaurantMenuService.findByCategoryId(categoryId);
+        logger.info("Retrieved {} food items for restaurant ID: {}", restaurantMenuResponses.size(), categoryId);
+        return ResponseEntity.ok(restaurantMenuResponses);
     }
 }

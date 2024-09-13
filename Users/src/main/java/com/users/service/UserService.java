@@ -4,17 +4,17 @@ import com.users.constant.ConstantMessage;
 import com.users.dtoconversion.DtoConversion;
 import com.users.entities.User;
 import com.users.exception.AlreadyExists;
-import com.users.exception.NotFoundException;
-import com.users.indto.LoginRequest;
-import com.users.indto.UserRequest;
-import com.users.outdto.UserResponse;
+import com.users.exception.ResourceNotFoundException;
+import com.users.dto.LoginRequest;
+import com.users.dto.UserRequest;
+import com.users.dto.UserResponse;
 import com.users.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.users.passwordencryption.PasswordEncodingAndDecoding;
-
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +34,9 @@ public class UserService {
      */
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Utility for encoding and decoding passwords.
@@ -68,7 +71,7 @@ public class UserService {
         LOGGER.info("Adding a new user with email: {}", userRequest.getUserEmail());
 
         User user = DtoConversion.convertUserRequestToUser(userRequest);
-        Optional<User> optionalUser = userRepository.findByUserEmail(userRequest.getUserEmail());
+        Optional<User> optionalUser = userRepository.findByUserEmail(userRequest.getUserEmail().toLowerCase());
         if (optionalUser.isPresent()){
             LOGGER.error("User with email {} already exists", userRequest.getUserEmail());
             throw new AlreadyExists(ConstantMessage.ALREADY_EXISTS);
@@ -88,13 +91,13 @@ public class UserService {
      *
      * @param loginRequest the {@link LoginRequest} containing login details.
      * @return a {@link UserResponse} with the details of the authenticated user.
-     * @throws NotFoundException if no user with the given email is found.
+     * @throws ResourceNotFoundException if no user with the given email is found.
      */
     public UserResponse authenticateUser(final LoginRequest loginRequest) {
         LOGGER.info("Authenticating user with email: {}", loginRequest.getUserEmail());
 
         User user = userRepository.findByUserEmail(loginRequest.getUserEmail())
-                .orElseThrow(() -> new NotFoundException(ConstantMessage.NOT_FOUND));
+                .orElseThrow(() -> new ResourceNotFoundException(ConstantMessage.NOT_FOUND));
         passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
         UserResponse userResponse = DtoConversion.userToUserResponse(user);
         LOGGER.info("User with email {} authenticated successfully", loginRequest.getUserEmail());
@@ -111,4 +114,32 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+
+    public void updateWalletBalance(Long userId, Double newBalance) {
+        // Fetch the user from the repository
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(ConstantMessage.NOT_FOUND));
+
+        // Update wallet balance
+        user.setWallet(newBalance);
+
+        // Save the updated user back to the repository
+        userRepository.save(user);
+    }
+
+    public void sendMail(String text) {
+        try {
+            // Define the list of recipients
+            List<String> recipients = Arrays.asList(
+                    "iadityapatel1729@gmail.com",
+                    "adityapatel21052022@gmail.com",
+                    "vyaskhushi2407@gmail.com"
+            );
+            // Send email to all recipients
+            emailService.sendMail(ConstantMessage.SENDER, recipients, text);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResourceNotFoundException(ConstantMessage.NOT_FOUND);
+        }
+    }
 }

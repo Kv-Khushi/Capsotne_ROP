@@ -3,9 +3,10 @@ package com.restaurants.service;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.FoodCategory;
+import com.restaurants.exception.DuplicateCategoryException;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.FoodCategoryRequest;
-import com.restaurants.dto.outdto.FoodCategoryResponse;
+import com.restaurants.dto.FoodCategoryRequest;
+import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.repository.FoodCategoryRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,8 +36,27 @@ public class FoodCategoryService {
      * @param foodCategoryRequest the request object containing category details
      * @return the response object containing details of the added food category
      */
+
+
     public FoodCategoryResponse addFoodCategory(final FoodCategoryRequest foodCategoryRequest) {
         logger.info("Adding a new food category with details: {}", foodCategoryRequest);
+
+        // Check if the category already exists for the restaurant
+        boolean exists = foodCategoryRepository.existsByRestaurantIdAndCategoryNameIgnoreCase(
+                foodCategoryRequest.getRestaurantId(),
+                foodCategoryRequest.getCategoryName()
+        );
+
+        if (exists) {
+            logger.error("Duplicate category: {} already exists for restaurant ID: {}",
+                    foodCategoryRequest.getCategoryName(),
+                    foodCategoryRequest.getRestaurantId());
+            throw new DuplicateCategoryException(
+                    String.format("Category '%s' already exists for restaurant ID: %d",
+                            foodCategoryRequest.getCategoryName(),
+                            foodCategoryRequest.getRestaurantId())
+            );
+        }
 
         FoodCategory foodCategory = dtoConversion.convertToFoodCategoryEntity(foodCategoryRequest);
         FoodCategory savedFoodCategory = foodCategoryRepository.save(foodCategory);

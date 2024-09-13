@@ -1,11 +1,11 @@
 package com.users.service;
 
+import com.users.dto.LoginRequest;
+import com.users.dto.UserRequest;
+import com.users.dto.UserResponse;
 import com.users.entities.User;
 import com.users.exception.AlreadyExists;
-import com.users.exception.NotFoundException;
-import com.users.indto.LoginRequest;
-import com.users.indto.UserRequest;
-import com.users.outdto.UserResponse;
+import com.users.exception.ResourceNotFoundException;
 import com.users.repository.UserRepository;
 import com.users.passwordencryption.PasswordEncodingAndDecoding;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserServiceTest {
 
@@ -112,7 +109,7 @@ public class UserServiceTest {
 
         when(userRepository.findByUserEmail(loginRequest.getUserEmail())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> userService.authenticateUser(loginRequest));
+        assertThrows(ResourceNotFoundException.class, () -> userService.authenticateUser(loginRequest));
     }
 
 }

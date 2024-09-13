@@ -1,11 +1,15 @@
 package com.restaurants.service;
+import com.restaurants.dto.UserResponse;
+import com.restaurants.enums.UserRole;
+import com.restaurants.exception.InvalidRequestException;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
-//import com.restaurants.feignclientconfig.UserServiceClient;
-import com.restaurants.dto.indto.RestaurantRequest;
-import com.restaurants.dto.outdto.RestaurantResponse;
+import com.restaurants.dto.RestaurantRequest;
+import com.restaurants.dto.RestaurantResponse;
+import com.restaurants.exception.UnauthorizedException;
+import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.repository.RestaurantRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,8 +36,8 @@ public class RestaurantService {
     @Autowired
     private DtoConversion dtoConversion;
 
-//    @Autowired
-//    private UserServiceClient userServiceClient;
+    @Autowired
+    private UserServiceClient userServiceClient;
 
     /**
      * Adds a new restaurant with an optional image.
@@ -41,23 +45,49 @@ public class RestaurantService {
      * @param restaurantRequest the request object containing restaurant details
      * @return the response object containing details of the added restaurant
      */
-    public RestaurantResponse addRestaurant(final RestaurantRequest restaurantRequest,
-                                            final MultipartFile image) {
+
+    public RestaurantResponse addRestaurant(final RestaurantRequest restaurantRequest, final MultipartFile image) {
         logger.info("Adding a new restaurant with details: {}", restaurantRequest);
 
-        logger.info("Adding a new restaurant with details: {}", restaurantRequest);
+        // Fetch the user details
+        UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
+        String userRole = userResponse.getUserRole();
+
+        // Check if the user is a customer
+        if (UserRole.CUSTOMER.name().equals(userRole)) {
+            logger.error("User with ID {} is a CUSTOMER and cannot register a restaurant", restaurantRequest.getUserId());
+            throw new UnauthorizedException(ConstantMessage.UNAUTHORIZED_USER);
+        }
+
+        // Convert the restaurant request to an entity
         Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
+
+
         try {
-            if (image!= null && !image.isEmpty()) {
-                logger.info("Processing image file for restaurant");
+            if (image != null && !image.isEmpty()) {
+                String contentType = image.getContentType();
+                if (contentType == null || !(contentType.equals("image/jpeg") || contentType.equals("image/png"))) {
+                    logger.error("Invalid image type: {}. Only JPG and PNG are allowed.", contentType);
+                    throw new InvalidRequestException(ConstantMessage.INVALID_IMAGE_FORMAT);
+                }
+                // Process the image if validation passes
                 restaurant.setRestaurantImage(image.getBytes());
             }
+        } catch (InvalidRequestException e) {
+            // Ensure not to catch the specific exception unless for logging
+            throw e;  // Re-throw if caught
         } catch (Exception e) {
             logger.error("Error occurred while processing image file for restaurant: {}", e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException("Image processing failed");
         }
+
+
+        // Save the restaurant
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
         logger.info("Restaurant added successfully with ID: {}", savedRestaurant.getRestaurantId());
+
+        // Convert the saved entity to a response DTO
         return dtoConversion.convertToRestaurantResponse(savedRestaurant);
     }
 
@@ -111,6 +141,8 @@ public class RestaurantService {
      * @return a byte array containing the image data
      * @throws NotFoundException if the restaurant with the given ID is not found
      */
+
+
         public byte[] getRestaurantImage(final Long restaurantId)throws NotFoundException{
             logger.info("Fetching image for restaurant with ID: {}", restaurantId);
             RestaurantResponse restaurant = getRestaurantById(restaurantId);

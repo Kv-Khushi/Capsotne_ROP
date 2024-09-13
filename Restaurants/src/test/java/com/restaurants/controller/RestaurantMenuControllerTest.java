@@ -1,8 +1,8 @@
 package com.restaurants.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.restaurants.dto.indto.RestaurantMenuRequest;
-import com.restaurants.dto.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.RestaurantMenuRequest;
+import com.restaurants.dto.RestaurantMenuResponse;
 import com.restaurants.service.RestaurantMenuService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

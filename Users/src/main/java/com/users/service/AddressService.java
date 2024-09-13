@@ -2,8 +2,8 @@ package com.users.service;
 
 import com.users.dtoconversion.DtoConversion;
 import com.users.entities.Address;
-import com.users.indto.AddressRequest;
-import com.users.outdto.AddressResponse;
+import com.users.dto.AddressRequest;
+import com.users.dto.AddressResponse;
 import com.users.repository.AddressRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

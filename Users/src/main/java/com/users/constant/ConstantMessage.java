@@ -8,6 +8,8 @@ package com.users.constant;
  */
 public final class ConstantMessage {
 
+ public static final String SENDER = "vyaskhushi2407@gmail.com";
+
  /**
   * Private constructor to prevent instantiation.
   */
@@ -28,9 +30,16 @@ public final class ConstantMessage {
  /**
   * The default wallet amount used in the system.
   */
- public static final Long WALLET_AMOUNT = 1000L;
+ public static final Double  WALLET_AMOUNT = 1000.0;
 
 
+ /**
+  * The message to be used when the user successfully added.
+  */
  public static final String USER_ADD_SUCCESS = "User added successfully";
+
+ public static final String MAIL_SENT_SUCCESSFULLY = "Email sent successfully";
+
+
 }
 
