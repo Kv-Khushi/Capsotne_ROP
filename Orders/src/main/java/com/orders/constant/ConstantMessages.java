@@ -1,6 +1,5 @@
 package com.orders.constant;
 
-import org.omg.PortableInterceptor.SUCCESSFUL;
 
 public class ConstantMessages {
 
@@ -27,6 +26,8 @@ public class ConstantMessages {
     public static final String INVALID_ADDRESS_ID = "Invalid address ID for this user.";
 
     public static final String RESTAURANT_OWNER_CANNOT_ADD_TO_CART = "Restaurant owners cannot add items to the cart.";
+
+    public static final String NO_ORDERS_FOUND = "No orders found for the user.";
 }
 
 

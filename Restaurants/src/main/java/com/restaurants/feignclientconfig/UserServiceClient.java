@@ -1,6 +1,6 @@
 package com.restaurants.feignclientconfig;
 
-import com.restaurants.dto.outdto.UserResponse;
+import com.restaurants.dto.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

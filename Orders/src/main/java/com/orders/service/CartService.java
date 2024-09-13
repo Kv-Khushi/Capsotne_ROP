@@ -7,11 +7,11 @@ import com.orders.exception.InvalidRequestException;
 import com.orders.exception.ResourceNotFoundException;
 import com.orders.feignclientconfig.RestaurantFeignClient;
 import com.orders.feignclientconfig.UserFeignClient;
-import com.orders.indto.CartRequest;
-import com.orders.outdto.CartResponse;
-import com.orders.outdto.RestaurantMenuResponse;
-import com.orders.outdto.RestaurantResponse;
-import com.orders.outdto.UserResponse;
+import com.orders.dto.CartRequest;
+import com.orders.dto.CartResponse;
+import com.orders.dto.RestaurantMenuResponse;
+import com.orders.dto.RestaurantResponse;
+import com.orders.dto.UserResponse;
 import com.orders.repository.CartRepository;
 import feign.FeignException;
 import org.slf4j.Logger;
@@ -41,6 +41,16 @@ public class CartService {
 
     private static final Logger logger = LoggerFactory.getLogger(CartService.class);
 
+
+    /**
+     * Adds an item to the cart. If the item already exists in the cart, it updates the quantity.
+     * It also validates user, restaurant, and food item existence.
+     *
+     * @param cartRequest the details of the cart item to add
+     * @return the updated or newly created {@link Cart} entity
+     * @throws ResourceNotFoundException if user, restaurant, or food item is not found
+     * @throws InvalidRequestException if multiple restaurants are found in the cart
+     */
     @Transactional
     public Cart addItemToCart(CartRequest cartRequest) {
         RestaurantMenuResponse menuResponse = null;
@@ -100,6 +110,14 @@ public class CartService {
                     return cartRepository.save(newCart);
                 });
     }
+
+    /**
+     * Removes an item from the cart by user ID and food item ID.
+     *
+     * @param userId the ID of the user
+     * @param foodItemId the ID of the food item to remove
+     * @throws ResourceNotFoundException if the item is not found in the cart
+     */
     @Transactional
     public void removeItemFromCart(Long userId, Long foodItemId) {
         Cart cart = cartRepository.findByUserIdAndFoodItemId(userId, foodItemId)
@@ -109,6 +127,13 @@ public class CartService {
     }
 
 
+
+    /**
+     * Updates the quantity of an item in the cart and adjusts the price accordingly.
+     *
+     * @param cartRequest the updated details of the cart item
+     * @throws IllegalArgumentException if the item is not found or if the quantity is negative
+     */
     @Transactional
     public void updateItemQuantity(CartRequest cartRequest) {
         logger.info("Received cart update request: {}", cartRequest);
@@ -134,6 +159,13 @@ public class CartService {
         logger.info("Updated cart item: {}", cart);
     }
 
+
+    /**
+     * Retrieves all cart items for a specific user.
+     *
+     * @param userId the ID of the user
+     * @return a list of {@link CartResponse} DTOs representing the cart items
+     */
     public List<CartResponse> getAllCartItemsByUserId(Long userId) {
         // Fetch all cart items by userId
         List<Cart> cartItems = cartRepository.findByUserId(userId);

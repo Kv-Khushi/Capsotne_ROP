@@ -38,4 +38,6 @@ public final class ConstantMessage {
     public static final String UNAUTHORIZED_USER = " Customers are not allowed to register a restaurant";
 
 
+    public static final String INVALID_IMAGE_FORMAT = "Only JPG and PNG image formats are allowed.";
+
 }

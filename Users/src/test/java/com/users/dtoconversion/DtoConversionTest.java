@@ -1,11 +1,11 @@
 package com.users.dtoconversion;
 
+import com.users.dto.AddressRequest;
+import com.users.dto.AddressResponse;
+import com.users.dto.UserRequest;
+import com.users.dto.UserResponse;
 import com.users.entities.Address;
 import com.users.entities.User;
-import com.users.indto.AddressRequest;
-import com.users.indto.UserRequest;
-import com.users.outdto.AddressResponse;
-import com.users.outdto.UserResponse;
 import org.junit.jupiter.api.Test;
 import com.users.enums.UserRole;
 

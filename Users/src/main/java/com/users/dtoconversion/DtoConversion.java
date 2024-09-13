@@ -2,10 +2,10 @@ package com.users.dtoconversion;
 
 import com.users.entities.Address;
 import com.users.entities.User;
-import com.users.indto.AddressRequest;
-import com.users.indto.UserRequest;
-import com.users.outdto.AddressResponse;
-import com.users.outdto.UserResponse;
+import com.users.dto.AddressRequest;
+import com.users.dto.UserRequest;
+import com.users.dto.AddressResponse;
+import com.users.dto.UserResponse;
 
 /**
  * Utility class for converting between DTOs (Data Transfer Objects) and entities.
@@ -23,7 +23,7 @@ public class DtoConversion {
         user.setUserName(userRequest.getUserName());
         user.setUserPassword(userRequest.getUserPassword());
         user.setPhoneNumber(userRequest.getPhoneNumber());
-        user.setUserEmail(userRequest.getUserEmail());
+        user.setUserEmail(userRequest.getUserEmail().toLowerCase());
         user.setUserRole(userRequest.getUserRole());
         return user;
     }

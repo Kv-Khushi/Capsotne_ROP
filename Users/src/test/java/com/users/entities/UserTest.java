@@ -28,7 +28,7 @@ class UserTest {
         user.setUserName("testUser");
         user.setUserEmail("test@example.com");
         user.setUserPassword("password123");
-        user.setWallet(5000L);
+        user.setWallet(5000.0);
         user.setUserRole(UserRole.RESTAURANT_OWNER);
 
         assertEquals(1L, user.getUserId());
@@ -36,7 +36,7 @@ class UserTest {
         assertEquals("testUser", user.getUserName());
         assertEquals("test@example.com", user.getUserEmail());
         assertEquals("password123", user.getUserPassword());
-        assertEquals(5000L, user.getWallet());
+        assertEquals(5000.0, user.getWallet());
         assertEquals(UserRole.RESTAURANT_OWNER, user.getUserRole());
     }
 
@@ -94,7 +94,7 @@ class UserTest {
         user.setUserName("testUser");
         user.setUserEmail("test@example.com");
         user.setUserPassword("password123");
-        user.setWallet(5000L);
+        user.setWallet(5000.0);
         user.setUserRole(UserRole.RESTAURANT_OWNER);
 
         String expectedString = "User(userId=1, phoneNumber=1234567890, userName=testUser, userEmail=test@example.com, userPassword=password123, wallet=5000, userRole=RESTAURANT_OWNER)";
@@ -114,7 +114,7 @@ class UserTest {
     public void testInvalidEmail() {
         user.setUserEmail(null);
         assertNull(user.getUserEmail());
-        // Additional tests could be done here if you have custom validation for emails.
+
     }
 
     @Test
@@ -122,6 +122,6 @@ class UserTest {
         user.setPhoneNumber(null);
         assertNull(user.getPhoneNumber());
 
-        // Optionally, you could add validations for phone number formats or values.
+
     }
 }

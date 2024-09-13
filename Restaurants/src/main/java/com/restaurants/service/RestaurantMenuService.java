@@ -1,13 +1,12 @@
 package com.restaurants.service;
 
 import com.restaurants.constant.ConstantMessage;
-import com.restaurants.dto.outdto.RestaurantResponse;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.RestaurantMenu;
 import com.restaurants.exception.DuplicateItemException;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.RestaurantMenuRequest;
-import com.restaurants.dto.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.RestaurantMenuRequest;
+import com.restaurants.dto.RestaurantMenuResponse;
 import com.restaurants.repository.RestaurantMenuRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,7 +47,7 @@ public class RestaurantMenuService {
         logger.info("Adding a new food item with details: {}", restaurantMenuRequest);
 
         // Check if the item already exists for the restaurant
-        boolean exists = restaurantMenuRepository.existsByRestaurantIdAndItemName(
+        boolean exists = restaurantMenuRepository.existsByRestaurantIdAndItemNameIgnoreCase(
                 restaurantMenuRequest.getRestaurantId(),
                 restaurantMenuRequest.getItemName()
         );

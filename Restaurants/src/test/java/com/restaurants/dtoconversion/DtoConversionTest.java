@@ -2,10 +2,10 @@ package com.restaurants.dtoconversion;
 
 import com.restaurants.entities.FoodCategory;
 import com.restaurants.entities.RestaurantMenu;
-import com.restaurants.dto.indto.FoodCategoryRequest;
-import com.restaurants.dto.indto.RestaurantMenuRequest;
-import com.restaurants.dto.indto.RestaurantRequest;
-import com.restaurants.dto.outdto.FoodCategoryResponse;
+import com.restaurants.dto.FoodCategoryRequest;
+import com.restaurants.dto.RestaurantMenuRequest;
+import com.restaurants.dto.RestaurantRequest;
+import com.restaurants.dto.FoodCategoryResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.restaurants.entities.Restaurant;

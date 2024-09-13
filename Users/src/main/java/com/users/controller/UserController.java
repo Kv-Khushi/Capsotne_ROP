@@ -2,22 +2,17 @@ package com.users.controller;
 
 import com.users.constant.ConstantMessage;
 import com.users.entities.User;
-import com.users.indto.LoginRequest;
-import com.users.indto.UserRequest;
-import com.users.outdto.UserAddResponse;
-import com.users.outdto.UserResponse;
+import com.users.dto.LoginRequest;
+import com.users.dto.UserRequest;
+import com.users.dto.CommonResponse;
+import com.users.dto.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.users.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
@@ -43,6 +38,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     /**
      * Adds a new user.
      * This method is not designed to be overridden.
@@ -52,7 +48,7 @@ public class UserController {
      */
 
     @PostMapping("/addUser")
-    public final ResponseEntity<UserAddResponse> addUser(final @Valid @RequestBody UserRequest userRequest) {
+    public final ResponseEntity<CommonResponse> addUser(final @Valid @RequestBody UserRequest userRequest) {
         LOGGER.info("Received request to add a new user with username: {}", userRequest.getUserName());
 
         userService.addUser(userRequest); // Perform the operation
@@ -60,7 +56,7 @@ public class UserController {
         LOGGER.info("Successfully added user with username: {}", userRequest.getUserName());
 
         // Create a response with the success message from ConstantMessage
-        UserAddResponse response = new UserAddResponse(ConstantMessage.USER_ADD_SUCCESS);
+        CommonResponse response = new CommonResponse(ConstantMessage.USER_ADD_SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -117,4 +113,19 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
+
+
+    @PutMapping("/{userId}/wallet")
+    public ResponseEntity<String> updateWalletBalance(@PathVariable Long userId, @RequestBody Double newBalance) {
+        userService.updateWalletBalance(userId, newBalance);  // Call the service method
+        return ResponseEntity.ok("Wallet balance updated successfully.");
+    }
+
+
+    @PostMapping("/send")
+    public ResponseEntity<?> sendEmail(@RequestParam String text) {
+        userService.sendMail(text);
+        return new ResponseEntity<>(ConstantMessage.MAIL_SENT_SUCCESSFULLY, HttpStatus.OK);
+    }
+
 }

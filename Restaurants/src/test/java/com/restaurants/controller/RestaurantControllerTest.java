@@ -1,8 +1,7 @@
 package com.restaurants.controller;
 
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.RestaurantRequest;
-import com.restaurants.dto.outdto.RestaurantResponse;
+import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.service.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;

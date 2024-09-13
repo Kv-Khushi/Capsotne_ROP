@@ -1,12 +1,10 @@
 package com.restaurants.controller;
 
 import com.restaurants.constant.ConstantMessage;
-import com.restaurants.dto.outdto.RestaurantResponse;
-import com.restaurants.dto.outdto.SuccessResponse;
-import com.restaurants.entities.RestaurantMenu;
+import com.restaurants.dto.SuccessResponse;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.RestaurantMenuRequest;
-import com.restaurants.dto.outdto.RestaurantMenuResponse;
+import com.restaurants.dto.RestaurantMenuRequest;
+import com.restaurants.dto.RestaurantMenuResponse;
 import com.restaurants.service.RestaurantMenuService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

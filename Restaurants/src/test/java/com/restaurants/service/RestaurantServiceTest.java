@@ -1,7 +1,7 @@
 package com.restaurants.service;
 
 import com.restaurants.constant.ConstantMessage;
-import com.restaurants.dto.outdto.RestaurantResponse;
+import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
 import com.restaurants.exception.NotFoundException;

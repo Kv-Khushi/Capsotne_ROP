@@ -12,6 +12,8 @@ public class NotFoundException extends RuntimeException{
      *                by the {@link #getMessage()} method)
      */
     public NotFoundException(final String message) {
+
         super(message);
     }
+
 }

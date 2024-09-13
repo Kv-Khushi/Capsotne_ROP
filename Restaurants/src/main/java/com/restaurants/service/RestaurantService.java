@@ -1,12 +1,13 @@
 package com.restaurants.service;
-import com.restaurants.dto.outdto.UserResponse;
+import com.restaurants.dto.UserResponse;
 import com.restaurants.enums.UserRole;
+import com.restaurants.exception.InvalidRequestException;
 import com.restaurants.exception.NotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
-import com.restaurants.dto.indto.RestaurantRequest;
-import com.restaurants.dto.outdto.RestaurantResponse;
+import com.restaurants.dto.RestaurantRequest;
+import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.exception.UnauthorizedException;
 import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.repository.RestaurantRepository;
@@ -61,16 +62,26 @@ public class RestaurantService {
         // Convert the restaurant request to an entity
         Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
 
-        // Handle image processing
+
         try {
             if (image != null && !image.isEmpty()) {
-                logger.info("Processing image file for restaurant");
+                String contentType = image.getContentType();
+                if (contentType == null || !(contentType.equals("image/jpeg") || contentType.equals("image/png"))) {
+                    logger.error("Invalid image type: {}. Only JPG and PNG are allowed.", contentType);
+                    throw new InvalidRequestException(ConstantMessage.INVALID_IMAGE_FORMAT);
+                }
+                // Process the image if validation passes
                 restaurant.setRestaurantImage(image.getBytes());
             }
+        } catch (InvalidRequestException e) {
+            // Ensure not to catch the specific exception unless for logging
+            throw e;  // Re-throw if caught
         } catch (Exception e) {
             logger.error("Error occurred while processing image file for restaurant: {}", e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException("Image processing failed");
         }
+
 
         // Save the restaurant
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);

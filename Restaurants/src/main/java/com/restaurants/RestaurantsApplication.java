@@ -10,7 +10,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @EnableFeignClients
-public class RestaurantsApplication {
+public class
+RestaurantsApplication {
 	/**
 	 * The main method to run the Restaurants application.
 	 *

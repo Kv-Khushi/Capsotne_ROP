@@ -26,7 +26,7 @@ public interface FoodCategoryRepository extends JpaRepository<FoodCategory, Long
   * @param name the name of the category
   * @return an {@link Optional} containing the {@link FoodCategory} entity if found
   */
- boolean existsByRestaurantIdAndCategoryName(Long restaurantId, String categoryName);
+ boolean existsByRestaurantIdAndCategoryNameIgnoreCase(Long restaurantId, String categoryName);
 
 
 }

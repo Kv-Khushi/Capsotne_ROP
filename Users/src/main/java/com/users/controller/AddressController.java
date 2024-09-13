@@ -1,8 +1,8 @@
 package com.users.controller;
 
 import com.users.entities.Address;
-import com.users.indto.AddressRequest;
-import com.users.outdto.AddressResponse;
+import com.users.dto.AddressRequest;
+import com.users.dto.AddressResponse;
 import com.users.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

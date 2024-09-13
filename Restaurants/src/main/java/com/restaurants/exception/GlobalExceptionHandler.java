@@ -6,17 +6,15 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
+
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 /**
  * Global exception handler for the application to handle various exceptions.
@@ -106,29 +104,37 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException ex) {
+        logger.error("Handling InvalidRequestException: {}", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleValidationExceptions(Exception ex) {
-        List<String> errorMessages = null;
+    public ResponseEntity<List<ErrorResponse>> handleValidationExceptions(Exception ex) {
+        logger.info("Handling validation exceptions: {}", ex.getMessage()); // Log exception details
+        List<ErrorResponse> errors = new ArrayList<>();
 
         if (ex instanceof MethodArgumentNotValidException) {
-            errorMessages = ((MethodArgumentNotValidException) ex)
-                    .getBindingResult()
-                    .getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .collect(Collectors.toList());
+            ((MethodArgumentNotValidException) ex).getBindingResult().getFieldErrors().forEach(error -> {
+                String fieldName = error.getField();
+                String errorMessage = error.getDefaultMessage();
+                errors.add(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), String.format("Field '%s': %s", fieldName, errorMessage)));
+            });
         } else if (ex instanceof BindException) {
-            errorMessages = ((BindException) ex)
-                    .getBindingResult()
-                    .getFieldErrors()
-                    .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .collect(Collectors.toList());
+            ((BindException) ex).getBindingResult().getFieldErrors().forEach(error -> {
+                String fieldName = error.getField();
+                String errorMessage = error.getDefaultMessage();
+                errors.add(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), String.format("Field '%s': %s", fieldName, errorMessage)));
+            });
         }
 
-        String errorMessage = errorMessages != null ? String.join(", ", errorMessages) : "Validation error";
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
+
 }

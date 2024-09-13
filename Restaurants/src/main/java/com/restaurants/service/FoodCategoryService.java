@@ -5,8 +5,8 @@ import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.FoodCategory;
 import com.restaurants.exception.DuplicateCategoryException;
 import com.restaurants.exception.NotFoundException;
-import com.restaurants.dto.indto.FoodCategoryRequest;
-import com.restaurants.dto.outdto.FoodCategoryResponse;
+import com.restaurants.dto.FoodCategoryRequest;
+import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.repository.FoodCategoryRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,7 +42,7 @@ public class FoodCategoryService {
         logger.info("Adding a new food category with details: {}", foodCategoryRequest);
 
         // Check if the category already exists for the restaurant
-        boolean exists = foodCategoryRepository.existsByRestaurantIdAndCategoryName(
+        boolean exists = foodCategoryRepository.existsByRestaurantIdAndCategoryNameIgnoreCase(
                 foodCategoryRequest.getRestaurantId(),
                 foodCategoryRequest.getCategoryName()
         );

@@ -1,8 +1,8 @@
 package com.restaurants.controller;
 
-import com.restaurants.dto.indto.FoodCategoryRequest;
-import com.restaurants.dto.outdto.FoodCategoryResponse;
-import com.restaurants.dto.outdto.SuccessResponse;
+import com.restaurants.dto.FoodCategoryRequest;
+import com.restaurants.dto.FoodCategoryResponse;
+import com.restaurants.dto.SuccessResponse;
 import com.restaurants.exception.DuplicateCategoryException;
 import com.restaurants.service.FoodCategoryService;
 import com.restaurants.exception.NotFoundException;
