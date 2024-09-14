@@ -3,6 +3,7 @@ package com.users.service;
 import com.users.constant.ConstantMessage;
 import com.users.dtoconversion.DtoConversion;
 import com.users.entities.User;
+import com.users.enums.UserRole;
 import com.users.exception.AlreadyExists;
 import com.users.exception.ResourceNotFoundException;
 import com.users.dto.LoginRequest;
@@ -35,6 +36,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Service for sending emails.
+     */
     @Autowired
     private EmailService emailService;
 
@@ -76,6 +80,12 @@ public class UserService {
             LOGGER.error("User with email {} already exists", userRequest.getUserEmail());
             throw new AlreadyExists(ConstantMessage.ALREADY_EXISTS);
         }
+
+        if (userRequest.getUserRole() == UserRole.RESTAURANT_OWNER) {
+            user.setWallet(null);
+        } else {
+            user.setWallet(ConstantMessage.WALLET_AMOUNT); // default wallet balance
+        }
         passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
         user.setUserPassword(passwordEncodingAndDecoding.encodePassword(user.getUserPassword()));
         User savedUser = userRepository.save(user);
@@ -115,7 +125,13 @@ public class UserService {
     }
 
 
-    public void updateWalletBalance(Long userId, Double newBalance) {
+    /**
+     * Updates the wallet balance for the specified user.
+     *
+     * @param userId the ID of the user whose wallet balance is to be updated
+     * @param newBalance the new balance to set in the user's wallet
+     */
+    public void updateWalletBalance(final Long userId, final Double newBalance) {
         // Fetch the user from the repository
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ConstantMessage.NOT_FOUND));
@@ -127,7 +143,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void sendMail(String text) {
+
+    /**
+     * Sends an email to predefined recipients.
+     *
+     * @param text the content of the email.
+     */
+    public void sendMail(final String text) {
         try {
             // Define the list of recipients
             List<String> recipients = Arrays.asList(

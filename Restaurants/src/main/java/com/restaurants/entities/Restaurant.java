@@ -41,7 +41,7 @@ public class Restaurant {
     /**
      * The contact number for the restaurant.
      */
-    private Long contactNumber;
+    private String contactNumber;
 
     /**
      * A description of the restaurant.

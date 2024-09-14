@@ -1,6 +1,10 @@
 package com.restaurants.controller;
 
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.constant.ConstantMessage;
+import com.restaurants.dto.RestaurantRequest;
+import com.restaurants.dto.SuccessResponse;
+import com.restaurants.exception.InvalidRequestException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.service.RestaurantService;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,38 +36,33 @@ class RestaurantControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-//    @Test
-//    void addRestaurantSuccessTest() throws Exception {
-//        RestaurantRequest restaurantRequest = new RestaurantRequest();
-//        restaurantRequest.setUserId(1L);
-//        restaurantRequest.setRestaurantName("Test Restaurant");
-//        restaurantRequest.setRestaurantAddress("123 Test St");
-//        restaurantRequest.setContactNumber(1234567890L);
-//        restaurantRequest.setRestaurantDescription("A test restaurant");
-//        restaurantRequest.setOpeningHour("10");
-//
-//        MultipartFile multipartFile = mock(MultipartFile.class);
-//        when(multipartFile.isEmpty()).thenReturn(false);
-//        when(multipartFile.getBytes()).thenReturn(new byte[0]);
-//
-//        RestaurantResponse restaurantResponse = new RestaurantResponse();
-//        restaurantResponse.setUserId(1L);
-//        restaurantResponse.setRestaurantName("Test Restaurant");
-//        restaurantResponse.setRestaurantAddress("123 Test St");
-//        restaurantResponse.setContactNumber(1234567890L);
-//        restaurantResponse.setRestaurantDescription("A test restaurant");
-//        restaurantResponse.setOpeningHour("10");
-//
-//        when(restaurantService.addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class)))
-//                .thenReturn(restaurantResponse);
-//
-//        ResponseEntity<RestaurantResponse> responseEntity = restaurantController.addRestaurant(restaurantRequest, multipartFile);
-//
-//        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-//        assertNotNull(responseEntity.getBody());
-//        assertEquals("Test Restaurant", responseEntity.getBody().getRestaurantName());
-//        verify(restaurantService, times(1)).addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class));
-//    }
+    @Test
+    void addRestaurantSuccessTest() {
+        RestaurantRequest request = new RestaurantRequest();
+        request.setUserId(1L);
+        request.setRestaurantName("Test Restaurant");
+        request.setRestaurantAddress("Test Address");
+        request.setContactNumber("9876543210");
+        request.setRestaurantDescription("Test Description");
+        request.setOpeningHour("10:00 AM");
+
+        // Create a mock MultipartFile
+        MultipartFile image = mock(MultipartFile.class);
+        when(image.getOriginalFilename()).thenReturn("image.jpg");
+        when(image.getContentType()).thenReturn("image/jpeg");
+
+        when(restaurantService.addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class)))
+                .thenReturn(new RestaurantResponse());
+
+        ResponseEntity<SuccessResponse> responseEntity = restaurantController.addRestaurant(request, image);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+        assertEquals(ConstantMessage.RESTAURANT_ADD_SUCCESS, responseEntity.getBody().getMessage());
+        verify(restaurantService, times(1)).addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class));
+    }
+
+
 
     @Test
     void getAllRestaurantsSuccessTest() {
@@ -83,7 +83,7 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void getRestaurantByIdSuccessTest() throws NotFoundException {
+    void getRestaurantByIdSuccessTest() throws ResourceNotFoundException {
         Long restaurantId = 1L;
         RestaurantResponse restaurantResponse = new RestaurantResponse();
         restaurantResponse.setRestaurantName("Test Restaurant");
@@ -97,13 +97,13 @@ class RestaurantControllerTest {
         verify(restaurantService, times(1)).getRestaurantById(restaurantId);
     }
 
-
     @Test
-    void getRestaurantByIdNotFoundTest() throws NotFoundException {
-        Long restaurantId = 1L;
-        when(restaurantService.getRestaurantById(anyLong())).thenThrow(new NotFoundException("Restaurant not found"));
+    void getRestaurantByIdInvalidIdTest() throws ResourceNotFoundException {
+        Long restaurantId = 999L;
+        when(restaurantService.getRestaurantById(anyLong()))
+                .thenThrow(new ResourceNotFoundException("Restaurant not found"));
 
-        NotFoundException thrown = assertThrows(NotFoundException.class, () -> {
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
             restaurantController.getRestaurantById(restaurantId);
         });
 
@@ -112,7 +112,20 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void getRestaurantImageSuccessTest() throws NotFoundException {
+    void getRestaurantByIdNotFoundTest() throws ResourceNotFoundException {
+        Long restaurantId = 1L;
+        when(restaurantService.getRestaurantById(anyLong())).thenThrow(new ResourceNotFoundException("Restaurant not found"));
+
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            restaurantController.getRestaurantById(restaurantId);
+        });
+
+        assertEquals("Restaurant not found", thrown.getMessage());
+        verify(restaurantService, times(1)).getRestaurantById(restaurantId);
+    }
+
+    @Test
+    void getRestaurantImageSuccessTest() throws ResourceNotFoundException {
         Long restaurantId = 1L;
         byte[] imageData = new byte[]{1, 2, 3};
 
@@ -128,11 +141,11 @@ class RestaurantControllerTest {
     }
 
     @Test
-    void getRestaurantImageNotFoundTest() throws NotFoundException {
+    void getRestaurantImageNotFoundTest() throws ResourceNotFoundException {
         Long restaurantId = 1L;
-        when(restaurantService.getRestaurantImage(anyLong())).thenThrow(new NotFoundException("Image not found"));
+        when(restaurantService.getRestaurantImage(anyLong())).thenThrow(new ResourceNotFoundException("Image not found"));
 
-        NotFoundException thrown = assertThrows(NotFoundException.class, () -> {
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
             restaurantController.getRestaurantImage(restaurantId);
         });
 
@@ -158,4 +171,37 @@ class RestaurantControllerTest {
         assertEquals("Test Restaurant", responseEntity.getBody().get(0).getRestaurantName());
         verify(restaurantService, times(1)).getALlRestaurantsByUserId(userId);
     }
+
+    @Test
+    void getAllRestaurantByUserIdEmptyListTest() {
+        Long userId = 1L;
+        when(restaurantService.getALlRestaurantsByUserId(anyLong())).thenReturn(new ArrayList<>());
+
+        ResponseEntity<List<RestaurantResponse>> responseEntity = restaurantController.getAllRestaurantByUserId(userId);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+        assertTrue(responseEntity.getBody().isEmpty());
+        verify(restaurantService, times(1)).getALlRestaurantsByUserId(userId);
+    }
+
+    @Test
+    void addRestaurantMissingFieldsTest() {
+        RestaurantRequest request = new RestaurantRequest();
+        request.setUserId(1L);
+
+        // Create a mock MultipartFile
+        MultipartFile image = mock(MultipartFile.class);
+
+        when(restaurantService.addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class)))
+                .thenThrow(new InvalidRequestException("Missing required fields"));
+
+        InvalidRequestException thrown = assertThrows(InvalidRequestException.class, () -> {
+            restaurantController.addRestaurant(request, image);
+        });
+
+        assertEquals("Missing required fields", thrown.getMessage());
+        verify(restaurantService, times(1)).addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class));
+    }
+
 }

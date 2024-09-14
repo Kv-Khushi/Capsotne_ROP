@@ -89,4 +89,55 @@ class AddressServiceTest {
         assertTrue(result);
         verify(addressRepository, times(1)).deleteById(addressId);
     }
+
+    @Test
+    void getAllAddressForUser_shouldReturnEmptyList_whenNoAddressesFound() {
+        // Given
+        Long userId = 1L;
+        when(addressRepository.findByUserId(userId)).thenReturn(Arrays.asList());
+
+        // When
+        List<Address> result = addressService.getAllAddressForUser(userId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(0, result.size());  // Asserting that the result is an empty list
+        verify(addressRepository, times(1)).findByUserId(userId);
+    }
+
+    @Test
+    void deleteAddress_shouldNotThrowError_whenAddressDoesNotExist() {
+        // Given
+        Long addressId = 100L; // Non-existent address ID
+        doNothing().when(addressRepository).deleteById(addressId);  // Simulate deletion of a non-existent address
+
+        // When
+        boolean result = addressService.deleteAddress(addressId);
+
+        // Then
+        assertTrue(result);  // Even though the address doesn't exist, it should return true
+        verify(addressRepository, times(1)).deleteById(addressId);  // Ensure deleteById was called
+    }
+
+    @Test
+    void getAllAddressForUser_shouldThrowException_whenRepositoryFails() {
+        // Given
+        Long userId = 1L;
+        when(addressRepository.findByUserId(userId)).thenThrow(new RuntimeException("Database error"));
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> addressService.getAllAddressForUser(userId));
+        verify(addressRepository, times(1)).findByUserId(userId);
+    }
+
+    @Test
+    void deleteAddress_shouldThrowException_whenRepositoryFails() {
+        // Given
+        Long addressId = 1L;
+        doThrow(new RuntimeException("Database error")).when(addressRepository).deleteById(addressId);
+
+        // When & Then
+        assertThrows(RuntimeException.class, () -> addressService.deleteAddress(addressId));
+        verify(addressRepository, times(1)).deleteById(addressId);
+    }
 }

@@ -84,10 +84,10 @@ public class GlobalExceptionHandler {
      * @param ex the NotFoundException to handle
      * @return an ErrorResponse with status 404 and exception message
      */
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorResponse handleNotFoundException(final NotFoundException ex) {
+    public ErrorResponse handleNotFoundException(final ResourceNotFoundException ex) {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
@@ -98,11 +98,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
     }
 
-    @ExceptionHandler(DuplicateItemException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateItemException(DuplicateItemException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-    }
 
 
     @ExceptionHandler(InvalidRequestException.class)
@@ -135,6 +130,12 @@ public class GlobalExceptionHandler {
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(AlreadyExistsException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
 }

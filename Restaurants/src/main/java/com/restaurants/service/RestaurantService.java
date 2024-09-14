@@ -2,7 +2,7 @@ package com.restaurants.service;
 import com.restaurants.dto.UserResponse;
 import com.restaurants.enums.UserRole;
 import com.restaurants.exception.InvalidRequestException;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.Restaurant;
@@ -61,7 +61,12 @@ public class RestaurantService {
 
         // Convert the restaurant request to an entity
         Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
+        logger.info("Converted restaurant entity: {}", restaurant);
 
+        if (restaurant == null) {
+            logger.error("Failed to convert restaurant request to entity, restaurant is null");
+            throw new RuntimeException("Restaurant conversion failed");
+        }
 
         try {
             if (image != null && !image.isEmpty()) {
@@ -72,6 +77,7 @@ public class RestaurantService {
                 }
                 // Process the image if validation passes
                 restaurant.setRestaurantImage(image.getBytes());
+                System.out.println(restaurant.getRestaurantImage());
             }
         } catch (InvalidRequestException e) {
             // Ensure not to catch the specific exception unless for logging
@@ -117,9 +123,9 @@ public class RestaurantService {
      *
      * @param restaurantId the ID of the restaurant to retrieve
      * @return the response object containing details of the restaurant
-     * @throws NotFoundException if the restaurant with the given ID is not found
+     * @throws ResourceNotFoundException if the restaurant with the given ID is not found
      */
-    public RestaurantResponse getRestaurantById(final Long restaurantId) throws NotFoundException {
+    public RestaurantResponse getRestaurantById(final Long restaurantId) throws ResourceNotFoundException {
         logger.info("Retrieving restaurant with ID: {}", restaurantId);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
@@ -129,7 +135,7 @@ public class RestaurantService {
             return response;
         } else {
             logger.error("Restaurant with ID: {} not found", restaurantId);
-            throw new NotFoundException(ConstantMessage.RESTAURANT_NOT_FOUND);
+            throw new ResourceNotFoundException(ConstantMessage.RESTAURANT_NOT_FOUND);
         }
     }
 
@@ -139,11 +145,11 @@ public class RestaurantService {
      *
      * @param restaurantId the ID of the restaurant to retrieve the image for
      * @return a byte array containing the image data
-     * @throws NotFoundException if the restaurant with the given ID is not found
+     * @throws ResourceNotFoundException if the restaurant with the given ID is not found
      */
 
 
-        public byte[] getRestaurantImage(final Long restaurantId)throws NotFoundException{
+        public byte[] getRestaurantImage(final Long restaurantId)throws ResourceNotFoundException {
             logger.info("Fetching image for restaurant with ID: {}", restaurantId);
             RestaurantResponse restaurant = getRestaurantById(restaurantId);
             return restaurant.getRestaurantImage();
@@ -171,5 +177,5 @@ public class RestaurantService {
     }
 
 
-
 }
+

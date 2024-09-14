@@ -2,7 +2,8 @@ package com.restaurants.service;
 
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.FoodCategory;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.AlreadyExistsException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.dto.FoodCategoryRequest;
 import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.repository.FoodCategoryRepository;
@@ -64,13 +65,13 @@ class FoodCategoryServiceTest {
     void deleteCategoryNotFoundTest() {
         when(repo.existsById(anyLong())).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> service.deleteFoodCategory(1L));
+        assertThrows(ResourceNotFoundException.class, () -> service.deleteFoodCategory(1L));
 
         verify(repo, times(1)).existsById(1L);
     }
 
     @Test
-    void deleteCategoryTest() throws NotFoundException {
+    void deleteCategoryTest() throws ResourceNotFoundException {
         when(repo.existsById(anyLong())).thenReturn(true);
 
         service.deleteFoodCategory(1L);
@@ -100,13 +101,13 @@ class FoodCategoryServiceTest {
     void updateCategoryNotFoundTest() {
         when(repo.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> service.updateCategoryName(1L, "Main Course"));
+        assertThrows(ResourceNotFoundException.class, () -> service.updateCategoryName(1L, "Main Course"));
 
         verify(repo, times(1)).findById(1L);
     }
 
     @Test
-    void updateCategoryTest() throws NotFoundException {
+    void updateCategoryTest() throws ResourceNotFoundException {
         FoodCategory category = new FoodCategory();
         category.setCategoryId(1L);
         category.setCategoryName("Appetizers");
@@ -121,6 +122,29 @@ class FoodCategoryServiceTest {
         assertEquals("Main Course", category.getCategoryName());
         verify(repo, times(1)).findById(1L);
         verify(repo, times(1)).save(category);
+    }
+
+
+    @Test
+    void addCategoryAlreadyExistsTest() {
+        FoodCategoryRequest req = new FoodCategoryRequest();
+        req.setRestaurantId(1L);
+        req.setCategoryName("Appetizers");
+
+        when(repo.existsByRestaurantIdAndCategoryNameIgnoreCase(anyLong(), any(String.class))).thenReturn(true);
+
+        assertThrows(AlreadyExistsException.class, () -> service.addFoodCategory(req));
+
+        verify(repo, times(1)).existsByRestaurantIdAndCategoryNameIgnoreCase(anyLong(), any(String.class));
+    }
+
+    @Test
+    void updateCategoryNameExceptionHandlingTest() {
+        when(repo.findById(anyLong())).thenThrow(new RuntimeException("Database error"));
+
+        assertThrows(RuntimeException.class, () -> service.updateCategoryName(1L, "Main Course"));
+
+        verify(repo, times(1)).findById(1L);
     }
 }
 

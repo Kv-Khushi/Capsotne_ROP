@@ -1,8 +1,10 @@
 package com.restaurants.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dto.RestaurantMenuRequest;
 import com.restaurants.dto.RestaurantMenuResponse;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.service.RestaurantMenuService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,5 +98,23 @@ class RestaurantMenuControllerTest {
 
         verify(restaurantMenuService, times(1)).updateRestaurantMenu(restaurantId, request);
     }
+
+    @Test
+    void getFoodItemImageTest() throws Exception {
+        Long foodItemId = 1L;
+        byte[] imageData = new byte[]{1, 2, 3};
+
+        when(restaurantMenuService.getFoodItemImage(anyLong())).thenReturn(imageData);
+
+        mockMvc.perform(get("/foodItems/{foodItemId}/image", foodItemId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.IMAGE_JPEG))
+                .andExpect(content().bytes(imageData));
+
+        verify(restaurantMenuService, times(1)).getFoodItemImage(foodItemId);
+    }
+
+
+
 
 }

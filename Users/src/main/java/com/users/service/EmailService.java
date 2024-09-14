@@ -8,13 +8,26 @@ import org.springframework.stereotype.Service;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 
+/**
+ * Service for sending emails.
+ */
 @Service
 public class EmailService {
 
+    /**
+     * JavaMailSender used to send emails.
+     */
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendMail(String from, List<String> to, String text) {
+    /**
+     * Sends an email to a list of recipients.
+     *
+     * @param from the email address of the sender
+     * @param to the list of recipient email addresses
+     * @param text the body of the email
+     */
+    public void sendMail(final String from, final List<String> to, final String text) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);

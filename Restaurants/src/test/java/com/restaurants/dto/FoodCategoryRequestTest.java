@@ -1,7 +1,6 @@
-package com.restaurants.indto;
+package com.restaurants.dto;
 
 
-import com.restaurants.dto.FoodCategoryRequest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

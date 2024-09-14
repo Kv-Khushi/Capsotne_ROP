@@ -28,7 +28,7 @@ class DtoConversionTest {
         request.setUserId(1L);
         request.setRestaurantName("Test Restaurant");
         request.setRestaurantAddress("123 Test St");
-        request.setContactNumber(1234567890L);
+        request.setContactNumber("6734567890");
         request.setRestaurantDescription("Test Description");
         request.setOpeningHour("10");
 

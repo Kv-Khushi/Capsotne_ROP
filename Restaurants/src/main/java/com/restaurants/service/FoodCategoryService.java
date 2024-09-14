@@ -3,8 +3,8 @@ package com.restaurants.service;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.FoodCategory;
-import com.restaurants.exception.DuplicateCategoryException;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.AlreadyExistsException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.dto.FoodCategoryRequest;
 import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.repository.FoodCategoryRepository;
@@ -51,11 +51,7 @@ public class FoodCategoryService {
             logger.error("Duplicate category: {} already exists for restaurant ID: {}",
                     foodCategoryRequest.getCategoryName(),
                     foodCategoryRequest.getRestaurantId());
-            throw new DuplicateCategoryException(
-                    String.format("Category '%s' already exists for restaurant ID: %d",
-                            foodCategoryRequest.getCategoryName(),
-                            foodCategoryRequest.getRestaurantId())
-            );
+           throw new AlreadyExistsException(ConstantMessage.CATEGORY_ALREADY_EXISTS);
         }
 
         FoodCategory foodCategory = dtoConversion.convertToFoodCategoryEntity(foodCategoryRequest);
@@ -68,13 +64,13 @@ public class FoodCategoryService {
      * Deletes a food category by its ID.
      *
      * @param categoryId the ID of the category to delete
-     * @throws NotFoundException if the category with the given ID is not found
+     * @throws ResourceNotFoundException if the category with the given ID is not found
      */
-    public void deleteFoodCategory(final Long categoryId) throws NotFoundException {
+    public void deleteFoodCategory(final Long categoryId) throws ResourceNotFoundException {
         logger.info("Attempting to delete food category with ID: {}", categoryId);
         if (!foodCategoryRepository.existsById(categoryId)) {
             logger.error("Food category with ID: {} not found", categoryId);
-            throw new NotFoundException(ConstantMessage.CATEGORY_NOT_FOUND);
+            throw new ResourceNotFoundException(ConstantMessage.CATEGORY_NOT_FOUND);
         }
         foodCategoryRepository.deleteById(categoryId);
         logger.info("Food category with ID: {} deleted successfully", categoryId);
@@ -105,16 +101,16 @@ public class FoodCategoryService {
      * @param categoryId the ID of the category to update
      * @param newCategoryName the new name to set for the category
      * @return the response object containing updated category details
-     * @throws NotFoundException if the category with the given ID is not found
+     * @throws ResourceNotFoundException if the category with the given ID is not found
      */
 
-    public FoodCategoryResponse updateCategoryName(final Long categoryId, final String newCategoryName) throws NotFoundException {
+    public FoodCategoryResponse updateCategoryName(final Long categoryId, final String newCategoryName) throws ResourceNotFoundException {
         logger.info("Updating category name for category ID: {} to new name: {}", categoryId, newCategoryName);
 
         FoodCategory existingCategory = foodCategoryRepository.findById(categoryId)
                 .orElseThrow(() -> {
                     logger.error("Food category with ID: {} not found", categoryId);
-                    return new NotFoundException(ConstantMessage.CATEGORY_NOT_FOUND);
+                    return new ResourceNotFoundException(ConstantMessage.CATEGORY_NOT_FOUND);
                 });
 
         existingCategory.setCategoryName(newCategoryName);

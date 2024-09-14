@@ -8,6 +8,9 @@ package com.users.constant;
  */
 public final class ConstantMessage {
 
+ /**
+  * The sender email address used in the system.
+  */
  public static final String SENDER = "vyaskhushi2407@gmail.com";
 
  /**
@@ -38,8 +41,20 @@ public final class ConstantMessage {
   */
  public static final String USER_ADD_SUCCESS = "User added successfully";
 
+
+ /**
+  * The message to be used when an email is successfully sent.
+  */
  public static final String MAIL_SENT_SUCCESSFULLY = "Email sent successfully";
 
+
+ /**
+  * The message to be used when an address is successfully added.
+  */
+ public static final String ADDRESS_ADD_SUCCESS = "Address added successfully";
+
+
+ public static final String ADDRESS_ALREADY_EXISTS = "Address already exists";
 
 }
 

@@ -113,7 +113,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<List<ErrorResponse>> handleValidationExceptions(Exception ex) {
+    public ResponseEntity<List<ErrorResponse>> handleValidationExceptions(final Exception ex) {
       // Log exception details
         List<ErrorResponse> errors = new ArrayList<>();
 

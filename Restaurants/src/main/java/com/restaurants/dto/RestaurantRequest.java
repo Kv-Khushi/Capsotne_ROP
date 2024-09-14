@@ -3,9 +3,7 @@ package com.restaurants.dto;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 /**
  * Data transfer object for creating or updating a restaurant.
@@ -16,7 +14,7 @@ public class RestaurantRequest {
     /**
      * The ID of the user associated with the restaurant.
      */
-    @NotNull
+    @NotNull(message = "User ID cannot be null")
     private Long userId;
 
     /**
@@ -24,7 +22,8 @@ public class RestaurantRequest {
      * Must be between 1 and 100 characters in length.
      */
     @NotBlank(message = "Restaurant Name can not be blank")
-    @Size(min = 1, max = MAX_RESTAURANT_NAME_LENGTH)
+    @Size(min = 5, max = MAX_RESTAURANT_NAME_LENGTH)
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Restaurant Name must not contain numeric values")
     private String restaurantName;
 
     /**
@@ -32,14 +31,19 @@ public class RestaurantRequest {
      * Must be between 1 and 255 characters in length.
      */
     @NotBlank(message = "Restaurant Address can not be blank")
-    @Size(min = 1, max = MAX_RESTAURANT_ADDRESS_LENGTH)
+    @Size(min = 5, max = MAX_RESTAURANT_ADDRESS_LENGTH)
     private String restaurantAddress;
 
     /**
      * The contact number of the restaurant.
      */
-    @NotNull
-    private Long contactNumber;
+    @NotNull(message = "Contact Number cannot be null")
+    @Positive(message = "Contact Number must be a positive number")
+    @Digits(integer = 10, fraction = 0, message = "Contact Number must be a 10-digit number")
+    @Min(value = 1000000000L, message = "Phone number should be exactly 10 digits")
+    @Max(value = 9999999999L, message = "Phone number should be exactly 10 digits")
+    @Pattern(regexp = "^[6789][0-9]{9}$", message = "Contact Number must start with 6, 7, 8, or 9 and be 10 digits long")
+    private String contactNumber;
 
     /**
      * A description of the restaurant.
@@ -55,6 +59,6 @@ public class RestaurantRequest {
     private MultipartFile restaurantImage;
 
     // Define constants for magic numbers
-    private static final int MAX_RESTAURANT_NAME_LENGTH = 100;
-    private static final int MAX_RESTAURANT_ADDRESS_LENGTH = 255;
+    private static final int MAX_RESTAURANT_NAME_LENGTH = 20;
+    private static final int MAX_RESTAURANT_ADDRESS_LENGTH = 15;
 }

@@ -1,6 +1,5 @@
-package com.restaurants.indto;
+package com.restaurants.dto;
 
-import com.restaurants.dto.RestaurantResponse;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +25,7 @@ class RestaurantResponseTest {
         response.setUserId(2L);
         response.setRestaurantName("The Bistro");
         response.setRestaurantAddress("123 Main St");
-        response.setContactNumber(1234567890L);
+        response.setContactNumber("1234567890");
         response.setRestaurantDescription("A cozy place with a great menu");
         response.setOpeningHour("9 AM - 10 PM");
 
@@ -37,7 +36,7 @@ class RestaurantResponseTest {
         assertEquals(2L, response.getUserId());
         assertEquals("The Bistro", response.getRestaurantName());
         assertEquals("123 Main St", response.getRestaurantAddress());
-        assertEquals(1234567890L, response.getContactNumber());
+        assertEquals("1234567890", response.getContactNumber());
         assertEquals("A cozy place with a great menu", response.getRestaurantDescription());
         assertEquals("9 AM - 10 PM", response.getOpeningHour());
         assertArrayEquals(imageBytes, response.getRestaurantImage());
@@ -50,7 +49,7 @@ class RestaurantResponseTest {
         response.setUserId(3L);
         response.setRestaurantName("Cafe Delight");
         response.setRestaurantAddress("456 Elm St");
-        response.setContactNumber(9876543210L);
+        response.setContactNumber("9876543210");
         response.setRestaurantDescription("Great coffee and pastries");
         response.setOpeningHour("8 AM - 8 PM");
 
@@ -61,7 +60,7 @@ class RestaurantResponseTest {
         assertEquals(3L, response.getUserId());
         assertEquals("Cafe Delight", response.getRestaurantName());
         assertEquals("456 Elm St", response.getRestaurantAddress());
-        assertEquals(9876543210L, response.getContactNumber());
+        assertEquals("9876543210", response.getContactNumber());
         assertEquals("Great coffee and pastries", response.getRestaurantDescription());
         assertEquals("8 AM - 8 PM", response.getOpeningHour());
         assertArrayEquals(imageBytes, response.getRestaurantImage());
@@ -90,7 +89,7 @@ class RestaurantResponseTest {
         response1.setUserId(2L);
         response1.setRestaurantName("The Bistro");
         response1.setRestaurantAddress("123 Main St");
-        response1.setContactNumber(1234567890L);
+        response1.setContactNumber("1234567890");
         response1.setRestaurantDescription("A cozy place with a great menu");
         response1.setOpeningHour("9 AM - 10 PM");
 
@@ -102,7 +101,7 @@ class RestaurantResponseTest {
         response2.setUserId(2L);
         response2.setRestaurantName("The Bistro");
         response2.setRestaurantAddress("123 Main St");
-        response2.setContactNumber(1234567890L);
+        response2.setContactNumber("1234567890");
         response2.setRestaurantDescription("A cozy place with a great menu");
         response2.setOpeningHour("9 AM - 10 PM");
 
@@ -120,7 +119,7 @@ class RestaurantResponseTest {
         response.setUserId(3L);
         response.setRestaurantName("Cafe Delight");
         response.setRestaurantAddress("456 Elm St");
-        response.setContactNumber(9876543210L);
+        response.setContactNumber("9876543210");
         response.setRestaurantDescription("Great coffee and pastries");
         response.setOpeningHour("8 AM - 8 PM");
 
@@ -131,3 +130,4 @@ class RestaurantResponseTest {
         assertTrue(response.toString().contains("RestaurantResponse"));
     }
 }
+

@@ -1,5 +1,7 @@
 package com.users.controller;
 
+import com.users.constant.ConstantMessage;
+import com.users.dto.CommonResponse;
 import com.users.entities.Address;
 import com.users.dto.AddressRequest;
 import com.users.dto.AddressResponse;
@@ -47,13 +49,13 @@ public class AddressController {
      *         or an {@link HttpStatus#INTERNAL_SERVER_ERROR} status if creation fails
      */
     @PostMapping("/addAddress")
-    public ResponseEntity<AddressResponse> addAddress(final @Valid @RequestBody AddressRequest addressRequest) {
+    public ResponseEntity<CommonResponse> addAddress(final @Valid @RequestBody AddressRequest addressRequest) {
 
         logger.info("Received request to add address for userId: {}", addressRequest.getUserId());
-
-        AddressResponse newAddress = addressService.addAddress(addressRequest);
+        addressService.addAddress(addressRequest);
+        CommonResponse response = new CommonResponse(ConstantMessage.ADDRESS_ADD_SUCCESS);
         logger.info("Successfully added address for userId: {}", addressRequest.getUserId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**

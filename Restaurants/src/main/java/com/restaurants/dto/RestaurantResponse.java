@@ -28,7 +28,7 @@ private Long restaurantId;
     /**
      * The contact number of the restaurant.
      */
-    private Long contactNumber;
+    private String contactNumber;
 
     /**
      * A description of the restaurant.

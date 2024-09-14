@@ -32,6 +32,7 @@ public class UserRequest {
     @Digits(integer = 10, fraction = 0, message = "Phone number should be exactly 10 digits")
     @Min(value = 1000000000L, message = "Phone number should be exactly 10 digits")
     @Max(value = 9999999999L, message = "Phone number should be exactly 10 digits")
+
     private Long phoneNumber;
 
     /**

@@ -41,7 +41,7 @@ public final class DtoConversion {
      * @return a {@link RestaurantResponse} containing restaurant details
      */
     public static RestaurantResponse convertToRestaurantResponse(final Restaurant restaurant) {
-        final RestaurantResponse restaurantResponse = new RestaurantResponse();
+        RestaurantResponse restaurantResponse = new RestaurantResponse();
         restaurantResponse.setRestaurantId(restaurant.getRestaurantId());
         restaurantResponse.setUserId(restaurant.getUserId());
         restaurantResponse.setRestaurantName(restaurant.getRestaurantName());

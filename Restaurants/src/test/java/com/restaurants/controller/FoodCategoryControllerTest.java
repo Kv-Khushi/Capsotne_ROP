@@ -2,7 +2,7 @@ package com.restaurants.controller;
 
 import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.service.FoodCategoryService;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +52,7 @@ class FoodCategoryControllerTest {
 
     @Test
     void deleteCategoryNotFoundTest() throws Exception {
-        doThrow(new NotFoundException(ConstantMessage.CATEGORY_NOT_FOUND)).when(service).deleteFoodCategory(anyLong());
+        doThrow(new ResourceNotFoundException(ConstantMessage.CATEGORY_NOT_FOUND)).when(service).deleteFoodCategory(anyLong());
 
         mockMvc.perform(delete("/foodCategories/delete/1"))
                 .andExpect(status().isNotFound())

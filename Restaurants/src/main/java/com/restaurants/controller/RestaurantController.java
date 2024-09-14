@@ -2,7 +2,7 @@ package com.restaurants.controller;
 
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dto.SuccessResponse;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.dto.RestaurantRequest;
 import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.service.RestaurantService;
@@ -71,10 +71,10 @@ public final class RestaurantController {
   *
   * @param restaurantId the ID of the restaurant to retrieve
   * @return the restaurant details
-  * @throws NotFoundException if the restaurant is not found
+  * @throws ResourceNotFoundException if the restaurant is not found
   */
  @GetMapping("/getRestaurantById/{restaurantId}")
- public RestaurantResponse getRestaurantById(@PathVariable final Long restaurantId) throws NotFoundException {
+ public RestaurantResponse getRestaurantById(@PathVariable final Long restaurantId) throws ResourceNotFoundException {
   logger.info("Request to retrieve restaurant with ID: {}", restaurantId);
 
   RestaurantResponse restaurantResponse = restaurantService.getRestaurantById(restaurantId);
@@ -87,11 +87,11 @@ public final class RestaurantController {
   *
   * @param restaurantId the ID of the restaurant
   * @return the image data of the restaurant
-  * @throws NotFoundException if the restaurant is not found
+  * @throws ResourceNotFoundException if the restaurant is not found
   */
 
  @GetMapping("/{restaurantId}/image")
- public ResponseEntity<byte[]> getRestaurantImage(@PathVariable final Long restaurantId) throws NotFoundException {
+ public ResponseEntity<byte[]> getRestaurantImage(@PathVariable final Long restaurantId) throws ResourceNotFoundException {
   logger.info("Retrieving image for restaurant with ID: {}", restaurantId);
   byte[] imageData = restaurantService.getRestaurantImage(restaurantId);
   return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageData);

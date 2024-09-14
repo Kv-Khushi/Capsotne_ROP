@@ -56,7 +56,8 @@ public class User {
      * The wallet amount associated with the user.
      * Initialized with a default value from {@link ConstantMessage#WALLET_AMOUNT}.
      */
-    private Double wallet = ConstantMessage.WALLET_AMOUNT;
+//    private Double wallet = ConstantMessage.WALLET_AMOUNT;
+    private Double wallet;
 
     /**
      * The role of the user in the system.

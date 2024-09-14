@@ -2,7 +2,7 @@ package com.restaurants.service;
 
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.RestaurantMenu;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.dto.RestaurantMenuRequest;
 import com.restaurants.dto.RestaurantMenuResponse;
 import com.restaurants.repository.RestaurantMenuRepository;
@@ -117,7 +117,7 @@ class RestaurantMenuServiceTest {
         Long itemId = 1L;
         when(restaurantMenuRepository.existsById(itemId)).thenReturn(false);
 
-        assertThrows(NotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             restaurantMenuService.deleteFoodItem(itemId);
         });
 
@@ -152,7 +152,7 @@ class RestaurantMenuServiceTest {
         Long restaurantId = 1L;
         when(restaurantMenuRepository.findByRestaurantId(restaurantId)).thenReturn(new ArrayList<>());
 
-        assertThrows(NotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             restaurantMenuService.getFoodItemsByRestaurantId(restaurantId);
         });
 
@@ -166,7 +166,7 @@ class RestaurantMenuServiceTest {
 
         when(restaurantMenuRepository.findById(restaurantId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             restaurantMenuService.updateRestaurantMenu(restaurantId, request);
         });
 
@@ -174,5 +174,65 @@ class RestaurantMenuServiceTest {
         verify(restaurantMenuRepository, never()).save(any(RestaurantMenu.class));
     }
 
+    @Test
+    void getFoodItemByIdSuccessTest() throws Exception {
+        Long foodItemId = 1L;
+        RestaurantMenu menu = new RestaurantMenu();
+        menu.setItemId(foodItemId);
+        menu.setItemName("Pizza");
+
+        when(restaurantMenuRepository.findById(foodItemId)).thenReturn(Optional.of(menu));
+        RestaurantMenuResponse response = restaurantMenuService.getFoodItemById(foodItemId);
+
+        assertNotNull(response);
+        assertEquals(foodItemId, response.getItemId());
+        assertEquals("Pizza", response.getItemName());
+        verify(restaurantMenuRepository, times(1)).findById(foodItemId);
+    }
+
+    @Test
+    void findByCategoryIdSuccessTest() throws Exception {
+        Long categoryId = 1L;
+        List<RestaurantMenu> menus = new ArrayList<>();
+        RestaurantMenu menu = new RestaurantMenu();
+        menu.setItemId(1L);
+        menu.setItemName("Pizza");
+        menus.add(menu);
+
+        when(restaurantMenuRepository.findByCategoryId(categoryId)).thenReturn(menus);
+        when(dtoConversion.convertToRestaurantMenuResponse(menu)).thenReturn(new RestaurantMenuResponse());
+
+        List<RestaurantMenuResponse> responses = restaurantMenuService.findByCategoryId(categoryId);
+
+        assertNotNull(responses);
+        assertEquals(1, responses.size());
+        verify(restaurantMenuRepository, times(1)).findByCategoryId(categoryId);
+        verify(dtoConversion, times(1)).convertToRestaurantMenuResponse(menu);
+    }
+
+    @Test
+    void findByCategoryIdNotFoundTest() throws Exception {
+        Long categoryId = 1L;
+        when(restaurantMenuRepository.findByCategoryId(categoryId)).thenReturn(new ArrayList<>());
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            restaurantMenuService.findByCategoryId(categoryId);
+        });
+
+        verify(restaurantMenuRepository, times(1)).findByCategoryId(categoryId);
+    }
+
+    @Test
+    void getFoodItemsByRestaurantIdExceptionTest() throws Exception {
+        Long restaurantId = 1L;
+        when(restaurantMenuRepository.findByRestaurantId(restaurantId)).thenThrow(new RuntimeException("Database error"));
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            restaurantMenuService.getFoodItemsByRestaurantId(restaurantId);
+        });
+
+        assertEquals("Database error", thrown.getMessage());
+        verify(restaurantMenuRepository, times(1)).findByRestaurantId(restaurantId);
+    }
 
 }

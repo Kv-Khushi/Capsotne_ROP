@@ -41,7 +41,7 @@ class RestaurantTest {
     @Test
     void testSetGetContactNumber() {
         Restaurant restaurant = new Restaurant();
-        Long contactNumber = 1234567890L;
+        String contactNumber =" 1234567890";
         restaurant.setContactNumber(contactNumber);
         assertEquals(contactNumber, restaurant.getContactNumber(), "Contact number should match");
     }

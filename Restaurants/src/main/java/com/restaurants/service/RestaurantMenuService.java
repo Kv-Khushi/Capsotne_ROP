@@ -3,8 +3,8 @@ package com.restaurants.service;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dtoconversion.DtoConversion;
 import com.restaurants.entities.RestaurantMenu;
-import com.restaurants.exception.DuplicateItemException;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.AlreadyExistsException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.dto.RestaurantMenuRequest;
 import com.restaurants.dto.RestaurantMenuResponse;
 import com.restaurants.repository.RestaurantMenuRepository;
@@ -56,11 +56,7 @@ public class RestaurantMenuService {
             logger.error("Duplicate item: {} already exists for restaurant ID: {}",
                     restaurantMenuRequest.getItemName(),
                     restaurantMenuRequest.getRestaurantId());
-            throw new DuplicateItemException(
-                    String.format("Item '%s' already exists for restaurant ID: %d",
-                            restaurantMenuRequest.getItemName(),
-                            restaurantMenuRequest.getRestaurantId())
-            );
+            throw new AlreadyExistsException(ConstantMessage.FOOD_ITEM_ALREADY_EXISTS);
         }
 
         RestaurantMenu restaurantMenu = dtoConversion.convertToRestaurantMenuEntity(restaurantMenuRequest);
@@ -86,14 +82,14 @@ public class RestaurantMenuService {
      * Deletes a food item by its ID.
      *
      * @param itemId the ID of the food item to delete
-     * @throws NotFoundException if the food item with the given ID is not found
+     * @throws ResourceNotFoundException if the food item with the given ID is not found
      */
-    public void deleteFoodItem(final Long itemId) throws NotFoundException {
+    public void deleteFoodItem(final Long itemId) throws ResourceNotFoundException {
         logger.info("Attempting to delete food item with ID: {}", itemId);
 
         if (!restaurantMenuRepository.existsById(itemId)) {
             logger.error("Food item with ID: {} not found", itemId);
-            throw new NotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
+            throw new ResourceNotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
         }
         restaurantMenuRepository.deleteById(itemId);
         logger.info("Food item with ID: {} deleted successfully", itemId);
@@ -104,16 +100,16 @@ public class RestaurantMenuService {
      *
      * @param restaurantId the ID of the restaurant to get food items for
      * @return a list of response objects containing details of food items
-     * @throws NotFoundException if no food items are found for the given restaurant ID
+     * @throws ResourceNotFoundException if no food items are found for the given restaurant ID
      */
-    public List<RestaurantMenuResponse> getFoodItemsByRestaurantId(final Long restaurantId) throws NotFoundException {
+    public List<RestaurantMenuResponse> getFoodItemsByRestaurantId(final Long restaurantId) throws ResourceNotFoundException {
         logger.info("Retrieving all food items for restaurant ID: {}", restaurantId);
 
         List<RestaurantMenu> menuList = restaurantMenuRepository.findByRestaurantId(restaurantId);
 
         if (menuList.isEmpty()) {
             logger.error("No food items found for restaurant ID: {}", restaurantId);
-            throw new NotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
+            throw new ResourceNotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
         }
 
         List<RestaurantMenuResponse> responseList = new ArrayList<>();
@@ -132,16 +128,16 @@ public class RestaurantMenuService {
      * @param restaurantId the ID of the restaurant to update the menu item for
      * @param menuRequest the request object containing updated details of the food item
      * @return the response object containing updated details of the food item
-     * @throws NotFoundException if the food item with the given ID is not found
+     * @throws ResourceNotFoundException if the food item with the given ID is not found
      */
     public RestaurantMenuResponse updateRestaurantMenu(final Long restaurantId,
-                                                       final RestaurantMenuRequest menuRequest) throws NotFoundException {
+                                                       final RestaurantMenuRequest menuRequest) throws ResourceNotFoundException {
         logger.info("Updating food item for restaurant ID: {} with details: {}", restaurantId, menuRequest);
 
         RestaurantMenu existingRestaurantMenu = restaurantMenuRepository.findById(restaurantId)
                 .orElseThrow(() -> {
                     logger.error("Food item with ID: {} not found", restaurantId);
-                    return new NotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
+                    return new ResourceNotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
                 });
 
         existingRestaurantMenu.setItemName(menuRequest.getItemName());
@@ -156,9 +152,9 @@ public class RestaurantMenuService {
     }
 
 
-    public RestaurantMenuResponse getFoodItemById(Long foodItemId) throws NotFoundException {
+    public RestaurantMenuResponse getFoodItemById(Long foodItemId) throws ResourceNotFoundException {
         RestaurantMenu menuItem = restaurantMenuRepository.findById(foodItemId)
-                .orElseThrow(() -> new NotFoundException("Food item not found with id: " + foodItemId));
+                .orElseThrow(() -> new ResourceNotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND));
 
         // Manually map fields
         RestaurantMenuResponse response = new RestaurantMenuResponse();
@@ -174,21 +170,21 @@ public class RestaurantMenuService {
         return response;
     }
 
-    public byte[] getFoodItemImage(final Long foodItemId) throws NotFoundException {
+    public byte[] getFoodItemImage(final Long foodItemId) throws ResourceNotFoundException {
         logger.info("Fetching image for food item with ID: {}", foodItemId);
         RestaurantMenuResponse foodItem = getFoodItemById(foodItemId);
         return foodItem.getImageUrl(); // Assuming this returns byte[]
     }
 
     @Transactional
-    public List<RestaurantMenuResponse> findByCategoryId(final Long categoryId) throws NotFoundException {
+    public List<RestaurantMenuResponse> findByCategoryId(final Long categoryId) throws ResourceNotFoundException {
         logger.info("Retrieving all food items for restaurant ID: {}", categoryId);
 
         List<RestaurantMenu> menuList = restaurantMenuRepository.findByCategoryId(categoryId);
 
         if (menuList.isEmpty()) {
             logger.error("No food items found for restaurant ID: {}",categoryId);
-            throw new NotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
+            throw new ResourceNotFoundException(ConstantMessage.FOOD_ITEM_NOT_FOUND);
         }
 
         List<RestaurantMenuResponse> responseList = new ArrayList<>();

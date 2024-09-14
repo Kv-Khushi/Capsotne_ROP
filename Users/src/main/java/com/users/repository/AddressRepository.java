@@ -25,4 +25,11 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
    */
   List<Address> findByUserId(Long userId);
 
+  boolean existsByUserIdAndStreetAndCityAndStateAndZipCode(
+          Long userId,
+          String street,
+          String city,
+          String state,
+          Integer zipCode
+  );
 }

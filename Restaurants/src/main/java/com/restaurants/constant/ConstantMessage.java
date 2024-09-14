@@ -40,4 +40,8 @@ public final class ConstantMessage {
 
     public static final String INVALID_IMAGE_FORMAT = "Only JPG and PNG image formats are allowed.";
 
+    public static final String CATEGORY_ALREADY_EXISTS = "Category already exists";
+
+    public static final String FOOD_ITEM_ALREADY_EXISTS = "Food Item already exists";
+
 }

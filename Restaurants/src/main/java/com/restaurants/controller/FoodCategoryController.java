@@ -3,14 +3,13 @@ package com.restaurants.controller;
 import com.restaurants.dto.FoodCategoryRequest;
 import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.dto.SuccessResponse;
-import com.restaurants.exception.DuplicateCategoryException;
+
 import com.restaurants.service.FoodCategoryService;
-import com.restaurants.exception.NotFoundException;
+import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.constant.ConstantMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,14 +38,9 @@ public final class FoodCategoryController {
 
     @PostMapping("/add")
     public ResponseEntity<SuccessResponse> addFoodCategory(@Valid @RequestBody FoodCategoryRequest foodCategoryRequest) {
-        try {
-            foodCategoryService.addFoodCategory(foodCategoryRequest);
-            logger.info("Food category added successfully");
-            return ResponseEntity.ok(new SuccessResponse(ConstantMessage.CATEGORY_ADD_SUCCESS));
-        } catch (DuplicateCategoryException e) {
-            logger.error("Error adding food category: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new SuccessResponse(e.getMessage()));
-        }
+        foodCategoryService.addFoodCategory(foodCategoryRequest);
+        logger.info("Food category added successfully");
+        return ResponseEntity.ok(new SuccessResponse(ConstantMessage.CATEGORY_ADD_SUCCESS));
     }
 
     /**
@@ -58,15 +52,9 @@ public final class FoodCategoryController {
     @DeleteMapping("/delete/{categoryId}")
     public ResponseEntity<String> deleteFoodCategory(@PathVariable final Long categoryId) {
         logger.info("Request to delete food category with ID: {}", categoryId);
-
-        try {
-            foodCategoryService.deleteFoodCategory(categoryId);
-            logger.info("Food category with ID: {} deleted successfully", categoryId);
-            return ResponseEntity.ok("Food category deleted successfully.");
-        } catch (NotFoundException e) {
-            logger.error("Error deleting food category with ID: {} - {}", categoryId, e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ConstantMessage.CATEGORY_NOT_FOUND);
-        }
+        foodCategoryService.deleteFoodCategory(categoryId);
+        logger.info("Food category with ID: {} deleted successfully", categoryId);
+        return ResponseEntity.ok("Food category deleted successfully.");
     }
 
     /**
@@ -92,12 +80,12 @@ public final class FoodCategoryController {
      * @param categoryId      the ID of the food category to update
      * @param newCategoryName the new name for the food category
      * @return a response entity with the updated food category
-     * @throws NotFoundException if the food category is not found
+     * @throws ResourceNotFoundException if the food category is not found
      */
     @PutMapping("/{categoryId}/name")
     public ResponseEntity<FoodCategoryResponse> updateCategoryName(
             @PathVariable final Long categoryId,
-            @RequestBody final String newCategoryName) throws NotFoundException {
+            @RequestBody final String newCategoryName) throws ResourceNotFoundException {
         logger.info("Request to update food category name for ID: {} to {}", categoryId, newCategoryName);
 
         FoodCategoryResponse updatedCategory = foodCategoryService.updateCategoryName(categoryId, newCategoryName);

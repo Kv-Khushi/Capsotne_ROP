@@ -115,15 +115,32 @@ public class UserController {
     }
 
 
+    /**
+     * Updates the wallet balance of a user.
+     * This method is not designed to be overridden.
+     *
+     * @param userId     the ID of the user whose wallet balance needs to be updated
+     * @param newBalance the new balance to be set
+     * @return a {@link ResponseEntity} containing a success message
+     */
+
     @PutMapping("/{userId}/wallet")
-    public ResponseEntity<String> updateWalletBalance(@PathVariable Long userId, @RequestBody Double newBalance) {
+    public ResponseEntity<String> updateWalletBalance(@PathVariable final Long userId, @RequestBody final Double newBalance) {
         userService.updateWalletBalance(userId, newBalance);  // Call the service method
         return ResponseEntity.ok("Wallet balance updated successfully.");
     }
 
 
+
+    /**
+     * Sends an email with the provided text.
+     * This method is not designed to be overridden.
+     *
+     * @param text the text to be sent in the email
+     * @return a {@link ResponseEntity} containing a success message
+     */
     @PostMapping("/send")
-    public ResponseEntity<?> sendEmail(@RequestParam String text) {
+    public ResponseEntity<?> sendEmail(@RequestParam final String text) {
         userService.sendMail(text);
         return new ResponseEntity<>(ConstantMessage.MAIL_SENT_SUCCESSFULLY, HttpStatus.OK);
     }

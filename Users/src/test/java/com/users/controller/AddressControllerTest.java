@@ -1,8 +1,10 @@
 package com.users.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.users.constant.ConstantMessage;
 import com.users.dto.AddressRequest;
 import com.users.dto.AddressResponse;
+import com.users.dto.CommonResponse;
 import com.users.entities.Address;
 import com.users.service.AddressService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,7 +44,7 @@ public class AddressControllerTest {
     }
 
     @Test
-    void addAddress_shouldReturnCreatedAddressResponse() throws Exception {
+    void addAddress_shouldReturnCreatedCommonResponse() throws Exception {
         // Given
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setStreet("123 Main St");
@@ -49,16 +54,17 @@ public class AddressControllerTest {
         addressRequest.setCountry("India");
         addressRequest.setUserId(1L);
 
-        AddressResponse addressResponse = new AddressResponse();
-        when(addressService.addAddress(any(AddressRequest.class))).thenReturn(addressResponse);
+        CommonResponse commonResponse = new CommonResponse(ConstantMessage.ADDRESS_ADD_SUCCESS);
 
-        // When & Then
+        // When
         mockMvc.perform(MockMvcRequestBuilders.post("/address/addAddress")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(addressRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(content().json(objectMapper.writeValueAsString(addressResponse)));
+                .andExpect(content().json(objectMapper.writeValueAsString(commonResponse)));
     }
+
+
 
 
     @Test
@@ -98,6 +104,8 @@ public class AddressControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(addresses)));
     }
+
+
 
 }
 

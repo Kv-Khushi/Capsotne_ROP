@@ -1,15 +1,18 @@
 package com.users.service;
 
+import com.users.constant.ConstantMessage;
 import com.users.dtoconversion.DtoConversion;
 import com.users.entities.Address;
 import com.users.dto.AddressRequest;
 import com.users.dto.AddressResponse;
+import com.users.exception.AlreadyExists;
 import com.users.repository.AddressRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 /**
@@ -66,6 +69,18 @@ public class AddressService {
     public AddressResponse addAddress(final AddressRequest addressRequest){
         LOGGER.info("Adding a new address for userId: {}", addressRequest.getUserId());
 
+        boolean addressExists = addressRepository.existsByUserIdAndStreetAndCityAndStateAndZipCode(
+                addressRequest.getUserId(),
+                addressRequest.getStreet(),
+                addressRequest.getCity(),
+                addressRequest.getState(),
+                addressRequest.getZipCode()
+        );
+
+        if (addressExists) {
+            LOGGER.warn("Address already exists for userId: {}", addressRequest.getUserId());
+            throw new AlreadyExists(ConstantMessage.ADDRESS_ALREADY_EXISTS);
+        }
         Address address = DtoConversion.convertAddressRequestToAddress(addressRequest);
         Address savedAddress = addressRepository.save(address);
         AddressResponse addressResponse = DtoConversion.addressToAddressResponse(savedAddress);
