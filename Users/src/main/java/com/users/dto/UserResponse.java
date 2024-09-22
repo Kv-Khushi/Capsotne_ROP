@@ -49,6 +49,5 @@ public class UserResponse {
     /**
      * The role of the user.
      */
-
     private UserRole userRole;
 }

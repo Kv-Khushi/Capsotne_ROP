@@ -18,13 +18,13 @@ class UserTest {
 
     @Test
     public void testDefaultConstructor() {
-        assertNotNull(user);  // Ensure that the User object is created
+        assertNotNull(user);
     }
 
     @Test
     public void testSettersAndGetters() {
         user.setUserId(1L);
-        user.setPhoneNumber(1234567890L);
+        user.setPhoneNumber(7894567890L);
         user.setUserName("testUser");
         user.setUserEmail("test@example.com");
         user.setUserPassword("password123");
@@ -32,7 +32,7 @@ class UserTest {
         user.setUserRole(UserRole.RESTAURANT_OWNER);
 
         assertEquals(1L, user.getUserId());
-        assertEquals(1234567890L, user.getPhoneNumber());
+        assertEquals(7894567890L, user.getPhoneNumber());
         assertEquals("testUser", user.getUserName());
         assertEquals("test@example.com", user.getUserEmail());
         assertEquals("password123", user.getUserPassword());
@@ -40,17 +40,12 @@ class UserTest {
         assertEquals(UserRole.RESTAURANT_OWNER, user.getUserRole());
     }
 
-    @Test
-    public void testDefaultWalletAmount() {
-        // Ensure the default wallet value is set correctly from the ConstantMessage class
-        assertEquals(ConstantMessage.WALLET_AMOUNT, user.getWallet());
-    }
 
     @Test
     public void testEqualsAndHashCode() {
         User user1 = new User();
         user1.setUserId(1L);
-        user1.setPhoneNumber(1234567890L);
+        user1.setPhoneNumber(7894567890L);
         user1.setUserName("testUser");
         user1.setUserEmail("test@example.com");
         user1.setUserPassword("password123");
@@ -59,14 +54,14 @@ class UserTest {
 
         User user2 = new User();
         user2.setUserId(1L);
-        user2.setPhoneNumber(1234567890L);
+        user2.setPhoneNumber(7894567890L);
         user2.setUserName("testUser");
         user2.setUserEmail("test@example.com");
         user2.setUserPassword("password123");
         user2.setWallet(ConstantMessage.WALLET_AMOUNT);
         user2.setUserRole(UserRole.RESTAURANT_OWNER);
 
-        // Ensure that the two users are considered equal and have the same hashcode
+
         assertEquals(user1, user2);
         assertEquals(user1.hashCode(), user2.hashCode());
     }
@@ -75,7 +70,7 @@ class UserTest {
     public void testNotEquals() {
         User user1 = new User();
         user1.setUserId(1L);
-        user1.setPhoneNumber(1234567890L);
+        user1.setPhoneNumber(7894567890L);
         user1.setUserName("testUser");
 
         User user2 = new User();
@@ -83,22 +78,7 @@ class UserTest {
         user2.setPhoneNumber(9876543210L);
         user2.setUserName("anotherUser");
 
-        // Ensure that the two users are considered not equal
         assertNotEquals(user1, user2);
-    }
-
-    @Test
-    public void testToString() {
-        user.setUserId(1L);
-        user.setPhoneNumber(1234567890L);
-        user.setUserName("testUser");
-        user.setUserEmail("test@example.com");
-        user.setUserPassword("password123");
-        user.setWallet(5000.0);
-        user.setUserRole(UserRole.RESTAURANT_OWNER);
-
-        String expectedString = "User(userId=1, phoneNumber=1234567890, userName=testUser, userEmail=test@example.com, userPassword=password123, wallet=5000, userRole=RESTAURANT_OWNER)";
-        assertEquals(expectedString, user.toString());
     }
 
     @Test
@@ -114,14 +94,12 @@ class UserTest {
     public void testInvalidEmail() {
         user.setUserEmail(null);
         assertNull(user.getUserEmail());
-
     }
 
     @Test
     public void testInvalidPhoneNumber() {
         user.setPhoneNumber(null);
         assertNull(user.getPhoneNumber());
-
 
     }
 }

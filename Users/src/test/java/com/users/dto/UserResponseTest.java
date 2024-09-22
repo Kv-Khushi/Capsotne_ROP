@@ -10,43 +10,43 @@ public class UserResponseTest {
     public void testGettersAndSetters() {
         UserResponse userResponse = new UserResponse();
 
-        // Test userId
+
         assertNull(userResponse.getUserId());
         Long userId = 1L;
         userResponse.setUserId(userId);
         assertEquals(userId, userResponse.getUserId());
 
-        // Test phoneNumber
+
         assertNull(userResponse.getPhoneNumber());
         Long phoneNumber = 1234567890L;
         userResponse.setPhoneNumber(phoneNumber);
         assertEquals(phoneNumber, userResponse.getPhoneNumber());
 
-        // Test userName
+
         assertNull(userResponse.getUserName());
         String userName = "JohnDoe";
         userResponse.setUserName(userName);
         assertEquals(userName, userResponse.getUserName());
 
-        // Test userEmail
+
         assertNull(userResponse.getUserEmail());
         String userEmail = "john.doe@example.com";
         userResponse.setUserEmail(userEmail);
         assertEquals(userEmail, userResponse.getUserEmail());
 
-        // Test userPassword
+
         assertNull(userResponse.getUserPassword());
         String userPassword = "password123";
         userResponse.setUserPassword(userPassword);
         assertEquals(userPassword, userResponse.getUserPassword());
 
-        // Test wallet
+
         assertNull(userResponse.getWallet());
         Double wallet = 1000.0;
         userResponse.setWallet(wallet);
         assertEquals(wallet, userResponse.getWallet());
 
-        // Test userRole
+
         assertNull(userResponse.getUserRole());
         UserRole userRole = UserRole.CUSTOMER;
         userResponse.setUserRole(userRole);

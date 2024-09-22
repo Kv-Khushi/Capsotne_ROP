@@ -25,6 +25,21 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
    */
   List<Address> findByUserId(Long userId);
 
+
+
+  /**
+   * Checks whether an address exists for a specific user based on the user ID, street, city, state, and zip code.
+   * <p>
+   * This method is used to verify if a {@link Address} record exists with the specified details.
+   * </p>
+   *
+   * @param userId   the unique identifier of the user
+   * @param street   the street of the address
+   * @param city     the city of the address
+   * @param state    the state of the address
+   * @param zipCode  the zip code of the address
+   * @return {@code true} if an address exists with the given details, otherwise {@code false}
+   */
   boolean existsByUserIdAndStreetAndCityAndStateAndZipCode(
           Long userId,
           String street,

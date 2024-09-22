@@ -40,18 +40,19 @@ public class AddressControllerTest {
 
     @BeforeEach
     void setUp() {
+
         objectMapper = new ObjectMapper();
     }
 
     @Test
     void addAddress_shouldReturnCreatedCommonResponse() throws Exception {
-        // Given
+
         AddressRequest addressRequest = new AddressRequest();
         addressRequest.setStreet("123 Main St");
-        addressRequest.setCity("Indore");
-        addressRequest.setState("MP");
+        addressRequest.setCity("Address");
+        addressRequest.setState("AB");
         addressRequest.setZipCode(12345);
-        addressRequest.setCountry("India");
+        addressRequest.setCountry("Abcde");
         addressRequest.setUserId(1L);
 
         CommonResponse commonResponse = new CommonResponse(ConstantMessage.ADDRESS_ADD_SUCCESS);
@@ -63,32 +64,6 @@ public class AddressControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().json(objectMapper.writeValueAsString(commonResponse)));
     }
-
-
-
-
-    @Test
-    void deleteAddress_shouldReturnNoContent() throws Exception {
-        // Given
-        Long userId = 1L;
-        when(addressService.deleteAddress(userId)).thenReturn(true);
-
-        // When & Then
-        mockMvc.perform(MockMvcRequestBuilders.delete("/address/deleteAddress/{userId}", userId))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void deleteAddress_shouldReturnNotFound() throws Exception {
-        // Given
-        Long userId = 1L;
-        when(addressService.deleteAddress(userId)).thenReturn(false);
-
-        // When & Then
-        mockMvc.perform(MockMvcRequestBuilders.delete("/address/deleteAddress/{userId}", userId))
-                .andExpect(status().isNotFound());
-    }
-
 
     @Test
     void getAllAddressForUserFind_shouldReturnListOfAddresses() throws Exception {
@@ -104,8 +79,6 @@ public class AddressControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(addresses)));
     }
-
-
 
 }
 

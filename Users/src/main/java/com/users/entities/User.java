@@ -1,6 +1,6 @@
 package com.users.entities;
 
-import com.users.constant.ConstantMessage;
+
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import com.users.enums.UserRole;
+
 
 /**
  * Represents a user entity in the system.
@@ -54,9 +55,7 @@ public class User {
 
     /**
      * The wallet amount associated with the user.
-     * Initialized with a default value from {@link ConstantMessage#WALLET_AMOUNT}.
      */
-//    private Double wallet = ConstantMessage.WALLET_AMOUNT;
     private Double wallet;
 
     /**

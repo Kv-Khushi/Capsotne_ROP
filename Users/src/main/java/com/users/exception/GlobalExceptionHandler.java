@@ -20,7 +20,7 @@ import java.util.List;
  * </p>
  */
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public final class GlobalExceptionHandler {
 
     /**
      * Represents an error response containing the HTTP status and error message.
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles {@link AlreadyExists} exceptions.
+     * Handles {@link ResourceAlreadyExists} exceptions.
      * <p>
      * Returns an {@link ErrorResponse} with HTTP status code {@link HttpStatus#CONFLICT}
      * and the exception's message.
@@ -76,13 +76,27 @@ public class GlobalExceptionHandler {
      * @param ex the {@code AlreadyExists} exception
      * @return an {@link ErrorResponse} containing the error details
      */
-    @ExceptionHandler(AlreadyExists.class)
+    @ExceptionHandler(ResourceAlreadyExists.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ErrorResponse handleAlreadyExists(final AlreadyExists ex) {
+    public ErrorResponse handleAlreadyExists(final ResourceAlreadyExists ex) {
         return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
+
+    /**
+     * Handles invalid credential exceptions (UnauthorizedAccessException).
+     * Can be overridden by subclasses to customize behavior for invalid credentials.
+     *
+     * @param ex the exception that was thrown due to invalid credentials
+     * @return an ErrorResponse containing the error details
+     */
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorResponse handleInvalidCredentialsException(final UnauthorizedAccessException ex) {
+        return new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+    }
     /**
      * Handles {@link ResourceNotFoundException} exceptions.
      * <p>
@@ -98,6 +112,20 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponse handleNotFoundException(final ResourceNotFoundException ex) {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+
+
+    /**
+     * Handles InvalidRequestException.
+     *
+     * @param ex the exception to handle
+     * @return ErrorResponse with 400 status and the exception message
+     */
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRequestException(final InvalidRequestException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -130,7 +158,6 @@ public class GlobalExceptionHandler {
                 errors.add(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), String.format("Field '%s': %s", fieldName, errorMessage)));
             });
         }
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 

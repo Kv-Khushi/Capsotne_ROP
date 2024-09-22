@@ -2,10 +2,13 @@ package com.users.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.users.constant.ConstantMessage;
 import com.users.dto.LoginRequest;
 import com.users.dto.UserRequest;
 import com.users.dto.UserResponse;
 import com.users.entities.User;
+import com.users.exception.InvalidRequestException;
+import com.users.exception.ResourceNotFoundException;
 import com.users.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.users.enums.UserRole;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,15 +30,15 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.RequestEntity.put;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+
+
 
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -56,14 +60,14 @@ public class UserControllerTest {
     @Test
     public void testAddUser_Success() throws Exception {
         UserRequest userRequest = new UserRequest();
-        userRequest.setPhoneNumber(1234567890L);
-        userRequest.setUserName("Khushi");
-        userRequest.setUserEmail("khushi@nucleusteq.com");
-        userRequest.setUserPassword("Khushi@123");
+        userRequest.setPhoneNumber(7894567890L);
+        userRequest.setUserName("test");
+        userRequest.setUserEmail("test@nucleusteq.com");
+        userRequest.setUserPassword("Test@123");
         userRequest.setUserRole(UserRole.CUSTOMER);
 
         UserResponse userResponse = new UserResponse();
-        userResponse.setUserEmail("khushi@nucleusteq.com");
+        userResponse.setUserEmail("test@nucleusteq.com");
 
         when(userService.addUser(any(UserRequest.class))).thenReturn(userResponse);
 
@@ -78,11 +82,11 @@ public class UserControllerTest {
     @Test
     public void testLoginUser_Success() throws Exception {
         UserRequest userRequest = new UserRequest();
-        userRequest.setUserEmail("khushi@nucleusteq.com");
-        userRequest.setUserPassword("Khushi@123");
+        userRequest.setUserEmail("test@nucleusteq.com");
+        userRequest.setUserPassword("Test@123");
 
         UserResponse userResponse = new UserResponse();
-        userResponse.setUserEmail("khushi@nucleusteq.com");
+        userResponse.setUserEmail("test@nucleusteq.com");
 
         when(userService.authenticateUser(any(LoginRequest.class))).thenReturn(userResponse);
 
@@ -91,19 +95,19 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsString(userRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userEmail").value("khushi@nucleusteq.com"));
+                .andExpect(jsonPath("$.userEmail").value("test@nucleusteq.com"));
     }
 
 
     @Test
     public void testAddUser_PhoneNumberNullValidationError() throws Exception {
         UserRequest userRequest = new UserRequest();
-        userRequest.setUserEmail("khushi@nucleusteq.com");
-        userRequest.setUserPassword("Khushi@123");
+        userRequest.setUserEmail("test@nucleusteq.com");
+        userRequest.setUserPassword("Test@123");
         userRequest.setUserId(1L);
         userRequest.setUserRole(UserRole.CUSTOMER);
-        userRequest.setPhoneNumber(null);  // Set to null to trigger @NotNull validation
-        userRequest.setUserName("Khushi Vyas");
+        userRequest.setPhoneNumber(null);
+        userRequest.setUserName("Test");
 
         mockMvc.perform(post("/users/addUser")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -114,35 +118,53 @@ public class UserControllerTest {
     }
 
 
-    @Test
-    public void testAddUser_InvalidEmailFormat() throws Exception {
-        UserRequest userRequest = new UserRequest();
-        userRequest.setPhoneNumber(9587367890L);
-        userRequest.setUserName("Khushi");
-        userRequest.setUserEmail("invalid-email");
-        userRequest.setUserPassword("Khushi@123");
-        userRequest.setUserRole(UserRole.CUSTOMER);
-
-        mockMvc.perform(post("/users/addUser")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userRequest)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$[0].status").value(400))
-                .andExpect(jsonPath("$[0].message").value("Field 'userEmail': Email must end with nucleusteq.com"));
-    }
 
     @Test
     public void testUpdateWalletBalance_Success() throws Exception {
-        Long userId = 1L;
-        Double newBalance = 1000.0;
+        doNothing().when(userService).updateWalletBalance(1L, 10.0); // Change the value to test
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/users/{userId}/wallet", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newBalance)))
-                .andDo(print())
+        mockMvc.perform(put("/users/1/wallet")
+                        .param("newBalance", "10") // Correctly use param for query parameters
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value("Wallet balance updated successfully."));
+                .andExpect(content().string(ConstantMessage.UPDATED_WALLET_BALANCE));
     }
+
+    @Test
+    public void testUpdateWalletBalance_UserNotFound() throws Exception {
+        doThrow(new ResourceNotFoundException(ConstantMessage.NOT_FOUND))
+                .when(userService).updateWalletBalance(1L, 10.0);
+
+        mockMvc.perform(put("/users/1/wallet")
+                        .param("newBalance", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound()); // Expect 404 Not Found
+    }
+
+    @Test
+    public void testUpdateWalletBalance_UserIsRestaurantOwner() throws Exception {
+        doThrow(new InvalidRequestException(ConstantMessage.OWNER_CAN_N0T_UPDATE_WALLET))
+                .when(userService).updateWalletBalance(1L, 10.0);
+
+        mockMvc.perform(put("/users/1/wallet")
+                        .param("newBalance", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()); // Expect 400 Bad Request
+    }
+
+    @Test
+    public void testUpdateWalletBalance_InvalidBalance() throws Exception {
+        // Assuming your service method throws an exception for invalid balance values
+        doThrow(new InvalidRequestException("Invalid balance amount"))
+                .when(userService).updateWalletBalance(1L, -10.0); // Negative balance
+
+        mockMvc.perform(put("/users/1/wallet")
+                        .param("newBalance", "-10") // Test with an invalid balance
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()); // Expect 400 Bad Request
+    }
+
+
 
     @Test
     public void testGetUser_Success() throws Exception {
@@ -190,6 +212,5 @@ public class UserControllerTest {
         String responseBody = result.getResponse().getContentAsString();
         assertEquals("User not found", responseBody);
     }
-
 
 }

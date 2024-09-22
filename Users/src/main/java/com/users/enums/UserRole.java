@@ -10,7 +10,7 @@ package com.users.enums;
  * </ul>
  * </p>
  */
-public enum UserRole {
+public enum UserRole{
     /**
      * Represents a regular customer in the system.
      */

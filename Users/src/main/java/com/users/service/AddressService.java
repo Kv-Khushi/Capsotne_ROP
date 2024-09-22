@@ -5,14 +5,13 @@ import com.users.dtoconversion.DtoConversion;
 import com.users.entities.Address;
 import com.users.dto.AddressRequest;
 import com.users.dto.AddressResponse;
-import com.users.exception.AlreadyExists;
+import com.users.exception.ResourceAlreadyExists;
 import com.users.repository.AddressRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ConcurrentModificationException;
 import java.util.List;
 
 /**
@@ -23,13 +22,8 @@ import java.util.List;
  * </p>
  */
 @Service
+@Slf4j
 public class AddressService {
-
-    /**
-     * Logger for logging AddressService operations.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddressService.class);
-
     /**
      * Repository for performing CRUD operations on Address entities.
      */
@@ -46,12 +40,12 @@ public class AddressService {
      * @return a list of {@link Address} entities associated with the specified user ID
      */
     public List<Address> getAllAddressForUser(final Long userId){
-        LOGGER.info("Retrieving all addresses for userId: {}", userId);
+        log.info("Retrieving all addresses for userId: {}", userId);
         List<Address> addresses = addressRepository.findByUserId(userId);
         if (addresses.isEmpty()) {
-            LOGGER.warn("No addresses found for userId: {}", userId);
+            log.error("No addresses found for userId: {}", userId);
         } else {
-            LOGGER.info("Found {} addresses for userId: {}", addresses.size(), userId);
+            log.info("Found {} addresses for userId: {}", addresses.size(), userId);
         }
         return addresses;
     }
@@ -67,7 +61,7 @@ public class AddressService {
      * @return the {@link AddressResponse} containing details of the newly added address
      */
     public AddressResponse addAddress(final AddressRequest addressRequest){
-        LOGGER.info("Adding a new address for userId: {}", addressRequest.getUserId());
+        log.info("Adding a new address for userId: {}", addressRequest.getUserId());
 
         boolean addressExists = addressRepository.existsByUserIdAndStreetAndCityAndStateAndZipCode(
                 addressRequest.getUserId(),
@@ -78,29 +72,14 @@ public class AddressService {
         );
 
         if (addressExists) {
-            LOGGER.warn("Address already exists for userId: {}", addressRequest.getUserId());
-            throw new AlreadyExists(ConstantMessage.ADDRESS_ALREADY_EXISTS);
+            log.error("Address already exists for userId: {}", addressRequest.getUserId());
+            throw new ResourceAlreadyExists(ConstantMessage.ADDRESS_ALREADY_EXISTS);
         }
         Address address = DtoConversion.convertAddressRequestToAddress(addressRequest);
         Address savedAddress = addressRepository.save(address);
         AddressResponse addressResponse = DtoConversion.addressToAddressResponse(savedAddress);
-        LOGGER.info("Successfully added address with id: {}", savedAddress.getAddressId());
+        log.info("Successfully added address with id: {}", savedAddress.getAddressId());
         return addressResponse;
     }
 
-    /**
-     * Deletes an address associated with a specific user ID.
-     * <p>
-     * This method removes the address from the repository using the provided user ID.
-     * </p>
-     *
-     * @param userId the unique identifier of the user whose address is to be deleted
-     * @return {@code true} if the address was successfully deleted, {@code false} otherwise
-     */
-    public boolean deleteAddress(final Long userId){
-        LOGGER.info("Attempting to delete address for userId: {}", userId);
-        addressRepository.deleteById(userId);
-        LOGGER.info("Successfully deleted address for userId: {}", userId);
-        return true;
-    }
 }

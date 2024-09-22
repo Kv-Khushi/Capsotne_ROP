@@ -24,7 +24,6 @@ public class LoginRequestTest {
     public void testGettersAndSetters() {
         LoginRequest loginRequest = new LoginRequest();
 
-        // Test userEmail
         assertNull(loginRequest.getUserEmail());
         String email = "test@nucleusteq.com";
         loginRequest.setUserEmail(email);
@@ -49,15 +48,15 @@ public class LoginRequestTest {
 
     @Test
     public void testValidation() {
-        // Create a LoginRequest object with invalid data
+
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUserEmail("invalid-email");
         loginRequest.setUserPassword("short");
 
-        // Validate the LoginRequest
+
         Set<javax.validation.ConstraintViolation<LoginRequest>> violations = validator.validate(loginRequest);
 
-        // Check for validation errors
+
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("userEmail")));
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("userPassword")));
@@ -69,10 +68,7 @@ public class LoginRequestTest {
         loginRequest.setUserEmail("test@nucleusteq.com");
         loginRequest.setUserPassword("Password1@");
 
-        // Validate the LoginRequest
         Set<javax.validation.ConstraintViolation<LoginRequest>> violations = validator.validate(loginRequest);
-
-        // Check that there are no validation errors
         assertTrue(violations.isEmpty());
     }
 }

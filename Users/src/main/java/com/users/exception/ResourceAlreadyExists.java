@@ -8,14 +8,14 @@ package com.users.exception;
  * This is a custom runtime exception that extends {@link RuntimeException}.
  * </p>
  */
-public class AlreadyExists extends RuntimeException {
+public class ResourceAlreadyExists extends RuntimeException {
 
  /**
   * Constructs a new {@code AlreadyExists} exception with the specified detail message.
   *
   * @param message the detail message, which provides more information about the cause of the exception
   */
- public AlreadyExists(final String message) {
+ public ResourceAlreadyExists(final String message) {
   super(message);
  }
 }

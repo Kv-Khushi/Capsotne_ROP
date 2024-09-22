@@ -1,17 +1,16 @@
 package com.users.service;
 
 import com.users.constant.ConstantMessage;
+import com.users.dto.*;
 import com.users.dtoconversion.DtoConversion;
 import com.users.entities.User;
 import com.users.enums.UserRole;
-import com.users.exception.AlreadyExists;
+import com.users.exception.InvalidRequestException;
+import com.users.exception.ResourceAlreadyExists;
 import com.users.exception.ResourceNotFoundException;
-import com.users.dto.LoginRequest;
-import com.users.dto.UserRequest;
-import com.users.dto.UserResponse;
+import com.users.exception.UnauthorizedAccessException;
 import com.users.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.users.passwordencryption.PasswordEncodingAndDecoding;
@@ -23,12 +22,8 @@ import java.util.Optional;
  * Service class for handling user-related operations.
  */
 @Service
+@Slf4j
 public class UserService {
-
-    /**
-     * Logger instance for logging events.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     /**
      * Repository for accessing user data.
@@ -53,12 +48,12 @@ public class UserService {
      * @return a list of {@link User} entities.
      */
     public List<User> getAllUserList(){
-        LOGGER.info("Retrieving all users");
+        log.info("Retrieving all users");
         List<User> list = userRepository.findAll();
         if (list.isEmpty()) {
-            LOGGER.warn("No users found");
+            log.error("No users found");
         } else {
-            LOGGER.info("Found {} users", list.size());
+            log.info("Found {} users", list.size());
         }
         return list;
     }
@@ -68,17 +63,18 @@ public class UserService {
      *
      * @param userRequest the {@link UserRequest} containing user details.
      * @return a {@link UserResponse} with the details of the added user.
-     * @throws AlreadyExists if a user with the same email already exists.
+     * @throws ResourceAlreadyExists if a user with the same email already exists.
      */
     public UserResponse addUser(final UserRequest userRequest) {
 
-        LOGGER.info("Adding a new user with email: {}", userRequest.getUserEmail());
+        log.info("Adding a new user with email: {}", userRequest.getUserEmail());
 
         User user = DtoConversion.convertUserRequestToUser(userRequest);
+
         Optional<User> optionalUser = userRepository.findByUserEmail(userRequest.getUserEmail().toLowerCase());
         if (optionalUser.isPresent()){
-            LOGGER.error("User with email {} already exists", userRequest.getUserEmail());
-            throw new AlreadyExists(ConstantMessage.ALREADY_EXISTS);
+            log.error("User with email {} already exists", userRequest.getUserEmail());
+            throw new ResourceAlreadyExists(ConstantMessage.ALREADY_EXISTS);
         }
 
         if (userRequest.getUserRole() == UserRole.RESTAURANT_OWNER) {
@@ -86,15 +82,15 @@ public class UserService {
         } else {
             user.setWallet(ConstantMessage.WALLET_AMOUNT); // default wallet balance
         }
-        passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
+
+     passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
+
         user.setUserPassword(passwordEncodingAndDecoding.encodePassword(user.getUserPassword()));
         User savedUser = userRepository.save(user);
-        LOGGER.info("Successfully added user with id: {}", savedUser.getUserId());
+        log.info("Successfully added user with id: {}", savedUser.getUserId());
         UserResponse userResponse = DtoConversion.userToUserResponse(savedUser);
         return userResponse;
     }
-
-
 
     /**
      * Authenticates a user based on the provided login request.
@@ -104,13 +100,18 @@ public class UserService {
      * @throws ResourceNotFoundException if no user with the given email is found.
      */
     public UserResponse authenticateUser(final LoginRequest loginRequest) {
-        LOGGER.info("Authenticating user with email: {}", loginRequest.getUserEmail());
+        log.info("Authenticating user with email: {}", loginRequest.getUserEmail());
 
         User user = userRepository.findByUserEmail(loginRequest.getUserEmail())
                 .orElseThrow(() -> new ResourceNotFoundException(ConstantMessage.NOT_FOUND));
         passwordEncodingAndDecoding = new PasswordEncodingAndDecoding();
+        if (!passwordEncodingAndDecoding.decodePassword(user.getUserPassword()).equals(loginRequest.getUserPassword())){
+            throw new UnauthorizedAccessException(ConstantMessage.INVALID_CREDENTIALS);
+        }
+
         UserResponse userResponse = DtoConversion.userToUserResponse(user);
-        LOGGER.info("User with email {} authenticated successfully", loginRequest.getUserEmail());
+
+        log.info("User with email {} authenticated successfully", loginRequest.getUserEmail());
         return userResponse;
     }
 
@@ -132,36 +133,38 @@ public class UserService {
      * @param newBalance the new balance to set in the user's wallet
      */
     public void updateWalletBalance(final Long userId, final Double newBalance) {
-        // Fetch the user from the repository
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ConstantMessage.NOT_FOUND));
-
-        // Update wallet balance
+        if(user.getUserRole().equals(UserRole.RESTAURANT_OWNER)){
+            throw new InvalidRequestException(ConstantMessage.OWNER_CAN_N0T_UPDATE_WALLET);
+        }
         user.setWallet(newBalance);
-
-        // Save the updated user back to the repository
         userRepository.save(user);
     }
 
-
     /**
-     * Sends an email to predefined recipients.
+     * Sends an email in response to a "Contact Us" form submission.
+     * <p>
+     * This method sends an email to the support team using the details provided
+     * in the {@code contactUsRequest}. It sends the email to a list of predefined support
+     * email addresses.
+     * </p>
      *
-     * @param text the content of the email.
+     * @param contactUsRequest the request containing the customer's name, subject, and message
+     * @return a {@link CommonResponse} indicating whether the email was sent successfully
      */
-    public void sendMail(final String text) {
-        try {
-            // Define the list of recipients
-            List<String> recipients = Arrays.asList(
-                    "iadityapatel1729@gmail.com",
-                    "adityapatel21052022@gmail.com",
-                    "vyaskhushi2407@gmail.com"
-            );
-            // Send email to all recipients
-            emailService.sendMail(ConstantMessage.SENDER, recipients, text);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ResourceNotFoundException(ConstantMessage.NOT_FOUND);
-        }
+    public CommonResponse sendContactUsEmail(final ContactUsRequest contactUsRequest) {
+        List<String> supportEmails = Arrays.asList("khushi.vyas@nucleusteq.com",
+                 "vyaskhushi2407@gmail.com","purviv939@gmail.com");
+
+        String subject = contactUsRequest.getSubject();
+        String customerName = contactUsRequest.getName();
+        String customMessage = contactUsRequest.getMessage();
+
+        emailService.sendContactUsEmail(supportEmails, subject, customerName, customMessage);
+        return new CommonResponse(ConstantMessage.MAIL_SENT_SUCCESSFULLY);
     }
+
 }
+

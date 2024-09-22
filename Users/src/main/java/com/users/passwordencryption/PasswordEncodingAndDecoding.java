@@ -36,9 +36,9 @@ public class PasswordEncodingAndDecoding {
      * @param encodedPassword the Base64 encoded password string to be decoded
      * @return the decoded plain text password
      */
-    public static String decodePassword(final String encodedPassword) {
-        byte[] decodedBytes = Base64.getDecoder().decode(encodedPassword);
-        return new String(decodedBytes, StandardCharsets.UTF_8);
-    }
+        public static String decodePassword(final String encodedPassword) {
+            byte[] decodedBytes = Base64.getDecoder().decode(encodedPassword);
+            return new String(decodedBytes, StandardCharsets.UTF_8);
+        }
 }
 

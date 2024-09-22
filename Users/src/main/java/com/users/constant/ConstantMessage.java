@@ -8,10 +8,6 @@ package com.users.constant;
  */
 public final class ConstantMessage {
 
- /**
-  * The sender email address used in the system.
-  */
- public static final String SENDER = "vyaskhushi2407@gmail.com";
 
  /**
   * Private constructor to prevent instantiation.
@@ -53,8 +49,31 @@ public final class ConstantMessage {
   */
  public static final String ADDRESS_ADD_SUCCESS = "Address added successfully";
 
-
+ /**
+  * The message to be used when an address already exists.
+  */
  public static final String ADDRESS_ALREADY_EXISTS = "Address already exists";
 
+ /**
+  * The message to be mail send fail.
+  */
+ public static final String MAIL_SEND_FAILED = "Failed to send the email";
+
+ /**
+  * The message to be used when user enter invalid credentials.
+  */
+ public static final String INVALID_CREDENTIALS = "Invalid email or password.";
+
+ /**
+  * The message to be used for updating wallet.
+  */
+ public static final String UPDATED_WALLET_BALANCE = "Wallet balance updated successfully.";
+
+ /**
+  * The message to be used for restricting owner to add amount in wallet.
+  */
+ public static final String OWNER_CAN_N0T_UPDATE_WALLET =" Restaurant Owner can not able to add amount in wallet";
 }
+
+
 

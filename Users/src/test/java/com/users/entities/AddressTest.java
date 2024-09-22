@@ -58,7 +58,7 @@ class AddressTest {
         address2.setCountry("Sample Country");
         address2.setUserId(101L);
 
-        // Check equals and hashCode
+
         assertEquals(address1, address2);
         assertEquals(address1.hashCode(), address2.hashCode());
     }
@@ -75,7 +75,7 @@ class AddressTest {
         address2.setStreet("456 Another St");
         address2.setCity("Another City");
 
-        // They should not be equal
+
         assertNotEquals(address1, address2);
     }
 
@@ -98,6 +98,5 @@ class AddressTest {
         address.setZipCode(null);
         assertNull(address.getZipCode());
 
-        // Try setting invalid zip code and test accordingly based on your business rules.
     }
 }
