@@ -3,12 +3,9 @@ package com.restaurants.controller;
 import com.restaurants.dto.FoodCategoryRequest;
 import com.restaurants.dto.FoodCategoryResponse;
 import com.restaurants.dto.SuccessResponse;
-
 import com.restaurants.service.FoodCategoryService;
-import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.constant.ConstantMessage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +19,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/foodCategories")
+@Slf4j
 public final class FoodCategoryController {
 
-    private static final Logger logger = LogManager.getLogger(FoodCategoryController.class);
 
     @Autowired
     private FoodCategoryService foodCategoryService;
@@ -37,9 +34,9 @@ public final class FoodCategoryController {
      */
 
     @PostMapping("/add")
-    public ResponseEntity<SuccessResponse> addFoodCategory(@Valid @RequestBody FoodCategoryRequest foodCategoryRequest) {
+    public ResponseEntity<SuccessResponse> addFoodCategory(@Valid @RequestBody final FoodCategoryRequest foodCategoryRequest) {
         foodCategoryService.addFoodCategory(foodCategoryRequest);
-        logger.info("Food category added successfully");
+        log.info("Food category added successfully");
         return ResponseEntity.ok(new SuccessResponse(ConstantMessage.CATEGORY_ADD_SUCCESS));
     }
 
@@ -51,9 +48,9 @@ public final class FoodCategoryController {
      */
     @DeleteMapping("/delete/{categoryId}")
     public ResponseEntity<String> deleteFoodCategory(@PathVariable final Long categoryId) {
-        logger.info("Request to delete food category with ID: {}", categoryId);
+        log.info("Request to delete food category with ID: {}", categoryId);
         foodCategoryService.deleteFoodCategory(categoryId);
-        logger.info("Food category with ID: {} deleted successfully", categoryId);
+        log.info("Food category with ID: {} deleted successfully", categoryId);
         return ResponseEntity.ok("Food category deleted successfully.");
     }
 
@@ -66,10 +63,10 @@ public final class FoodCategoryController {
     @GetMapping("/restaurant/{restaurantId}")
     public ResponseEntity<List<FoodCategoryResponse>> getAllCategoriesByRestaurantId(
             @PathVariable final Long restaurantId) {
-        logger.info("Request to retrieve food categories for restaurant with ID: {}", restaurantId);
+        log.info("Request to retrieve food categories for restaurant with ID: {}", restaurantId);
 
         List<FoodCategoryResponse> categories = foodCategoryService.getAllCategoriesByRestaurantId(restaurantId);
-        logger.info("Retrieved {} food categories for restaurant with ID: {}", categories.size(), restaurantId);
+        log.info("Retrieved {} food categories for restaurant with ID: {}", categories.size(), restaurantId);
 
         return ResponseEntity.ok(categories);
     }
@@ -80,17 +77,29 @@ public final class FoodCategoryController {
      * @param categoryId      the ID of the food category to update
      * @param newCategoryName the new name for the food category
      * @return a response entity with the updated food category
-     * @throws ResourceNotFoundException if the food category is not found
      */
     @PutMapping("/{categoryId}/name")
     public ResponseEntity<FoodCategoryResponse> updateCategoryName(
             @PathVariable final Long categoryId,
-            @RequestBody final String newCategoryName) throws ResourceNotFoundException {
-        logger.info("Request to update food category name for ID: {} to {}", categoryId, newCategoryName);
+            @RequestBody final String newCategoryName){
+        log.info("Request to update food category name for ID: {} to {}", categoryId, newCategoryName);
 
         FoodCategoryResponse updatedCategory = foodCategoryService.updateCategoryName(categoryId, newCategoryName);
-        logger.info("Food category with ID: {} updated successfully with new name: {}", categoryId, newCategoryName);
+        log.info("Food category with ID: {} updated successfully with new name: {}", categoryId, newCategoryName);
 
         return ResponseEntity.ok(updatedCategory);
+    }
+
+
+    /**
+     * Retrieves a food category by its ID.
+     *
+     * @param categoryId the ID of the food category
+     * @return a response entity with the food category details
+     */
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<FoodCategoryResponse> getFoodItemById(@PathVariable("categoryId") final Long categoryId) {
+        FoodCategoryResponse categoryResponse = foodCategoryService.getFoodCategoryById(categoryId);
+        return ResponseEntity.ok(categoryResponse);
     }
 }

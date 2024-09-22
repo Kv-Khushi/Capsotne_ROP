@@ -91,6 +91,14 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
+
+
+    /**
+     * Handles UnauthorizedException.
+     *
+     * @param ex the exception to handle
+     * @return ErrorResponse with 401 status and the exception message
+     */
     @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
@@ -99,19 +107,30 @@ public class GlobalExceptionHandler {
     }
 
 
+    /**
+     * Handles InvalidRequestException.
+     *
+     * @param ex the exception to handle
+     * @return ErrorResponse with 400 status and the exception message
+     */
 
     @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidRequestException(InvalidRequestException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidRequestException(final InvalidRequestException ex) {
         logger.error("Handling InvalidRequestException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-
+    /**
+     * Handles validation exceptions (MethodArgumentNotValidException and BindException).
+     *
+     * @param ex the exception to handle
+     * @return list of ErrorResponse with details of invalid fields
+     */
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<List<ErrorResponse>> handleValidationExceptions(Exception ex) {
+    public ResponseEntity<List<ErrorResponse>> handleValidationExceptions(final Exception ex) {
         logger.info("Handling validation exceptions: {}", ex.getMessage()); // Log exception details
         List<ErrorResponse> errors = new ArrayList<>();
 
@@ -132,10 +151,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
+
+
+    /**
+     * Handles AlreadyExistsException.
+     *
+     * @param ex the exception to handle
+     * @return ErrorResponse with 409 status and the exception message
+     */
     @ExceptionHandler(AlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(AlreadyExistsException ex) {
+    public ResponseEntity<ErrorResponse> handleAlreadyExistsException(final AlreadyExistsException ex) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    /**
+     * Handles RuntimeException.
+     *
+     * @param ex the exception to handle
+     * @return ErrorResponse with 500 status and the exception message
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(final RuntimeException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

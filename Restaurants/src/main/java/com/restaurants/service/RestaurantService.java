@@ -1,6 +1,7 @@
 package com.restaurants.service;
 import com.restaurants.dto.UserResponse;
 import com.restaurants.enums.UserRole;
+import com.restaurants.exception.AlreadyExistsException;
 import com.restaurants.exception.InvalidRequestException;
 import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.constant.ConstantMessage;
@@ -11,8 +12,8 @@ import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.exception.UnauthorizedException;
 import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.repository.RestaurantRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,9 @@ import java.util.Optional;
  * Service class for managing restaurant operations.
  */
 @Service
+@Slf4j
 public class RestaurantService {
-
-    private static final Logger logger = LogManager.getLogger(RestaurantService.class);
+    
 
     @Autowired
     private RestaurantRepository restaurantRepository;
@@ -47,53 +48,53 @@ public class RestaurantService {
      */
 
     public RestaurantResponse addRestaurant(final RestaurantRequest restaurantRequest, final MultipartFile image) {
-        logger.info("Adding a new restaurant with details: {}", restaurantRequest);
-
-        // Fetch the user details
-        UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
-        String userRole = userResponse.getUserRole();
-
-        // Check if the user is a customer
-        if (UserRole.CUSTOMER.name().equals(userRole)) {
-            logger.error("User with ID {} is a CUSTOMER and cannot register a restaurant", restaurantRequest.getUserId());
-            throw new UnauthorizedException(ConstantMessage.UNAUTHORIZED_USER);
-        }
-
-        // Convert the restaurant request to an entity
-        Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
-        logger.info("Converted restaurant entity: {}", restaurant);
-
-        if (restaurant == null) {
-            logger.error("Failed to convert restaurant request to entity, restaurant is null");
-            throw new RuntimeException("Restaurant conversion failed");
-        }
+        log.info("Adding a new restaurant with details: {}", restaurantRequest);
 
         try {
-            if (image != null && !image.isEmpty()) {
-                String contentType = image.getContentType();
-                if (contentType == null || !(contentType.equals("image/jpeg") || contentType.equals("image/png"))) {
-                    logger.error("Invalid image type: {}. Only JPG and PNG are allowed.", contentType);
-                    throw new InvalidRequestException(ConstantMessage.INVALID_IMAGE_FORMAT);
-                }
-                // Process the image if validation passes
-                restaurant.setRestaurantImage(image.getBytes());
-                System.out.println(restaurant.getRestaurantImage());
+            UserResponse userResponse = userServiceClient.getUserById(restaurantRequest.getUserId());
+            String userRole = userResponse.getUserRole();
+
+            if (UserRole.CUSTOMER.toString().equals(userRole)) {
+                log.error("User with ID {} is a CUSTOMER and cannot register a restaurant", restaurantRequest.getUserId());
+                throw new UnauthorizedException(ConstantMessage.UNAUTHORIZED_USER);
             }
-        } catch (InvalidRequestException e) {
-            // Ensure not to catch the specific exception unless for logging
-            throw e;  // Re-throw if caught
-        } catch (Exception e) {
-            logger.error("Error occurred while processing image file for restaurant: {}", e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Image processing failed");
+        }
+        catch(FeignException.NotFound ex){
+            throw new ResourceNotFoundException(ConstantMessage.USER_NOT_FOUND);
+        }
+        catch(FeignException ex){
+            throw new RuntimeException(ConstantMessage.USER_SERVICE_DOWN);
         }
 
+        boolean exists = restaurantRepository.existsByRestaurantNameIgnoreCase(restaurantRequest.getRestaurantName());
 
-        // Save the restaurant
+        if (exists) {
+            log.error("Duplicate restaurant: {} already exists", restaurantRequest.getRestaurantName());
+            throw new AlreadyExistsException(ConstantMessage.RESTAURANT_ALREADY_EXISTS);
+        }
+
+        Restaurant restaurant = dtoConversion.convertToRestaurantEntity(restaurantRequest);
+        log.info("Converted restaurant entity: {}", restaurant);
+
+        if(image.isEmpty() || image.getContentType() == null) {
+            throw new ResourceNotFoundException(ConstantMessage.INVALID_IMAGE);
+        }
+        try {
+                String contentType = image.getContentType();
+                if (!(contentType.equals("image/jpeg") || contentType.equals("image/png"))) {
+                    System.out.println("should not run ");
+                    log.error("Invalid image type: {}. Only JPG and PNG are allowed.", contentType);
+                    throw new InvalidRequestException(ConstantMessage.INVALID_IMAGE_FORMAT);
+                }
+                restaurant.setRestaurantImage(image.getBytes());
+        }
+        catch (Exception e) {
+            System.out.println(e.getClass());
+            log.error("Error occurred while processing image file for restaurant: {}", e.getMessage());
+            throw new RuntimeException("Image processing failed");
+        }
         Restaurant savedRestaurant = restaurantRepository.save(restaurant);
-        logger.info("Restaurant added successfully with ID: {}", savedRestaurant.getRestaurantId());
-
-        // Convert the saved entity to a response DTO
+        log.info("Restaurant added successfully with ID: {}", savedRestaurant.getRestaurantId());
         return dtoConversion.convertToRestaurantResponse(savedRestaurant);
     }
 
@@ -104,7 +105,7 @@ public class RestaurantService {
      * @return a list of response objects containing details of all restaurants
      */
     public List<RestaurantResponse> getAllRestaurants() {
-        logger.info("Retrieving all restaurants");
+        log.info("Retrieving all restaurants");
 
         List<Restaurant> restaurants = restaurantRepository.findAll();
         List<RestaurantResponse> restaurantResponses = new ArrayList<>();
@@ -114,7 +115,7 @@ public class RestaurantService {
             restaurantResponses.add(restaurantResponse);
         }
 
-        logger.info("Retrieved {} restaurants", restaurantResponses.size());
+        log.info("Retrieved {} restaurants", restaurantResponses.size());
         return restaurantResponses;
     }
 
@@ -125,19 +126,21 @@ public class RestaurantService {
      * @return the response object containing details of the restaurant
      * @throws ResourceNotFoundException if the restaurant with the given ID is not found
      */
-    public RestaurantResponse getRestaurantById(final Long restaurantId) throws ResourceNotFoundException {
-        logger.info("Retrieving restaurant with ID: {}", restaurantId);
+    public RestaurantResponse getRestaurantById(final Long restaurantId){
+        log.info("Retrieving restaurant with ID: {}", restaurantId);
 
         Optional<Restaurant> optionalRestaurant = restaurantRepository.findById(restaurantId);
         if (optionalRestaurant.isPresent()) {
             RestaurantResponse response = dtoConversion.convertToRestaurantResponse(optionalRestaurant.get());
-            logger.info("Restaurant found with ID: {}", restaurantId);
+            log.info("Restaurant found with ID: {}", restaurantId);
             return response;
         } else {
-            logger.error("Restaurant with ID: {} not found", restaurantId);
+            log.error("Restaurant with ID: {} not found", restaurantId);
             throw new ResourceNotFoundException(ConstantMessage.RESTAURANT_NOT_FOUND);
         }
     }
+
+
 
     /**
      * Retrieves the image of a restaurant by its ID.
@@ -148,13 +151,11 @@ public class RestaurantService {
      * @throws ResourceNotFoundException if the restaurant with the given ID is not found
      */
 
-
-        public byte[] getRestaurantImage(final Long restaurantId)throws ResourceNotFoundException {
-            logger.info("Fetching image for restaurant with ID: {}", restaurantId);
+        public byte[] getRestaurantImage(final Long restaurantId){
+            log.info("Fetching image for restaurant with ID: {}", restaurantId);
             RestaurantResponse restaurant = getRestaurantById(restaurantId);
             return restaurant.getRestaurantImage();
         }
-
 
     /**
      * Retrieves all restaurants associated with a specific user ID.
@@ -165,17 +166,16 @@ public class RestaurantService {
      */
        @Transactional
        public List<RestaurantResponse> getALlRestaurantsByUserId(final Long userId) {
-        logger.info("Retrieving restaurants for user ID: {}", userId);
-        List<Restaurant> restaurants = restaurantRepository.findAllByUserId(userId);
+        log.info("Retrieving restaurants for user ID: {}", userId);
+        List<Restaurant> restaurants = restaurantRepository.findByUserId(userId);
         List<RestaurantResponse> responseList = new ArrayList<>();
-           logger.info("Restaurants retrieved: {}", restaurants);
+           log.info("Restaurants retrieved: {}", restaurants);
         for (Restaurant restaurant : restaurants) {
-            responseList.add(DtoConversion.convertToRestaurantResponse(restaurant));
+            DtoConversion dtoConversion= new DtoConversion();
+            responseList.add(dtoConversion.convertToRestaurantResponse(restaurant));
         }
-        logger.info("Retrieved {} restaurants for user ID: {}", responseList.size(), userId);
+        log.info("Retrieved {} restaurants for user ID: {}", responseList.size(), userId);
         return responseList;
     }
-
-
 }
 

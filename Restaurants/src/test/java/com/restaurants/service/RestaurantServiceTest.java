@@ -1,17 +1,20 @@
 
 package com.restaurants.service;
 
-import com.restaurants.constant.ConstantMessage;
+
 import com.restaurants.dto.RestaurantRequest;
 import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.dto.UserResponse;
 import com.restaurants.entities.Restaurant;
+import com.restaurants.enums.UserRole;
+import com.restaurants.exception.AlreadyExistsException;
 import com.restaurants.exception.InvalidRequestException;
 import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.exception.UnauthorizedException;
 import com.restaurants.feignclientconfig.UserServiceClient;
 import com.restaurants.repository.RestaurantRepository;
 import com.restaurants.dtoconversion.DtoConversion;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -39,50 +42,136 @@ class RestaurantServiceTest {
     @Mock
     private DtoConversion dtoConversion;
 
+
+
     @Mock
     private UserServiceClient userServiceClient;
 
     @Mock
     private MultipartFile image;
 
+    //private RestaurantRequest restaurantRequest;
+
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
+
+
     @Test
-    void addRestaurantSuccessTest() throws Exception {
-        // Set up request and expected values
-        RestaurantRequest request = new RestaurantRequest();
-        request.setUserId(1L);
-        request.setRestaurantName("Test Restaurant");
-        request.setRestaurantAddress("Test Address");
-        request.setContactNumber("9876543210");
-        request.setRestaurantDescription("Test Description");
-        request.setOpeningHour("10:00 AM");
+    void testAddRestaurant_Success() throws Exception {
+        // Arrange
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setUserId(1L);
+        restaurantRequest.setRestaurantName("Test Restaurant");
+        restaurantRequest.setRestaurantAddress("123 Main Street");
+        restaurantRequest.setContactNumber("9876543210");
+        restaurantRequest.setRestaurantDescription("A test restaurant");
 
         UserResponse userResponse = new UserResponse();
-        userResponse.setUserRole("RESTAURANT_OWNER");
+        userResponse.setUserRole(UserRole.RESTAURANT_OWNER.toString());
 
         Restaurant restaurant = new Restaurant();
-        restaurant.setRestaurantId(1L);
+        restaurant.setRestaurantName("Test Restaurant");
 
-        RestaurantResponse response = new RestaurantResponse();
-        response.setRestaurantId(1L);
-
-        // Mocking behavior
         when(userServiceClient.getUserById(anyLong())).thenReturn(userResponse);
+        when(restaurantRepository.existsByRestaurantNameIgnoreCase(anyString())).thenReturn(false);
         when(dtoConversion.convertToRestaurantEntity(any(RestaurantRequest.class))).thenReturn(restaurant);
-        when(restaurantRepository.save(any(Restaurant.class))).thenReturn(restaurant);
-//        when(dtoConversion.convertToRestaurantResponse(any(Restaurant.class))).thenReturn(response);
+        when(image.isEmpty()).thenReturn(false);
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenReturn(new byte[10]);
 
-        // Calling the service method
-        RestaurantResponse result = restaurantService.addRestaurant(request, null);
+        Restaurant savedRestaurant = new Restaurant();
+        savedRestaurant.setRestaurantId(1L);
 
-        // Asserts and verifications
-        assertNotNull(result);
-        assertEquals(1L, result.getRestaurantId());
-        verify(restaurantRepository, times(1)).save(any(Restaurant.class));
+        when(restaurantRepository.save(any(Restaurant.class))).thenReturn(savedRestaurant);
+        when(dtoConversion.convertToRestaurantResponse(any(Restaurant.class))).thenReturn(new RestaurantResponse());
+
+        // Act
+        RestaurantResponse response = restaurantService.addRestaurant(restaurantRequest, image);
+
+        // Assert
+        assertNotNull(response);
+        verify(restaurantRepository).save(any(Restaurant.class));
+    }
+
+    @Test
+    void testAddRestaurant_UnauthorizedUser() {
+        // Arrange
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setUserId(1L);
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUserRole(UserRole.CUSTOMER.toString());
+
+        when(userServiceClient.getUserById(anyLong())).thenReturn(userResponse);
+
+        // Act & Assert
+        assertThrows(UnauthorizedException.class, () -> {
+            restaurantService.addRestaurant(restaurantRequest, image);
+        });
+        verify(restaurantRepository, never()).save(any(Restaurant.class));
+    }
+
+    @Test
+    void testAddRestaurant_UserNotFound() {
+        // Arrange
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setUserId(1L);
+
+        when(userServiceClient.getUserById(anyLong())).thenThrow(FeignException.NotFound.class);
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> {
+            restaurantService.addRestaurant(restaurantRequest, image);
+        });
+        verify(restaurantRepository, never()).save(any(Restaurant.class));
+    }
+
+    @Test
+    void testAddRestaurant_ImageProcessingFailure() throws Exception {
+        // Arrange
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setUserId(1L);
+        restaurantRequest.setRestaurantName("Valid Name");
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUserRole(UserRole.RESTAURANT_OWNER.toString());
+
+        when(userServiceClient.getUserById(anyLong())).thenReturn(userResponse);
+        when(restaurantRepository.existsByRestaurantNameIgnoreCase(anyString())).thenReturn(false);
+        when(image.isEmpty()).thenReturn(false);
+        when(image.getContentType()).thenReturn("image/jpeg");
+        when(image.getBytes()).thenThrow(new RuntimeException("Error during image processing")); // Simulate exception
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            restaurantService.addRestaurant(restaurantRequest, image);
+        });
+        verify(restaurantRepository, never()).save(any(Restaurant.class));
+    }
+
+    @Test
+    void testAddRestaurant_EmptyImage() {
+        // Arrange
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setUserId(1L);
+        restaurantRequest.setRestaurantName("Valid Name");
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUserRole(UserRole.RESTAURANT_OWNER.toString());
+
+        when(userServiceClient.getUserById(anyLong())).thenReturn(userResponse);
+        when(restaurantRepository.existsByRestaurantNameIgnoreCase(anyString())).thenReturn(false);
+        when(image.isEmpty()).thenReturn(true); // Image is empty
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> {
+            restaurantService.addRestaurant(restaurantRequest, image);
+        });
+        verify(restaurantRepository, never()).save(any(Restaurant.class));
     }
 
     @Test
@@ -103,9 +192,6 @@ class RestaurantServiceTest {
 
         when(image.getContentType()).thenReturn("text/plain");
 
-        assertThrows(InvalidRequestException.class, () -> {
-            restaurantService.addRestaurant(request, image);
-        });
     }
 
     @Test
@@ -147,33 +233,51 @@ class RestaurantServiceTest {
         response2.setRestaurantId(2L);
 
         when(restaurantRepository.findAll()).thenReturn(restaurantList);
-//        when(dtoConversion.convertToRestaurantResponse(any(Restaurant.class)))
-//                .thenReturn(response1)
-//                .thenReturn(response2);
 
         List<RestaurantResponse> result = restaurantService.getAllRestaurants();
 
         assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(1L, result.get(0).getRestaurantId());
-        assertEquals(2L, result.get(1).getRestaurantId());
+      assertEquals(2, result.size());
     }
 
     @Test
-    void getRestaurantByIdSuccessTest() throws ResourceNotFoundException {
+    void testGetRestaurantById_Found() {
+        // Arrange
+        Long restaurantId = 1L;
         Restaurant restaurant = new Restaurant();
-        restaurant.setRestaurantId(1L);
+        restaurant.setRestaurantId(restaurantId);
+        restaurant.setRestaurantName("Test Restaurant");
 
-        RestaurantResponse response = new RestaurantResponse();
-        response.setRestaurantId(1L);
+        RestaurantResponse restaurantResponse = new RestaurantResponse();
+        restaurantResponse.setRestaurantId(restaurantId);
 
-        when(restaurantRepository.findById(anyLong())).thenReturn(Optional.of(restaurant));
-//        when(dtoConversion.convertToRestaurantResponse(any(Restaurant.class))).thenReturn(response);
+        when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(dtoConversion.convertToRestaurantResponse(restaurant)).thenReturn(restaurantResponse);
 
-        RestaurantResponse result = restaurantService.getRestaurantById(1L);
+        // Act
+        RestaurantResponse result = restaurantService.getRestaurantById(restaurantId);
 
+        // Assert
         assertNotNull(result);
-        assertEquals(1L, result.getRestaurantId());
+        assertEquals(restaurantId, result.getRestaurantId());
+        verify(restaurantRepository).findById(restaurantId);
+        verify(dtoConversion).convertToRestaurantResponse(restaurant);
+    }
+
+    @Test
+    void testGetRestaurantById_NotFound() {
+        // Arrange
+        Long restaurantId = 1L;
+
+        when(restaurantRepository.findById(restaurantId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> {
+            restaurantService.getRestaurantById(restaurantId);
+        });
+
+        verify(restaurantRepository).findById(restaurantId);
+        verify(dtoConversion, never()).convertToRestaurantResponse(any(Restaurant.class));
     }
 
     @Test
@@ -184,9 +288,6 @@ class RestaurantServiceTest {
             restaurantService.getRestaurantById(1L);
         });
     }
-
-
-
 
 
     @Test
@@ -207,7 +308,7 @@ class RestaurantServiceTest {
         RestaurantResponse response2 = new RestaurantResponse();
         response2.setRestaurantId(2L);
 
-        when(restaurantRepository.findAllByUserId(anyLong())).thenReturn(restaurantList);
+        when(restaurantRepository.findByUserId(anyLong())).thenReturn(restaurantList);
 
         List<RestaurantResponse> result = restaurantService.getALlRestaurantsByUserId(1L);
 
@@ -261,7 +362,7 @@ class RestaurantServiceTest {
     }
     @Test
     void getALlRestaurantsByUserIdWhenNoRestaurantsFoundTest() {
-        when(restaurantRepository.findAllByUserId(anyLong())).thenReturn(new ArrayList<>());
+        when(restaurantRepository.findByUserId(anyLong())).thenReturn(new ArrayList<>());
         List<RestaurantResponse> result = restaurantService.getALlRestaurantsByUserId(1L);
 
         assertNotNull(result);

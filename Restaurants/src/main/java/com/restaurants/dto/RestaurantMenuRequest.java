@@ -1,8 +1,6 @@
 package com.restaurants.dto;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
-
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -49,5 +47,4 @@ public class RestaurantMenuRequest {
      */
     private Long restaurantId;
 
-    private MultipartFile imageUrl;
 }

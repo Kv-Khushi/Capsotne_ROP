@@ -6,8 +6,7 @@ import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.dto.RestaurantRequest;
 import com.restaurants.dto.RestaurantResponse;
 import com.restaurants.service.RestaurantService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,9 +23,9 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/restaurants")
+@Slf4j
 public final class RestaurantController {
-
- private static final Logger logger = LogManager.getLogger(RestaurantController.class);
+ 
 
  @Autowired
  private RestaurantService restaurantService;
@@ -40,15 +39,14 @@ public final class RestaurantController {
   */
 
  @PostMapping("/addRestaurant")
- public ResponseEntity<SuccessResponse> addRestaurant(@ModelAttribute @Valid RestaurantRequest restaurantRequest,
-                                                      @RequestParam("image") MultipartFile image) {
-  logger.info("Request to add new restaurant with details: {}", restaurantRequest);
+ public ResponseEntity<SuccessResponse> addRestaurant(@ModelAttribute @Valid final RestaurantRequest restaurantRequest,
+                                                      @RequestParam("image") final MultipartFile image) {
+   log.info("Request to add new restaurant with details: {}", restaurantRequest);
+   RestaurantResponse restaurantResponse =restaurantService.addRestaurant(restaurantRequest, image);
 
-  restaurantService.addRestaurant(restaurantRequest, image);
-
-  logger.info("Restaurant added successfully");
-
-  return ResponseEntity.ok(new SuccessResponse(ConstantMessage.RESTAURANT_ADD_SUCCESS));
+   log.info("Restaurant added successfully");
+   SuccessResponse response= new SuccessResponse(ConstantMessage.RESTAURANT_ADD_SUCCESS);
+   return new ResponseEntity<>(response,HttpStatus.CREATED);
  }
 
  /**
@@ -58,11 +56,10 @@ public final class RestaurantController {
   */
  @GetMapping("/allRestaurants")
  public ResponseEntity<List<RestaurantResponse>> getAllRestaurants() {
-  logger.info("Request to retrieve all restaurants");
+  log.info("Request to retrieve all restaurants");
 
   List<RestaurantResponse> restaurantResponses = restaurantService.getAllRestaurants();
-  logger.info("Retrieved {} restaurants", restaurantResponses.size());
-
+  log.info("Retrieved {} restaurants", restaurantResponses.size());
   return ResponseEntity.ok(restaurantResponses);
  }
 
@@ -75,10 +72,10 @@ public final class RestaurantController {
   */
  @GetMapping("/getRestaurantById/{restaurantId}")
  public RestaurantResponse getRestaurantById(@PathVariable final Long restaurantId) throws ResourceNotFoundException {
-  logger.info("Request to retrieve restaurant with ID: {}", restaurantId);
+  log.info("Request to retrieve restaurant with ID: {}", restaurantId);
 
   RestaurantResponse restaurantResponse = restaurantService.getRestaurantById(restaurantId);
-  logger.info("Retrieved restaurant with ID: {}", restaurantId);
+  log.info("Retrieved restaurant with ID: {}", restaurantId);
 
   return restaurantResponse;
  }
@@ -91,8 +88,8 @@ public final class RestaurantController {
   */
 
  @GetMapping("/{restaurantId}/image")
- public ResponseEntity<byte[]> getRestaurantImage(@PathVariable final Long restaurantId) throws ResourceNotFoundException {
-  logger.info("Retrieving image for restaurant with ID: {}", restaurantId);
+ public ResponseEntity<byte[]> getRestaurantImage(@PathVariable final Long restaurantId) {
+  log.info("Retrieving image for restaurant with ID: {}", restaurantId);
   byte[] imageData = restaurantService.getRestaurantImage(restaurantId);
   return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageData);
  }
@@ -103,11 +100,11 @@ public final class RestaurantController {
   * @param userId the ID of the user
   * @return a list of restaurants associated with the user
   */
- @GetMapping("/user/{userId}")
+ @GetMapping("/restaurantsByUser/{userId}")
  public ResponseEntity<List<RestaurantResponse>> getAllRestaurantByUserId(@PathVariable final Long userId) {
-  logger.info("Retrieving restaurants for user ID: {}", userId);
+  log.info("Retrieving restaurants for user ID: {}", userId);
   List<RestaurantResponse> response = restaurantService.getALlRestaurantsByUserId(userId);
-  logger.info("Retrieved {} restaurants for user ID: {}", response.size(), userId);
+  log.info("Retrieved {} restaurants for user ID: {}", response.size(), userId);
   return new ResponseEntity<>(response, HttpStatus.OK);
  }
 }

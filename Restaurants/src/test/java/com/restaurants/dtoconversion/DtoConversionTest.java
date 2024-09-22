@@ -92,6 +92,4 @@ class DtoConversionTest {
         assertEquals(request.getCategoryId(), menu.getCategoryId());
         assertEquals(request.getRestaurantId(), menu.getRestaurantId());
     }
-
-
 }

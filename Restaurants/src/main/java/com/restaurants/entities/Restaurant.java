@@ -59,23 +59,4 @@ public class Restaurant {
     @Lob
     private byte[] restaurantImage;
 
-    /**
-     * Returns a copy of the restaurant image byte array to prevent exposing internal representation.
-     *
-     * @return a copy of the restaurant image byte array, or null if the array is null.
-     */
-    public byte[] getRestaurantImage() {
-
-        return restaurantImage != null ? restaurantImage.clone() : null;
-    }
-
-    /**
-     * Sets a copy of the provided byte array to the restaurant image field to prevent external
-     * modification of the internal state.
-     *
-     * @param restaurantImage a byte array representing the restaurant image, or null.
-     */
-    public void setRestaurantImage(final byte[] restaurantImage) {
-        this.restaurantImage = restaurantImage != null ? restaurantImage.clone() : null;
-    }
 }

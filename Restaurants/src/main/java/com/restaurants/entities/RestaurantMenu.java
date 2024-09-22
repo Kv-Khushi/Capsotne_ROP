@@ -74,23 +74,4 @@ public class RestaurantMenu {
     @Lob
     private byte[] imageUrl;
 
-    /**
-     * Returns a copy of the imageUrl byte array to prevent exposing internal representation.
-     *
-     * @return a copy of the imageUrl byte array, or null if the array is null.
-     */
-    public byte[] getImageUrl() {
-        return imageUrl != null ? imageUrl.clone() : null;
-    }
-
-    /**
-     * Sets a copy of the provided byte array to the imageUrl field to prevent external
-     * modification of the internal state.
-     *
-     * @param imageUrl a byte array representing the image of the menu item, or null.
-     */
-    public void setImageUrl(final byte[] imageUrl) {
-
-        this.imageUrl = imageUrl != null ? imageUrl.clone() : null;
-    }
 }

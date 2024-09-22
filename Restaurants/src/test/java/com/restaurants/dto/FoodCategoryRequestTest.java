@@ -17,31 +17,31 @@ class FoodCategoryRequestTest {
     void testParameterizedConstructor() {
         FoodCategoryRequest request = new FoodCategoryRequest();
         request.setRestaurantId(1L);
-        request.setCategoryName("Appetizers");
+        request.setCategoryName("Sample Category");
 
         assertEquals(1L, request.getRestaurantId());
-        assertEquals("Appetizers", request.getCategoryName());
+        assertEquals("Sample Category", request.getCategoryName());
     }
 
     @Test
     void testLombokGettersAndSetters() {
         FoodCategoryRequest request = new FoodCategoryRequest();
         request.setRestaurantId(2L);
-        request.setCategoryName("Main Course");
+        request.setCategoryName("Sample Category");
 
         assertEquals(2L, request.getRestaurantId());
-        assertEquals("Main Course", request.getCategoryName());
+        assertEquals("Sample Category", request.getCategoryName());
     }
 
     @Test
     void testLombokEqualsAndHashCode() {
         FoodCategoryRequest request1 = new FoodCategoryRequest();
         request1.setRestaurantId(3L);
-        request1.setCategoryName("Desserts");
+        request1.setCategoryName("Sample Category");
 
         FoodCategoryRequest request2 = new FoodCategoryRequest();
         request2.setRestaurantId(3L);
-        request2.setCategoryName("Desserts");
+        request2.setCategoryName("Sample Category");
 
         assertEquals(request1, request2);
         assertEquals(request1.hashCode(), request2.hashCode());
@@ -51,9 +51,9 @@ class FoodCategoryRequestTest {
     void testLombokToString() {
         FoodCategoryRequest request = new FoodCategoryRequest();
         request.setRestaurantId(4L);
-        request.setCategoryName("Beverages");
+        request.setCategoryName("Sample Category");
 
-        String expectedString = "FoodCategoryRequest(restaurantId=4, categoryName=Beverages)";
+        String expectedString = "FoodCategoryRequest(restaurantId=4, categoryName=Sample Category)";
         assertTrue(request.toString().contains("FoodCategoryRequest"));
     }
 }

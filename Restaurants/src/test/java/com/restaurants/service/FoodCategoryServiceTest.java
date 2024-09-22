@@ -42,12 +42,12 @@ class FoodCategoryServiceTest {
     void addCategoryTest() {
         FoodCategoryRequest req = new FoodCategoryRequest();
         req.setRestaurantId(1L);
-        req.setCategoryName("Appetizers");
+        req.setCategoryName("Sample Category");
 
         FoodCategory category = new FoodCategory();
         category.setCategoryId(1L);
         category.setRestaurantId(1L);
-        category.setCategoryName("Appetizers");
+        category.setCategoryName("Sample Category");
 
         when(dtoConv.convertToFoodCategoryEntity(req)).thenReturn(category);
         when(repo.save(any(FoodCategory.class))).thenReturn(category);
@@ -85,7 +85,7 @@ class FoodCategoryServiceTest {
         FoodCategory category = new FoodCategory();
         category.setCategoryId(1L);
         category.setRestaurantId(1L);
-        category.setCategoryName("Appetizers");
+        category.setCategoryName("Sample Category");
 
         when(repo.findByRestaurantId(anyLong())).thenReturn(Arrays.asList(category));
         when(dtoConv.convertToFoodCategoryResponse(any(FoodCategory.class))).thenReturn(new FoodCategoryResponse());
@@ -101,7 +101,7 @@ class FoodCategoryServiceTest {
     void updateCategoryNotFoundTest() {
         when(repo.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> service.updateCategoryName(1L, "Main Course"));
+        assertThrows(ResourceNotFoundException.class, () -> service.updateCategoryName(1L, "Sample Category"));
 
         verify(repo, times(1)).findById(1L);
     }
@@ -110,16 +110,16 @@ class FoodCategoryServiceTest {
     void updateCategoryTest() throws ResourceNotFoundException {
         FoodCategory category = new FoodCategory();
         category.setCategoryId(1L);
-        category.setCategoryName("Appetizers");
+        category.setCategoryName("Sample Category");
 
         when(repo.findById(anyLong())).thenReturn(Optional.of(category));
         when(repo.save(any(FoodCategory.class))).thenReturn(category);
         when(dtoConv.convertToFoodCategoryResponse(any(FoodCategory.class))).thenReturn(new FoodCategoryResponse());
 
-        FoodCategoryResponse res = service.updateCategoryName(1L, "Main Course");
+        FoodCategoryResponse res = service.updateCategoryName(1L, "Sample Category");
 
         assertNotNull(res);
-        assertEquals("Main Course", category.getCategoryName());
+        assertEquals("Sample Category", category.getCategoryName());
         verify(repo, times(1)).findById(1L);
         verify(repo, times(1)).save(category);
     }
@@ -129,7 +129,7 @@ class FoodCategoryServiceTest {
     void addCategoryAlreadyExistsTest() {
         FoodCategoryRequest req = new FoodCategoryRequest();
         req.setRestaurantId(1L);
-        req.setCategoryName("Appetizers");
+        req.setCategoryName("Sample Category");
 
         when(repo.existsByRestaurantIdAndCategoryNameIgnoreCase(anyLong(), any(String.class))).thenReturn(true);
 
@@ -142,9 +142,46 @@ class FoodCategoryServiceTest {
     void updateCategoryNameExceptionHandlingTest() {
         when(repo.findById(anyLong())).thenThrow(new RuntimeException("Database error"));
 
-        assertThrows(RuntimeException.class, () -> service.updateCategoryName(1L, "Main Course"));
+        assertThrows(RuntimeException.class, () -> service.updateCategoryName(1L, "Sample Category"));
 
         verify(repo, times(1)).findById(1L);
     }
+
+    @Test
+    void testGetFoodCategoryById_Success() throws ResourceNotFoundException {
+        // Arrange
+        Long categoryId = 1L;
+        FoodCategory mockCategory = new FoodCategory();
+        mockCategory.setCategoryId(categoryId);
+        mockCategory.setCategoryName("Sample Category");
+        mockCategory.setRestaurantId(2L);
+
+        when(repo.findById(categoryId)).thenReturn(Optional.of(mockCategory));
+
+        // Act
+        FoodCategoryResponse response = service.getFoodCategoryById(categoryId);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(categoryId, response.getCategoryId());
+        assertEquals("Sample Category", response.getCategoryName());
+        assertEquals(2L, response.getRestaurantId());
+        verify(repo, times(1)).findById(categoryId);
+    }
+
+    @Test
+    void testGetFoodCategoryById_NotFound() {
+        // Arrange
+        Long categoryId = 1L;
+        when(repo.findById(categoryId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> service.getFoodCategoryById(categoryId));
+
+        assertEquals("Food Category not found with id " + categoryId, exception.getMessage());
+        verify(repo, times(1)).findById(categoryId);
+    }
+
 }
 

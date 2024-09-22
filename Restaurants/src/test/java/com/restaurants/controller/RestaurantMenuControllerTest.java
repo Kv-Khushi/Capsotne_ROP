@@ -4,22 +4,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restaurants.constant.ConstantMessage;
 import com.restaurants.dto.RestaurantMenuRequest;
 import com.restaurants.dto.RestaurantMenuResponse;
+import com.restaurants.dto.SuccessResponse;
 import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.service.RestaurantMenuService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -42,6 +48,21 @@ class RestaurantMenuControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(restaurantMenuController).build();
         objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    void testAddFoodItem() {
+        // Arrange
+        RestaurantMenuRequest request = new RestaurantMenuRequest();
+        MultipartFile image = new MockMultipartFile("image", "image.jpg", "image/jpeg", "dummy-image".getBytes());
+
+
+        // Act
+        ResponseEntity<SuccessResponse> response = restaurantMenuController.addFoodItem(request, image);
+
+        // Assert
+        assertEquals(201, response.getStatusCodeValue());
+
     }
 
     @Test
@@ -114,6 +135,38 @@ class RestaurantMenuControllerTest {
         verify(restaurantMenuService, times(1)).getFoodItemImage(foodItemId);
     }
 
+
+    @Test
+    void testGetFoodItemsByCategoryId() throws ResourceNotFoundException {
+        // Arrange
+        Long categoryId = 1L;
+        List<RestaurantMenuResponse> mockResponseList = new ArrayList<>();
+        mockResponseList.add(new RestaurantMenuResponse());
+
+        when(restaurantMenuService.getFoodItemsByCategoryId(categoryId)).thenReturn(mockResponseList);
+
+        // Act
+        ResponseEntity<List<RestaurantMenuResponse>> response = restaurantMenuController.getFoodItemsByCategoryId(categoryId);
+
+        // Assert
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void testGetFoodItemsByCategoryId_ResourceNotFound() throws ResourceNotFoundException {
+        // Arrange
+        Long categoryId = 999L;
+
+        when(restaurantMenuService.getFoodItemsByCategoryId(categoryId)).thenThrow(new ResourceNotFoundException("Category not found"));
+
+        // Act & Assert
+        try {
+            restaurantMenuController.getFoodItemsByCategoryId(categoryId);
+        } catch (ResourceNotFoundException ex) {
+            assertEquals("Category not found", ex.getMessage());
+        }
+    }
 
 
 

@@ -23,10 +23,10 @@ class RestaurantResponseTest {
         RestaurantResponse response = new RestaurantResponse();
         response.setRestaurantId(1L);
         response.setUserId(2L);
-        response.setRestaurantName("The Bistro");
+        response.setRestaurantName("Sample Name");
         response.setRestaurantAddress("123 Main St");
-        response.setContactNumber("1234567890");
-        response.setRestaurantDescription("A cozy place with a great menu");
+        response.setContactNumber("7834567890");
+        response.setRestaurantDescription("Description of the restaurant");
         response.setOpeningHour("9 AM - 10 PM");
 
         byte[] imageBytes = new byte[]{1, 2, 3};
@@ -34,10 +34,10 @@ class RestaurantResponseTest {
 
         assertEquals(1L, response.getRestaurantId());
         assertEquals(2L, response.getUserId());
-        assertEquals("The Bistro", response.getRestaurantName());
+        assertEquals("Sample Name", response.getRestaurantName());
         assertEquals("123 Main St", response.getRestaurantAddress());
-        assertEquals("1234567890", response.getContactNumber());
-        assertEquals("A cozy place with a great menu", response.getRestaurantDescription());
+        assertEquals("7834567890", response.getContactNumber());
+        assertEquals("Description of the restaurant", response.getRestaurantDescription());
         assertEquals("9 AM - 10 PM", response.getOpeningHour());
         assertArrayEquals(imageBytes, response.getRestaurantImage());
     }
@@ -47,10 +47,10 @@ class RestaurantResponseTest {
         RestaurantResponse response = new RestaurantResponse();
         response.setRestaurantId(2L);
         response.setUserId(3L);
-        response.setRestaurantName("Cafe Delight");
-        response.setRestaurantAddress("456 Elm St");
+        response.setRestaurantName("Sample Name");
+        response.setRestaurantAddress("456 Main road");
         response.setContactNumber("9876543210");
-        response.setRestaurantDescription("Great coffee and pastries");
+        response.setRestaurantDescription("Description of the restaurant");
         response.setOpeningHour("8 AM - 8 PM");
 
         byte[] imageBytes = new byte[]{4, 5, 6};
@@ -58,10 +58,10 @@ class RestaurantResponseTest {
 
         assertEquals(2L, response.getRestaurantId());
         assertEquals(3L, response.getUserId());
-        assertEquals("Cafe Delight", response.getRestaurantName());
-        assertEquals("456 Elm St", response.getRestaurantAddress());
+        assertEquals("Sample Name", response.getRestaurantName());
+        assertEquals("456 Main road", response.getRestaurantAddress());
         assertEquals("9876543210", response.getContactNumber());
-        assertEquals("Great coffee and pastries", response.getRestaurantDescription());
+        assertEquals("Description of the restaurant", response.getRestaurantDescription());
         assertEquals("8 AM - 8 PM", response.getOpeningHour());
         assertArrayEquals(imageBytes, response.getRestaurantImage());
     }
@@ -87,10 +87,10 @@ class RestaurantResponseTest {
         RestaurantResponse response1 = new RestaurantResponse();
         response1.setRestaurantId(1L);
         response1.setUserId(2L);
-        response1.setRestaurantName("The Bistro");
+        response1.setRestaurantName("Sample Name");
         response1.setRestaurantAddress("123 Main St");
-        response1.setContactNumber("1234567890");
-        response1.setRestaurantDescription("A cozy place with a great menu");
+        response1.setContactNumber("7834567890");
+        response1.setRestaurantDescription("Description of the restaurant");
         response1.setOpeningHour("9 AM - 10 PM");
 
         byte[] imageBytes1 = new byte[]{1, 2, 3};
@@ -99,10 +99,10 @@ class RestaurantResponseTest {
         RestaurantResponse response2 = new RestaurantResponse();
         response2.setRestaurantId(1L);
         response2.setUserId(2L);
-        response2.setRestaurantName("The Bistro");
+        response2.setRestaurantName("Sample Name");
         response2.setRestaurantAddress("123 Main St");
-        response2.setContactNumber("1234567890");
-        response2.setRestaurantDescription("A cozy place with a great menu");
+        response2.setContactNumber("7834567890");
+        response2.setRestaurantDescription("Description of the restaurant");
         response2.setOpeningHour("9 AM - 10 PM");
 
         byte[] imageBytes2 = new byte[]{1, 2, 3};
@@ -117,16 +117,16 @@ class RestaurantResponseTest {
         RestaurantResponse response = new RestaurantResponse();
         response.setRestaurantId(2L);
         response.setUserId(3L);
-        response.setRestaurantName("Cafe Delight");
-        response.setRestaurantAddress("456 Elm St");
+        response.setRestaurantName("Sample Name");
+        response.setRestaurantAddress("456 Main road");
         response.setContactNumber("9876543210");
-        response.setRestaurantDescription("Great coffee and pastries");
+        response.setRestaurantDescription("Description of the restaurant");
         response.setOpeningHour("8 AM - 8 PM");
 
         byte[] imageBytes = new byte[]{4, 5, 6};
         response.setRestaurantImage(imageBytes);
 
-        String expectedString = "RestaurantResponse(restaurantId=2, userId=3, restaurantName=Cafe Delight, restaurantAddress=456 Elm St, contactNumber=9876543210, restaurantDescription=Great coffee and pastries, openingHour=8 AM - 8 PM, restaurantImage=[B@"+Integer.toHexString(imageBytes.hashCode())+")";
+        String expectedString = "RestaurantResponse(restaurantId=2, userId=3, restaurantName=Sample Name, restaurantAddress=456 Main road, contactNumber=9876543210, restaurantDescription=Description of the restaurant, openingHour=8 AM - 8 PM, restaurantImage=[B@"+Integer.toHexString(imageBytes.hashCode())+")";
         assertTrue(response.toString().contains("RestaurantResponse"));
     }
 }

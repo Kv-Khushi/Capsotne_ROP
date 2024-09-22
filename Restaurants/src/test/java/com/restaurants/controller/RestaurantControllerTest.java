@@ -56,7 +56,7 @@ class RestaurantControllerTest {
 
         ResponseEntity<SuccessResponse> responseEntity = restaurantController.addRestaurant(request, image);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
         assertEquals(ConstantMessage.RESTAURANT_ADD_SUCCESS, responseEntity.getBody().getMessage());
         verify(restaurantService, times(1)).addRestaurant(any(RestaurantRequest.class), any(MultipartFile.class));

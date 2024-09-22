@@ -24,18 +24,18 @@ public class RestaurantMenuResponseTest {
         byte[] image = new byte[]{1, 2, 3, 4};
         RestaurantMenuResponse response = new RestaurantMenuResponse();
         response.setItemId(1L);
-        response.setItemName("Burger");
+        response.setItemName("Food Item");
         response.setPrice(5.99);
-        response.setDescription("Delicious beef burger");
+        response.setDescription("Food Item Description");
         response.setVegNonVeg(false);
         response.setCategoryId(10L);
         response.setRestaurantId(100L);
         response.setImageUrl(image);
 
         assertEquals(1L, response.getItemId());
-        assertEquals("Burger", response.getItemName());
+        assertEquals("Food Item", response.getItemName());
         assertEquals(5.99, response.getPrice());
-        assertEquals("Delicious beef burger", response.getDescription());
+        assertEquals("Food Item Description", response.getDescription());
         assertFalse(response.getVegNonVeg());
         assertEquals(10L, response.getCategoryId());
         assertEquals(100L, response.getRestaurantId());

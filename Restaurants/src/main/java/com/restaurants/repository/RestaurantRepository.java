@@ -30,5 +30,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     List<Restaurant> findByUserId(Long userId);
 
 
-    List<Restaurant> findAllByUserId(Long userId);
+    /**
+     * Checks if a restaurant with the given name exists in the database, ignoring case.
+     *
+     * @param restaurantName the name of the restaurant to check for existence
+     * @return true if a restaurant with the specified name exists, false otherwise
+     */
+    boolean existsByRestaurantNameIgnoreCase(String restaurantName);
 }

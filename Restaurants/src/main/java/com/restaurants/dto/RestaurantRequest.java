@@ -1,7 +1,7 @@
 package com.restaurants.dto;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import javax.validation.constraints.*;
 
@@ -56,7 +56,6 @@ public class RestaurantRequest {
      */
     private String openingHour;
 
-    private MultipartFile restaurantImage;
 
     // Define constants for magic numbers
     private static final int MAX_RESTAURANT_NAME_LENGTH = 20;

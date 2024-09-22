@@ -25,9 +25,9 @@ public class FoodCategoryResponseTest {
     @Test
     public void testCategoryName() {
         FoodCategoryResponse response = new FoodCategoryResponse();
-        response.setCategoryName("Appetizers");
+        response.setCategoryName("Sample Category");
 
-        assertEquals("Appetizers", response.getCategoryName());
+        assertEquals("Sample Category", response.getCategoryName());
     }
 
     @Test
@@ -35,11 +35,11 @@ public class FoodCategoryResponseTest {
         FoodCategoryResponse response = new FoodCategoryResponse();
         response.setCategoryId(2L);
         response.setRestaurantId(200L);
-        response.setCategoryName("Main Course");
+        response.setCategoryName("Sample Category");
 
         assertEquals(2L, response.getCategoryId());
         assertEquals(200L, response.getRestaurantId());
-        assertEquals("Main Course", response.getCategoryName());
+        assertEquals("Sample Category", response.getCategoryName());
     }
 }
 

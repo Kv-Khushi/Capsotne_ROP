@@ -25,7 +25,7 @@ class FoodCategoryTest {
     @Test
     void testSetGetCategoryName() {
         FoodCategory foodCategory = new FoodCategory();
-        String name = "Appetizers";
+        String name = " Sample Category";
         foodCategory.setCategoryName(name);
         assertEquals(name, foodCategory.getCategoryName(), "Category name should match");
     }
@@ -35,12 +35,12 @@ class FoodCategoryTest {
         FoodCategory foodCategory1 = new FoodCategory();
         foodCategory1.setCategoryId(1L);
         foodCategory1.setRestaurantId(2L);
-        foodCategory1.setCategoryName("Appetizers");
+        foodCategory1.setCategoryName("Sample Category");
 
         FoodCategory foodCategory2 = new FoodCategory();
         foodCategory2.setCategoryId(1L);
         foodCategory2.setRestaurantId(2L);
-        foodCategory2.setCategoryName("Appetizers");
+        foodCategory2.setCategoryName("Sample Category");
 
         // Test equality
         assertEquals(foodCategory1, foodCategory2, "FoodCategory objects should be equal");
@@ -54,9 +54,9 @@ class FoodCategoryTest {
         FoodCategory foodCategory = new FoodCategory();
         foodCategory.setCategoryId(1L);
         foodCategory.setRestaurantId(2L);
-        foodCategory.setCategoryName("Appetizers");
+        foodCategory.setCategoryName("Sample Category");
 
-        String expectedToString = "FoodCategory(categoryId=1, restaurantId=2, categoryName=Appetizers)";
+        String expectedToString = "FoodCategory(categoryId=1, restaurantId=2, categoryName=Sample Category)";
         assertEquals(expectedToString, foodCategory.toString(), "toString() output should match expected format");
     }
 }

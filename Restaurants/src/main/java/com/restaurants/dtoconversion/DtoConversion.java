@@ -24,7 +24,7 @@ public final class DtoConversion {
      * @return a {@link Restaurant} entity
      */
     public Restaurant convertToRestaurantEntity(final RestaurantRequest restaurantRequest) {
-        final Restaurant restaurant = new Restaurant();
+        Restaurant restaurant = new Restaurant();
         restaurant.setUserId(restaurantRequest.getUserId());
         restaurant.setRestaurantName(restaurantRequest.getRestaurantName());
         restaurant.setRestaurantAddress(restaurantRequest.getRestaurantAddress());
@@ -40,7 +40,7 @@ public final class DtoConversion {
      * @param restaurant the {@link Restaurant} entity
      * @return a {@link RestaurantResponse} containing restaurant details
      */
-    public static RestaurantResponse convertToRestaurantResponse(final Restaurant restaurant) {
+    public  RestaurantResponse convertToRestaurantResponse(final Restaurant restaurant) {
         RestaurantResponse restaurantResponse = new RestaurantResponse();
         restaurantResponse.setRestaurantId(restaurant.getRestaurantId());
         restaurantResponse.setUserId(restaurant.getUserId());
@@ -60,7 +60,7 @@ public final class DtoConversion {
      * @return a {@link FoodCategory} entity
      */
     public FoodCategory convertToFoodCategoryEntity(final FoodCategoryRequest foodCategoryRequest) {
-        final FoodCategory foodCategory = new FoodCategory();
+          FoodCategory foodCategory = new FoodCategory();
         foodCategory.setRestaurantId(foodCategoryRequest.getRestaurantId());
         foodCategory.setCategoryName(foodCategoryRequest.getCategoryName());
         return foodCategory;
@@ -73,7 +73,7 @@ public final class DtoConversion {
      * @return a {@link FoodCategoryResponse} containing food category details
      */
     public FoodCategoryResponse convertToFoodCategoryResponse(final FoodCategory foodCategory) {
-        final FoodCategoryResponse response = new FoodCategoryResponse();
+        FoodCategoryResponse response = new FoodCategoryResponse();
         response.setCategoryId(foodCategory.getCategoryId());
         response.setRestaurantId(foodCategory.getRestaurantId());
         response.setCategoryName(foodCategory.getCategoryName());
@@ -87,7 +87,7 @@ public final class DtoConversion {
      * @return a {@link RestaurantMenu} entity
      */
     public RestaurantMenu convertToRestaurantMenuEntity(final RestaurantMenuRequest request) {
-        final RestaurantMenu menu = new RestaurantMenu();
+       RestaurantMenu menu = new RestaurantMenu();
         menu.setItemName(request.getItemName());
         menu.setPrice(request.getPrice());
         menu.setDescription(request.getDescription());
@@ -104,7 +104,7 @@ public final class DtoConversion {
      * @return a {@link RestaurantMenuResponse} containing menu details
      */
     public RestaurantMenuResponse convertToRestaurantMenuResponse(final RestaurantMenu menu) {
-        final RestaurantMenuResponse response = new RestaurantMenuResponse();
+        RestaurantMenuResponse response = new RestaurantMenuResponse();
         response.setItemId(menu.getItemId());
         response.setItemName(menu.getItemName());
         response.setPrice(menu.getPrice());

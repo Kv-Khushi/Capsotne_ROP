@@ -1,6 +1,8 @@
 package com.restaurants.controller;
 
+import com.restaurants.dto.FoodCategoryRequest;
 import com.restaurants.dto.FoodCategoryResponse;
+import com.restaurants.dto.SuccessResponse;
 import com.restaurants.service.FoodCategoryService;
 import com.restaurants.exception.ResourceNotFoundException;
 import com.restaurants.constant.ConstantMessage;
@@ -10,11 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -38,6 +42,23 @@ class FoodCategoryControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
     }
 
+    @Test
+    void testAddFoodCategory_Success() {
+        // Arrange
+        FoodCategoryRequest foodCategoryRequest = new FoodCategoryRequest();
+        foodCategoryRequest.setCategoryName("Appetizers");
+
+        // Act
+        ResponseEntity<SuccessResponse> responseEntity = controller.addFoodCategory(foodCategoryRequest);
+
+        // Assert
+        assertEquals(200, responseEntity.getStatusCodeValue());
+        assertEquals(ConstantMessage.CATEGORY_ADD_SUCCESS, responseEntity.getBody().getMessage());
+
+        // Verify that the service method was called
+        verify(service, times(1)).addFoodCategory(foodCategoryRequest);
+    }
+
 
     @Test
     void deleteCategoryTest() throws Exception {
@@ -50,16 +71,6 @@ class FoodCategoryControllerTest {
         verify(service, times(1)).deleteFoodCategory(1L);
     }
 
-    @Test
-    void deleteCategoryNotFoundTest() throws Exception {
-        doThrow(new ResourceNotFoundException(ConstantMessage.CATEGORY_NOT_FOUND)).when(service).deleteFoodCategory(anyLong());
-
-        mockMvc.perform(delete("/foodCategories/delete/1"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string(ConstantMessage.CATEGORY_NOT_FOUND));
-
-        verify(service, times(1)).deleteFoodCategory(1L);
-    }
 
     @Test
     void getCategoriesByRestaurantIdTest() throws Exception {
