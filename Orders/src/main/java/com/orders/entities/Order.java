@@ -63,29 +63,72 @@ import java.util.List;
 
 /**
  * Represents an order entity in the system.
+ * <p>
+ * This class maps to the "orders" table in the database and contains information about an order,
+ * including the user, restaurant, and address associated with it, the total price, status, time, and the items in the order.
+ * </p>
+ * <p>
+ * The class uses Lombok's {@link Data} annotation to automatically generate getters, setters, and other common methods.
+ * </p>
  */
 @Entity
 @Table(name = "orders")
 @Data
 public class Order {
 
+    /**
+     * The unique identifier for the order.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
+    /**
+     * The unique identifier for the user who placed the order.
+     * <p>
+     * This value is fetched via Feign from the User microservice.
+     * </p>
+     */
     private Long userId; // fetched via Feign from User microservice
 
+    /**
+     * The unique identifier for the restaurant where the order was placed.
+     * <p>
+     * This value is fetched via Feign from the Restaurant microservice.
+     * </p>
+     */
     private Long restaurantId; // fetched via Feign from Restaurant microservice
 
+    /**
+     * The unique identifier for the address where the order should be delivered.
+     */
     private Long addressId;
 
+    /**
+     * The total price of the order.
+     */
     private Double totalPrice;
 
+    /**
+     * The current status of the order.
+     * <p>
+     * The status is represented as a string and is defined by the {@link OrderStatus} enum.
+     * </p>
+     */
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    /**
+     * The time when the order was placed.
+     */
     private LocalDateTime orderTime;
 
+    /**
+     * A JSON string representing the items in the order.
+     * <p>
+     * The JSON structure should be compatible with the expected format for items.
+     * </p>
+     */
     private String items;
 
     @Transient

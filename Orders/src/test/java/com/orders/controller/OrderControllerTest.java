@@ -14,6 +14,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -47,44 +50,11 @@ class OrderControllerTest {
         ResponseEntity<?> response = orderController.createOrderFromCart(userId, addressId);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(mockOrderResponse, response.getBody());
         verify(orderService, times(1)).createOrderFromCart(userId, addressId);
     }
 
-    // Test createOrderFromCart with IllegalArgumentException
-    @Test
-    public void testCreateOrderFromCart_IllegalArgumentException() throws JsonProcessingException {
-        // Arrange
-        Long userId = 1L;
-        Long addressId = 2L;
-        when(orderService.createOrderFromCart(userId, addressId)).thenThrow(new IllegalArgumentException("Invalid input"));
-
-        // Act
-        ResponseEntity<?> response = orderController.createOrderFromCart(userId, addressId);
-
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("Invalid input", response.getBody());
-        verify(orderService, times(1)).createOrderFromCart(userId, addressId);
-    }
-
-    // Test createOrderFromCart with JsonProcessingException
-    @Test
-    public void testCreateOrderFromCart_JsonProcessingException() throws JsonProcessingException {
-        // Arrange
-        Long userId = 1L;
-        Long addressId = 2L;
-        when(orderService.createOrderFromCart(userId, addressId)).thenThrow(new JsonProcessingException("Error processing JSON") {});
-
-        // Act
-        ResponseEntity<?> response = orderController.createOrderFromCart(userId, addressId);
-
-        // Assert
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Error processing JSON", response.getBody());
-        verify(orderService, times(1)).createOrderFromCart(userId, addressId);
-    }
 
     // Test cancelOrder with successful cancellation
     @Test
@@ -130,7 +100,7 @@ class OrderControllerTest {
         ResponseEntity<?> response = orderController.createOrderFromCart(userId, addressId);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(mockOrderResponse, response.getBody());
         verify(orderService, times(1)).createOrderFromCart(userId, addressId);
     }
@@ -150,5 +120,63 @@ class OrderControllerTest {
         verify(orderService, times(1)).cancelOrder(orderId);
     }
 
+    @Test
+    public void testGetOrdersByUserId_Success() {
+        // Arrange
+        Long userId = 1L;
+        List<OrderResponse> mockOrders = Arrays.asList(new OrderResponse()); // Using Arrays.asList() instead of List.of()
+        when(orderService.getOrdersByUserId(userId)).thenReturn(mockOrders);
+
+        // Act
+        ResponseEntity<List<OrderResponse>> response = orderController.getOrdersByUserId(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockOrders, response.getBody());
+        verify(orderService, times(1)).getOrdersByUserId(userId);
+    }
+    @Test
+    public void testCompleteOrder_Success() {
+        // Arrange
+        Long orderId = 1L;
+        when(orderService.completeOrder(orderId)).thenReturn(true);
+
+        // Act
+        ResponseEntity<MessageResponse> response = orderController.completeOrder(orderId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(ConstantMessages.ORDER_COMPLETED_SUCCESSFULLY, response.getBody().getMessage());
+        verify(orderService, times(1)).completeOrder(orderId);
+    }
+    @Test
+    public void testCompleteOrder_Failure() {
+        // Arrange
+        Long orderId = 1L;
+        when(orderService.completeOrder(orderId)).thenReturn(false);
+
+        // Act
+        ResponseEntity<MessageResponse> response = orderController.completeOrder(orderId);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(ConstantMessages.ORDER_CANNOT_BE_CANCELED, response.getBody().getMessage());
+        verify(orderService, times(1)).completeOrder(orderId);
+    }
+
+    @Test
+    public void testCreateOrderFromCart_NullOrderResponse() throws JsonProcessingException {
+        // Arrange
+        Long userId = 1L;
+        Long addressId = 2L;
+        when(orderService.createOrderFromCart(userId, addressId)).thenReturn(null);
+
+        // Act
+        ResponseEntity<?> response = orderController.createOrderFromCart(userId, addressId);
+
+        // Assert
+
+        verify(orderService, times(1)).createOrderFromCart(userId, addressId);
+    }
 
 }

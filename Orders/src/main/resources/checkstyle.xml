@@ -21,6 +21,10 @@
     </module>
 
 
+    <!-- Checks whether files end with a new line.                        -->
+    <!-- See https://checkstyle.org/config_misc.html#NewlineAtEndOfFile -->
+    <module name="NewlineAtEndOfFile"/>
+
     <!-- Checks that property files contain the same keys.         -->
     <!-- See https://checkstyle.org/config_misc.html#Translation -->
     <module name="Translation"/>
@@ -111,12 +115,16 @@
         <module name="MultipleVariableDeclarations"/>
         <module name="SimplifyBooleanExpression"/>
 
-
+        <!-- Checks for class design                         -->
+        <!-- See https://checkstyle.org/config_design.html -->
+        <module name="DesignForExtension"/>
+        <module name="FinalClass"/>
+        <module name="InterfaceIsType"/>
 
         <!-- Miscellaneous other checks.                   -->
         <!-- See https://checkstyle.org/config_misc.html -->
         <module name="ArrayTypeStyle"/>
-
+        <module name="FinalParameters"/>
         <module name="TodoComment"/>
         <module name="UpperEll"/>
 

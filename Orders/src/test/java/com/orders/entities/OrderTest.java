@@ -1,9 +1,11 @@
 package com.orders.entities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.orders.constant.ConstantMessages;
 import com.orders.entities.Cart;
 import com.orders.entities.Order;
 import com.orders.enums.OrderStatus;
+import com.orders.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javafx.beans.binding.Bindings.when;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class OrderTest {
@@ -28,6 +31,9 @@ public class OrderTest {
         order.setOrderStatus(OrderStatus.PENDING);
         order.setOrderTime(LocalDateTime.now());
     }
+
+
+
 
     @Test
     public void testOrderEntityCreation() {
@@ -132,4 +138,5 @@ public class OrderTest {
         assertEquals(order1, order2);
         assertEquals(order1.hashCode(), order2.hashCode());
     }
+
 }

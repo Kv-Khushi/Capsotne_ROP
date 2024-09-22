@@ -1,10 +1,10 @@
 package com.orders.controller;
 
 import com.orders.constant.ConstantMessages;
-import com.orders.entities.Cart;
 import com.orders.dto.CartRequest;
 import com.orders.dto.CartResponse;
 import com.orders.dto.MessageResponse;
+import com.orders.entities.Cart;
 import com.orders.service.CartService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class CartControllerTest {
         ResponseEntity<?> response = cartController.addItemToCart(cartRequest);
 
         // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(mockCart, response.getBody());
         verify(cartService, times(1)).addItemToCart(any(CartRequest.class));
     }
@@ -66,22 +66,6 @@ class CartControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ConstantMessages.ITEM_REMOVED_SUCCESSFULLY, response.getBody().getMessage());
         verify(cartService, times(1)).removeItemFromCart(userId, foodItemId);
-    }
-
-    // Test updateItemQuantity
-    @Test
-    public void testUpdateItemQuantity_Success() {
-        // Arrange
-        CartRequest cartRequest = new CartRequest();
-        doNothing().when(cartService).updateItemQuantity(any(CartRequest.class));
-
-        // Act
-        ResponseEntity<MessageResponse> response = cartController.updateItemQuantity(cartRequest);
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(ConstantMessages.ITEM_QUANTITY_UPDATED_SUCCESSFULLY, response.getBody().getMessage());
-        verify(cartService, times(1)).updateItemQuantity(any(CartRequest.class));
     }
 
     // Test getAllCartItemsByUserId

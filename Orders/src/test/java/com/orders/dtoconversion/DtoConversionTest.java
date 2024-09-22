@@ -1,9 +1,9 @@
 package com.orders.dtoconversion;
 
-import com.orders.entities.Cart;
 import com.orders.dto.CartRequest;
 import com.orders.dto.CartResponse;
 import com.orders.dto.RestaurantMenuResponse;
+import com.orders.entities.Cart;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -48,10 +48,11 @@ class DtoConversionTest {
         cart.setQuantity(3);
         cart.setPricePerItem(10.0);
 
-        RestaurantMenuResponse menuResponse = new RestaurantMenuResponse();
+
 
         // Act
-        CartResponse cartResponse = dtoConversion.cartToCartResponse(cart, menuResponse);
+        DtoConversion dtoConversion=new DtoConversion();
+        CartResponse cartResponse = dtoConversion.cartToCartResponse(cart);
 
         // Assert
         assertNotNull(cartResponse);

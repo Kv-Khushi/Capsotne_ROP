@@ -1,13 +1,13 @@
 
 package com.orders.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orders.constant.ConstantMessages;
 import com.orders.entities.Order;
 import com.orders.dto.MessageResponse;
 import com.orders.dto.OrderResponse;
 import com.orders.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/orders")
+@Slf4j
 public class OrderController {
+
+
 
     @Autowired
     private OrderService orderService;
@@ -36,17 +39,11 @@ public class OrderController {
      * @return a response entity containing the order response or an error message
      */
     @PostMapping("/create/{userId}/{addressId}")
-    public ResponseEntity<?> createOrderFromCart(@PathVariable final Long userId,
-                                                 @PathVariable final Long addressId) {
-        try {
-            OrderResponse orderResponse = orderService.createOrderFromCart(userId, addressId);
-            System.out.println(" hey "+orderResponse);
-            return ResponseEntity.ok(orderResponse);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        } catch (JsonProcessingException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing JSON");
-        }
+    public ResponseEntity<OrderResponse> createOrderFromCart(@PathVariable final Long userId,
+                                                 @PathVariable final Long addressId)  {
+        log.info("Received request to create order for user ID {} and address ID {}", userId, addressId);
+        OrderResponse orderResponse = orderService.createOrderFromCart(userId, addressId);
+            return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
     }
 
     /**
@@ -57,35 +54,59 @@ public class OrderController {
      */
     @PutMapping("/{orderId}/cancel")
     public ResponseEntity<MessageResponse> cancelOrder(@PathVariable final Long orderId) {
+        log.info("Received request to cancel order with ID {}", orderId);
         boolean canceled = orderService.cancelOrder(orderId);
         if (canceled) {
+            log.info("Order with ID {} canceled successfully", orderId);
             return ResponseEntity.ok(new MessageResponse(ConstantMessages.ORDER_CANCELED_SUCCESSFULLY));
         } else {
+            log.error("Order with ID {} cannot be canceled", orderId);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new MessageResponse(ConstantMessages.ORDER_CANNOT_BE_CANCELED));
         }
     }
 
+    /**
+     * Retrieves all orders for a given user ID.
+     *
+     * @param userId the ID of the user to get orders for
+     * @return a response entity containing a list of order responses or a no-content status if no orders are found
+     */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderResponse>> getOrdersByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<OrderResponse>> getOrdersByUserId(@PathVariable final Long userId) {
+        log.info("Received request to retrieve orders for user ID {}", userId);
         List<OrderResponse> orders = orderService.getOrdersByUserId(userId);
-        if (orders.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
+        log.info("Successfully retrieved {} orders for user ID {}", orders.size(), userId);
         return ResponseEntity.ok(orders);
     }
 
+
+    /**
+     * Retrieves all orders for a given restaurant ID.
+     *
+     * @param restaurantId the ID of the restaurant to get orders for
+     * @return a list of orders for the given restaurant ID
+     */
     @GetMapping("/restaurant/{restaurantId}")
-    public List<Order> getOrdersByRestaurantId(@PathVariable Long restaurantId) {
+    public List<Order> getOrdersByRestaurantId(@PathVariable final Long restaurantId) {
         return orderService.getOrdersByRestaurantId(restaurantId);
     }
 
+    /**
+     * Marks an order as complete based on its ID.
+     *
+     * @param orderId the ID of the order to mark as complete
+     * @return a response entity with a message indicating the result of the operation
+     */
     @PutMapping("/{orderId}/complete")
-    public ResponseEntity<MessageResponse> completeOrder(@PathVariable Long orderId) {
+    public ResponseEntity<MessageResponse> completeOrder(@PathVariable final Long orderId) {
+        log.info("Received request to complete order with ID {}", orderId);
         boolean complete = orderService.completeOrder(orderId);
         if (complete) {
-            return ResponseEntity.ok(new MessageResponse(ConstantMessages.ORDER_CANCELED_SUCCESSFULLY));
+            log.info("Order with ID {} marked as complete successfully", orderId);
+            return ResponseEntity.ok(new MessageResponse(ConstantMessages.ORDER_COMPLETED_SUCCESSFULLY));
         } else {
+            log.error("Order with ID {} cannot be completed", orderId);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new MessageResponse(ConstantMessages.ORDER_CANNOT_BE_CANCELED));
         }

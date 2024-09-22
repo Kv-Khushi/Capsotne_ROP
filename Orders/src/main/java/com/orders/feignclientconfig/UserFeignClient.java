@@ -4,10 +4,7 @@ package com.orders.feignclientconfig;
 import com.orders.dto.AddressResponse;
 import com.orders.dto.UserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,7 +34,14 @@ public interface UserFeignClient {
     @GetMapping("address/getAddress/{userId}")
     List<AddressResponse> getAllAddressesForUser(@PathVariable("userId") Long userId);
 
+
+    /**
+     * Updates the wallet balance for the given user ID.
+     *
+     * @param userId the ID of the user whose wallet balance is to be updated
+     * @param newBalance the new balance to set for the user's wallet
+     */
     @PutMapping("users/{userId}/wallet")
-    void updateWalletBalance(@PathVariable Long userId, @RequestBody Double newBalance);
+    void updateWalletBalance(@PathVariable Long userId, @RequestParam Double newBalance);
 
 }
