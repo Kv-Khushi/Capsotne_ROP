@@ -1,9 +1,10 @@
-package com.users.dtoconversion;
+package com.users.unit.dtoconversion;
 
 import com.users.dto.AddressRequest;
 import com.users.dto.AddressResponse;
 import com.users.dto.UserRequest;
 import com.users.dto.UserResponse;
+import com.users.dtoconversion.DtoConversion;
 import com.users.entities.Address;
 import com.users.entities.User;
 import org.junit.jupiter.api.Test;

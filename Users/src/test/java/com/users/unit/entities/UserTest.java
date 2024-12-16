@@ -1,6 +1,7 @@
-package com.users.entities;
+package com.users.unit.entities;
 
 import com.users.constant.ConstantMessage;
+import com.users.entities.User;
 import com.users.enums.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

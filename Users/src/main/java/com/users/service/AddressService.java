@@ -6,6 +6,7 @@ import com.users.entities.Address;
 import com.users.dto.AddressRequest;
 import com.users.dto.AddressResponse;
 import com.users.exception.ResourceAlreadyExists;
+import com.users.exception.ResourceNotFoundException;
 import com.users.repository.AddressRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -82,4 +83,28 @@ public class AddressService {
         return addressResponse;
     }
 
+    /**
+     * Updates an existing address.
+     *
+     * @param addressId the ID of the address to update
+     * @param addressRequest the new data to update the address with
+     * @return the updated {@link AddressResponse}
+     * @throws ResourceNotFoundException if the address with the given ID is not found
+     */
+    public AddressResponse updateAddress(Long addressId, AddressRequest addressRequest) {
+        log.info("Updating address with id: {}", addressId);
+
+        Address existingAddress = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + addressId));
+
+        existingAddress.setStreet(addressRequest.getStreet());
+        existingAddress.setCity(addressRequest.getCity());
+        existingAddress.setState(addressRequest.getState());
+        existingAddress.setZipCode(addressRequest.getZipCode());
+        existingAddress.setCountry(addressRequest.getCountry());
+
+        Address updatedAddress = addressRepository.save(existingAddress);
+        log.info("Successfully updated address with id: {}", updatedAddress.getAddressId());
+        return DtoConversion.addressToAddressResponse(updatedAddress);
+    }
 }

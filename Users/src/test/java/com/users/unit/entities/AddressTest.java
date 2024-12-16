@@ -1,5 +1,6 @@
-package com.users.entities;
+package com.users.unit.entities;
 
+import com.users.entities.Address;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

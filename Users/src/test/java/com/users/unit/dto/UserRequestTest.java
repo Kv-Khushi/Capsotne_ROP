@@ -1,6 +1,7 @@
 
-package com.users.dto;
+package com.users.unit.dto;
 
+import com.users.dto.UserRequest;
 import com.users.enums.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

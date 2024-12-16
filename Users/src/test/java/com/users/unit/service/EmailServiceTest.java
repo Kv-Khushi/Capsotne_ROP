@@ -1,5 +1,6 @@
-package com.users.service;
+package com.users.unit.service;
 
+import com.users.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

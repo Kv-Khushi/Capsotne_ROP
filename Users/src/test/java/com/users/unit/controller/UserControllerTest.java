@@ -1,8 +1,9 @@
-package com.users.controller;
+package com.users.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.users.constant.ConstantMessage;
+import com.users.controller.UserController;
 import com.users.dto.LoginRequest;
 import com.users.dto.UserRequest;
 import com.users.dto.UserResponse;

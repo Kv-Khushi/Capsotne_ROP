@@ -1,6 +1,7 @@
 package com.users.controller;
 
 import com.users.constant.ConstantMessage;
+import com.users.dto.AddressResponse;
 import com.users.dto.CommonResponse;
 import com.users.entities.Address;
 import com.users.dto.AddressRequest;
@@ -9,12 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.List;
 
@@ -69,5 +66,21 @@ public class AddressController {
             log.error("No addresses found for userId: {}", userId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    /**
+     * Updates an existing address.
+     *
+     * @param addressId the ID of the address to update
+     * @param addressRequest the new address data
+     * @return the updated address in the response body
+     */
+    @PutMapping("/{addressId}")
+    public ResponseEntity<AddressResponse> updateAddress(
+            @PathVariable Long addressId,
+            @Valid @RequestBody AddressRequest addressRequest) {
+
+        AddressResponse updatedAddress = addressService.updateAddress(addressId, addressRequest);
+        return ResponseEntity.ok(updatedAddress);
     }
 }

@@ -1,4 +1,4 @@
-package com.users.service;
+package com.users.unit.service;
 
 import com.users.constant.ConstantMessage;
 import com.users.dto.LoginRequest;
@@ -9,6 +9,8 @@ import com.users.enums.UserRole;
 import com.users.exception.ResourceNotFoundException;
 import com.users.repository.UserRepository;
 import com.users.passwordencryption.PasswordEncodingAndDecoding;
+import com.users.service.EmailService;
+import com.users.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

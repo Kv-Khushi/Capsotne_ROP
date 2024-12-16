@@ -1,5 +1,6 @@
-package com.users.dto;
+package com.users.unit.dto;
 
+import com.users.dto.LoginRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

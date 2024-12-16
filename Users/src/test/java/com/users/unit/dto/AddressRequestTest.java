@@ -1,5 +1,6 @@
-package com.users.dto;
+package com.users.unit.dto;
 
+import com.users.dto.AddressRequest;
 import org.junit.jupiter.api.Test;
 
 import javax.validation.ConstraintViolation;

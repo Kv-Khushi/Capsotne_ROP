@@ -1,5 +1,6 @@
-package com.users.dto;
+package com.users.unit.dto;
 
+import com.users.dto.CommonResponse;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

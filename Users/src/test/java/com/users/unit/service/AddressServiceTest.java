@@ -1,10 +1,11 @@
-package com.users.service;
+package com.users.unit.service;
 
 import com.users.dto.AddressRequest;
 import com.users.dto.AddressResponse;
 import com.users.dtoconversion.DtoConversion;
 import com.users.entities.Address;
 import com.users.repository.AddressRepository;
+import com.users.service.AddressService;
 import lombok.var;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

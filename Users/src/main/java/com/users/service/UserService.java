@@ -3,6 +3,7 @@ package com.users.service;
 import com.users.constant.ConstantMessage;
 import com.users.dto.*;
 import com.users.dtoconversion.DtoConversion;
+import com.users.entities.Address;
 import com.users.entities.User;
 import com.users.enums.UserRole;
 import com.users.exception.InvalidRequestException;
@@ -14,6 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.users.passwordencryption.PasswordEncodingAndDecoding;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -165,6 +170,5 @@ public class UserService {
         emailService.sendContactUsEmail(supportEmails, subject, customerName, customMessage);
         return new CommonResponse(ConstantMessage.MAIL_SENT_SUCCESSFULLY);
     }
-
 }
 

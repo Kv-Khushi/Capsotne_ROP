@@ -1,5 +1,6 @@
-package com.users.dto;
+package com.users.unit.dto;
 
+import com.users.dto.UserResponse;
 import com.users.enums.UserRole;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
