@@ -27,3 +27,5 @@ CREATE TABLE IF NOT EXISTS address (
 
 -- Add a unique constraint to prevent duplicate addresses for the same user
 ALTER TABLE address ADD CONSTRAINT unique_user_address UNIQUE (user_id, street, city, state, zip_code, country);
+
+
