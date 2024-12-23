@@ -1,5 +1,7 @@
 package com.users.passwordencryption;
 
+import org.springframework.stereotype.Component;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -11,6 +13,7 @@ import java.util.Base64;
  * and can be decoded back to their original form when needed.
  * </p>
  */
+@Component
 public class PasswordEncodingAndDecoding {
 
     /**

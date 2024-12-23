@@ -103,11 +103,11 @@ public class UserController{
      * @return a {@link ResponseEntity} containing a success message
      */
 
-    @PutMapping("/{userId}/wallet")
-    public ResponseEntity<String> updateWalletBalance(@PathVariable final Long userId, @RequestParam final Double newBalance) {
-        userService.updateWalletBalance(userId, newBalance);
-        return ResponseEntity.status(HttpStatus.OK).body(ConstantMessage.UPDATED_WALLET_BALANCE);
-    }
+        @PutMapping("/{userId}/wallet")
+        public ResponseEntity<String> updateWalletBalance(@PathVariable final Long userId, @RequestParam final Double newBalance) {
+            userService.updateWalletBalance(userId, newBalance);
+            return ResponseEntity.status(HttpStatus.OK).body(ConstantMessage.UPDATED_WALLET_BALANCE);
+        }
 
     /**
      * Sends an email with the provided text.
